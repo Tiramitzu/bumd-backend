@@ -1,0 +1,847 @@
+definitions:
+  http_util.JSONResultLogin:
+    properties:
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYxNjgyMjksImlk._aYI7pV2c9SU9VOp3RY_mxtFenYFQuKPJtVfk
+        type: string
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2
+        type: string
+    type: object
+  models.BentukBadanHukumForm:
+    properties:
+      deskripsi:
+        type: string
+      nama:
+        type: string
+    type: object
+  models.BentukBadanHukumModel:
+    properties:
+      deskripsi:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+    type: object
+  models.BentukUsahaForm:
+    properties:
+      deskripsi:
+        type: string
+      nama:
+        type: string
+    type: object
+  models.BentukUsahaModel:
+    properties:
+      deskripsi:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+    type: object
+  models.BumdForm:
+    properties:
+      alamat:
+        type: string
+      deskripsi:
+        type: string
+      email:
+        type: string
+      id_bentuk_hukum:
+        type: integer
+      id_bentuk_usaha:
+        type: integer
+      nama:
+        type: string
+      no_telp:
+        type: string
+      website:
+        type: string
+    type: object
+  models.BumdModel:
+    properties:
+      alamat:
+        type: string
+      bentuk_hukum:
+        type: string
+      bentuk_usaha:
+        type: string
+      deskripsi:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      id_bentuk_hukum:
+        type: integer
+      id_bentuk_usaha:
+        type: integer
+      id_daerah:
+        type: integer
+      nama:
+        type: string
+      no_telp:
+        type: string
+      website:
+        type: string
+    type: object
+  models.LoginForm:
+    properties:
+      password:
+        description: User password
+        example: "123456"
+        type: string
+      username:
+        example: warid
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.UserDetail:
+    properties:
+      nama_role:
+        type: string
+      nama_user:
+        type: string
+      username:
+        type: string
+    type: object
+  utils.DataValidationError:
+    properties:
+      field:
+        example: email
+        type: string
+      message:
+        example: Invalid email address
+        type: string
+    type: object
+  utils.LoginError:
+    properties:
+      message:
+        description: |-
+          Attempt   int    `json:"attempt" xml:"attempt" example:"3"`                            // sisa kesempatan login sebelum diblokir 5 menit
+          NextLogin int    `json:"next_login" xml:"next_login" example:"123233213"`              // unix timestamp UTC blokir login dibuka kembali
+        example: invalid username or password
+        type: string
+    type: object
+  utils.RequestError:
+    properties:
+      code:
+        example: 422
+        type: integer
+      fields:
+        items:
+          $ref: '#/definitions/utils.DataValidationError'
+        type: array
+      message:
+        example: Invalid email address
+        type: string
+    type: object
+info:
+  contact:
+    email: lifelinejar@mail.com
+    name: API Support
+  description: SIPD Service Auth Rest API.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: SIPD Service Auth
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login to get JWT token and refresh token.
+      operationId: auth-login
+      parameters:
+      - description: Login payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login Success, jwt provided
+          schema:
+            $ref: '#/definitions/http_util.JSONResultLogin'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "403":
+          description: Login forbidden
+          schema:
+            $ref: '#/definitions/utils.LoginError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      summary: user login
+      tags:
+      - Auth
+  /site/index:
+    get:
+      consumes:
+      - application/json
+      description: index page.
+      operationId: index
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema: {}
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "403":
+          description: Login forbidden
+          schema:
+            $ref: '#/definitions/utils.LoginError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      summary: index
+      tags:
+      - Site
+  /strict/bentuk_badan_hukum:
+    get:
+      description: get data bentuk badan hukum.
+      operationId: bentuk_badan_hukum-index
+      parameters:
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Nama Bentuk Badan Hukum
+        in: query
+        name: nama
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BentukBadanHukumModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bentuk badan hukum
+      tags:
+      - Bentuk Badan Hukum
+    post:
+      consumes:
+      - application/json
+      description: create data bentuk badan hukum.
+      operationId: bentuk_badan_hukum-create
+      parameters:
+      - description: Create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.BentukBadanHukumForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data bentuk badan hukum
+      tags:
+      - Bentuk Badan Hukum
+  /strict/bentuk_badan_hukum/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data bentuk badan hukum.
+      operationId: bentuk_badan_hukum-delete
+      parameters:
+      - description: Id untuk delete data bentuk badan hukum
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data bentuk badan hukum
+      tags:
+      - Bentuk Badan Hukum
+    put:
+      consumes:
+      - application/json
+      description: update data bentuk badan hukum.
+      operationId: bentuk_badan_hukum-update
+      parameters:
+      - description: Id untuk update data bentuk badan hukum
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.BentukBadanHukumForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data bentuk badan hukum
+      tags:
+      - Bentuk Badan Hukum
+  /strict/bentuk_usaha:
+    get:
+      description: get data bentuk usaha.
+      operationId: bentuk_usaha-index
+      parameters:
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Nama Bentuk Usaha
+        in: query
+        name: nama
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BentukUsahaModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bentuk usaha
+      tags:
+      - Bentuk Usaha
+    post:
+      consumes:
+      - application/json
+      description: create data bentuk usaha.
+      operationId: bentuk_usaha-create
+      parameters:
+      - description: Create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.BentukUsahaForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data bentuk usaha
+      tags:
+      - Bentuk Usaha
+  /strict/bentuk_usaha/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data bentuk usaha.
+      operationId: bentuk_usaha-delete
+      parameters:
+      - description: Id untuk delete data bentuk usaha
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data bentuk usaha
+      tags:
+      - Bentuk Usaha
+    put:
+      consumes:
+      - application/json
+      description: update data bentuk usaha.
+      operationId: bentuk_usaha-update
+      parameters:
+      - description: Id untuk update data bentuk usaha
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.BentukUsahaForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data bentuk usaha
+      tags:
+      - Bentuk Usaha
+  /strict/bumd:
+    get:
+      description: get data bumd.
+      operationId: bumd-index
+      parameters:
+      - description: Nama BUMD
+        in: query
+        name: nama
+        type: string
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BumdModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bumd
+      tags:
+      - BUMD
+    post:
+      consumes:
+      - application/json
+      description: create data bumd.
+      operationId: bumd-create
+      parameters:
+      - description: Create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.BumdForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data bumd
+      tags:
+      - BUMD
+  /strict/bumd/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data bumd.
+      operationId: bumd-delete
+      parameters:
+      - description: Id untuk delete data bumd
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data bumd
+      tags:
+      - BUMD
+    put:
+      consumes:
+      - application/json
+      description: update data bumd.
+      operationId: bumd-update
+      parameters:
+      - description: Id untuk update data bumd
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.BumdForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data bumd
+      tags:
+      - BUMD
+  /strict/user/logout:
+    get:
+      description: user logout.
+      operationId: user-logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: logout
+      tags:
+      - User
+  /strict/user/profile:
+    get:
+      description: get profile info.
+      operationId: user-profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.UserDetail'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: user get profile info
+      tags:
+      - User
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

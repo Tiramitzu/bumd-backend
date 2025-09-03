@@ -1,0 +1,145 @@
+.PHONY: clean critic security lint test swag run stop docker_push_image
+
+security:
+	gosec -quiet ./...
+
+test: security
+	go test -v -timeout 30s -coverprofile=cover.out -cover ./...
+	go tool cover -func=cover.out
+
+BUILD_DIR = $(PWD)/app
+
+# Deployment Env
+IMAGE_REGISTRY=registry-gitlab.kemendagri.go.id
+IMAGE_REGISTRY_UERNAME=x
+IMAGE_REGISTRY_PASSWORD=x
+IMAGE_NAME=sipd/services/auth
+
+# App Env
+SERVER_NAME=SIPD_AUTH_SERVICE
+SERVER_URL="0.0.0.0:3000"
+SERVER_READ_TIMEOUT=60
+JWT_SECRET_KEY="jwt_secret"
+
+DB_SERVER_URL="host=x.x.x.x port=5432 user=xxxx password=xxxx dbname=sipd_auth sslmode=disable"
+DB_SERVER_URL_MST_DATA="host=x.x.x.x port=5432 user=x password=x dbname=sipd_mst_data sslmode=disable"
+DB_SIPD_PEGAWAI="host=x.x.x.x port=5432 user=x password=x dbname=sipd_pegawai sslmode=disable"
+SERVICE_RBAC="http://localhost:3001"
+SERVICE_PEGAWAI="http://localhost:3031"
+SERVICE_REFERENSI="http://localhost:3032"
+SIPD_CORS_WHITELISTS="*"
+
+GRAYLOG_HOST="127.0.0.1:12201"
+
+MINIO_ENDPOINT="filestorage.kemendagri.go.id:9000" #filestorage.kemendagri.go.id / 192.168.128.106:9000
+MINIO_ACCESS_KEY="x"
+MINIO_SECRET_KEY="x"
+MINIO_BUCKET_NAME="sipd-auth"
+
+REDIS_HOST="127.0.0.1"
+REDIS_PORT="6379"
+REDIS_USERNAME=""
+REDIS_PASSWORD=""
+
+clean:
+	rm -rf ./build
+
+critic:
+	gocritic check -enableAll ./...
+
+security:
+	gosec -quiet ./...
+
+lint:
+	golangci-lint run ./...
+
+test: clean critic security lint
+	go test -v -timeout 60s -coverprofile=cover.out -cover ./...
+	go tool cover -func=cover.out
+
+swag:
+	swag fmt && swag init
+
+go:
+	export SERVER_NAME=$(SERVER_NAME);\
+    export SERVER_URL=$(SERVER_URL);\
+	export GRAYLOG_HOST=$(GRAYLOG_HOST);\
+	export REDIS_HOST=$(REDIS_HOST);\
+    export REDIS_PORT=$(REDIS_PORT);\
+    export REDIS_USERNAME=$(REDIS_USERNAME);\
+    export REDIS_PASSWORD=$(REDIS_PASSWORD);\
+    export SERVER_READ_TIMEOUT=$(SERVER_READ_TIMEOUT);\
+    export JWT_SECRET_KEY=$(JWT_SECRET_KEY);\
+    export DB_SERVER_URL=$(DB_SERVER_URL);\
+	export DB_SIPD_PEGAWAI=$(DB_SIPD_PEGAWAI);\
+    export DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA);\
+    export SERVICE_RBAC=$(SERVICE_RBAC);\
+    export SERVICE_PEGAWAI=$(SERVICE_PEGAWAI);\
+	export SERVICE_REFERENSI=$(SERVICE_REFERENSI);\
+	export MINIO_ENDPOINT=$(MINIO_ENDPOINT);\
+	export MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY);\
+	export MINIO_SECRET_KEY=$(MINIO_SECRET_KEY);\
+	export MINIO_BUCKET_NAME=$(MINIO_BUCKET_NAME);\
+	export SIPD_CORS_WHITELISTS=$(SIPD_CORS_WHITELISTS);\
+    go mod tidy;\
+    go run main.go
+
+build: test
+	go mod tidy;\
+    #go build -o $(BUILD_DIR)/$(IMAGE_NAME) -tags musl
+	CGO_ENABLED=0 go build -ldflags="-w -s" -o $(BUILD_DIR)/$(IMAGE_NAME) main.go
+
+run: swag build
+	export SERVER_NAME=$(SERVER_NAME);\
+    export SERVER_URL=$(SERVER_URL);\
+    export SERVER_READ_TIMEOUT=$(SERVER_READ_TIMEOUT);\
+    export JWT_SECRET_KEY=$(JWT_SECRET_KEY);\
+    export DB_SERVER_URL=$(DB_SERVER_URL);\
+	export DB_SIPD_PEGAWAI=$(DB_SIPD_PEGAWAI);\
+    export DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA);\
+    export SERVICE_RBAC=$(SERVICE_RBAC);\
+    export SERVICE_PEGAWAI=$(SERVICE_PEGAWAI);\
+	export SERVICE_REFERENSI=$(SERVICE_REFERENSI);\
+	export MINIO_ENDPOINT=$(MINIO_ENDPOINT);\
+    export MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY);\
+    export MINIO_SECRET_KEY=$(MINIO_SECRET_KEY);\
+    export MINIO_BUCKET_NAME=$(MINIO_BUCKET_NAME);\
+	$(BUILD_DIR)/$(IMAGE_NAME)
+
+docker_build_image:
+	docker build -t $(IMAGE_NAME):latest .
+
+docker_push_image: docker_build_image
+	docker image tag $(IMAGE_NAME):latest $(IMAGE_REGISTRY)/$(IMAGE_NAME):latest
+	docker login $(IMAGE_REGISTRY) --username $(IMAGE_REGISTRY_UERNAME) --password $(IMAGE_REGISTRY_PASSWORD)
+	docker image push $(IMAGE_REGISTRY)/$(IMAGE_NAME):latest
+	docker rmi $(IMAGE_NAME):latest
+	docker rmi $(IMAGE_REGISTRY)/$(IMAGE_NAME):latest
+
+docker_app: docker_build_image
+	docker run -d \
+	            --restart unless-stopped \
+        		--name $(IMAGE_NAME)_container \
+        		--network host \
+        		-e SERVER_NAME=$(SERVER_NAME) \
+        		-e SERVER_URL=$(SERVER_URL) \
+        		-e SERVER_READ_TIMEOUT=$(SERVER_READ_TIMEOUT) \
+        		-e JWT_SECRET_KEY=$(JWT_SECRET_KEY) \
+        		-e DB_SERVER_URL=$(DB_SERVER_URL) \
+        		-e DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA) \
+				-e DB_SIPD_PEGAWAI=$(DB_SIPD_PEGAWAI) \
+        		-e SERVICE_RBAC=$(SERVICE_RBAC) \
+        		-e SERVICE_PEGAWAI=$(SERVICE_PEGAWAI) \
+				-e SERVICE_REFERENSI=$(SERVICE_REFERENSI) \
+				-e MINIO_ENDPOINT=$(MINIO_ENDPOINT) \
+				-e MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY) \
+				-e MINIO_SECRET_KEY=$(MINIO_SECRET_KEY) \
+				-e MINIO_BUCKET_NAME=$(MINIO_BUCKET_NAME) \
+        		$(IMAGE_NAME):latest
+
+docker_run: docker_app
+
+docker_stop:
+	docker container stop $(IMAGE_NAME)_container
+	docker container rm $(IMAGE_NAME)_container
+	docker rmi $(IMAGE_NAME):latest
