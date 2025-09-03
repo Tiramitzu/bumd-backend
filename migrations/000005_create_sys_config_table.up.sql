@@ -1,0 +1,1 @@
+up/000005_create_sys_config_table.up.sql

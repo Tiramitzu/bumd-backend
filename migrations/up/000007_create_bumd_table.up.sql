@@ -3,12 +3,16 @@ CREATE TABLE bumd (
     id_daerah       INT             NOT NULL DEFAULT 0,
     id_bentuk_hukum INT             NOT NULL DEFAULT 0,
     id_bentuk_usaha INT             NOT NULL DEFAULT 0,
+    id_induk_perusahaan INT         NOT NULL DEFAULT 0,
+    penerapan_spi   BOOLEAN         NOT NULL DEFAULT FALSE,
     nama            VARCHAR(250)    NOT NULL DEFAULT '',
     deskripsi       TEXT            NOT NULL DEFAULT '',
     alamat          TEXT            NOT NULL DEFAULT '',
     no_telp         VARCHAR(30)     NOT NULL DEFAULT '',
+    no_fax          VARCHAR(30)     NOT NULL DEFAULT '',
     email           VARCHAR(250)    NOT NULL DEFAULT '',
     website         VARCHAR(250)    NOT NULL DEFAULT '',
+    narahubung      VARCHAR(30)     NOT NULL DEFAULT '',
     created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by      INT             NOT NULL DEFAULT 0,
     updated_at      TIMESTAMP       NOT NULL DEFAULT '0001-01-01 00:00:00',
@@ -35,6 +39,12 @@ CREATE INDEX idx_bumd_id_bentuk_hukum
 
 CREATE INDEX idx_bumd_id_bentuk_usaha 
     ON bumd(id_bentuk_usaha);
+
+CREATE INDEX idx_bumd_id_induk_perusahaan 
+    ON bumd(id_induk_perusahaan);
+
+CREATE INDEX idx_bumd_penerapan_spi 
+    ON bumd(penerapan_spi);
 
 CREATE INDEX idx_bumd_nama 
     ON bumd(nama);

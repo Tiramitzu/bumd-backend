@@ -12,16 +12,16 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type BentukUsahaController struct {
+type AktaNotarisController struct {
 	pgxConn *pgxpool.Pool
 }
 
-func NewBentukUsahaController(pgxConn *pgxpool.Pool) *BentukUsahaController {
-	return &BentukUsahaController{pgxConn: pgxConn}
+func NewAktaNotarisController(pgxConn *pgxpool.Pool) *AktaNotarisController {
+	return &AktaNotarisController{pgxConn: pgxConn}
 }
 
-func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, nama string) (r []models.BentukUsahaModel, totalCount, pageCount int, err error) {
-	r = make([]models.BentukUsahaModel, 0)
+func (c *AktaNotarisController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, nama string) (r []models.AktaNotarisModel, totalCount, pageCount int, err error) {
+	r = make([]models.AktaNotarisModel, 0)
 	offset := limit * (page - 1)
 
 	var args []interface{}
@@ -59,7 +59,7 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 
 	defer rows.Close()
 	for rows.Next() {
-		var m models.BentukUsahaModel
+		var m models.AktaNotarisModel
 		err = rows.Scan(&m.ID, &m.Nama, &m.Deskripsi)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
@@ -75,22 +75,7 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 	return r, totalCount, pageCount, err
 }
 
-func (c *BentukUsahaController) View(fCtx *fasthttp.RequestCtx, id int) (r models.BentukUsahaModel, err error) {
-	q := `
-	SELECT id, nama, deskripsi
-	FROM mst_bentuk_usaha
-	WHERE id = $1
-	AND deleted_by = 0
-	`
-	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama, &r.Deskripsi)
-	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
-	}
-
-	return r, err
-}
-
-func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.BentukUsahaForm) (r bool, err error) {
+func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.AktaNotarisForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -108,10 +93,7 @@ func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
 	if err != nil {
-		return false, utils.RequestError{
-			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghitung data Bentuk Usaha - " + err.Error(),
-		}
+		return false, err
 	}
 
 	if count > 0 {
@@ -127,16 +109,13 @@ func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 
 	_, err = c.pgxConn.Exec(fCtx, q, payload.Nama, payload.Deskripsi, idUser)
 	if err != nil {
-		return false, utils.RequestError{
-			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal membuat data Bentuk Usaha - " + err.Error(),
-		}
+		return false, err
 	}
 
 	return true, err
 }
 
-func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.BentukUsahaForm, id int) (r bool, err error) {
+func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.AktaNotarisForm, id int) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -154,10 +133,7 @@ func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
 	if err != nil {
-		return false, utils.RequestError{
-			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghitung data Bentuk Usaha - " + err.Error(),
-		}
+		return false, err
 	}
 
 	if count < 1 {
@@ -175,16 +151,13 @@ func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 
 	_, err = c.pgxConn.Exec(fCtx, q, payload.Nama, payload.Deskripsi, idUser, id)
 	if err != nil {
-		return false, utils.RequestError{
-			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal memperbarui data Bentuk Usaha - " + err.Error(),
-		}
+		return false, err
 	}
 
 	return true, err
 }
 
-func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int) (r bool, err error) {
+func (c *AktaNotarisController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -202,10 +175,7 @@ func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
 	if err != nil {
-		return false, utils.RequestError{
-			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghapus data Bentuk Usaha - " + err.Error(),
-		}
+		return false, err
 	}
 
 	if count < 1 {
@@ -223,10 +193,7 @@ func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id)
 	if err != nil {
-		return false, utils.RequestError{
-			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghapus data Bentuk Usaha - " + err.Error(),
-		}
+		return false, err
 	}
 
 	return true, err

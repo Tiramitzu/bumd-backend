@@ -17,3 +17,10 @@ CREATE INDEX idx_mst_bentuk_badan_hukum_nama
 -- Add index on deleted_at for soft delete queries
 CREATE INDEX idx_mst_bentuk_badan_hukum_deleted_at 
     ON mst_bentuk_badan_hukum(deleted_at);
+
+-- Populate data
+INSERT INTO mst_bentuk_badan_hukum (nama, deskripsi, created_by) VALUES
+('Perumda', '', 1),
+('Perseroda', '', 1),
+('Lainnya', '', 1),
+('Perusda', '', 1)

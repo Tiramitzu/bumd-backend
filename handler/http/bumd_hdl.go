@@ -27,6 +27,7 @@ func NewBumdHandler(
 
 	rStrict := r.Group("bumd")
 	rStrict.Get("/", handler.Index)
+	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
@@ -39,18 +40,22 @@ func NewBumdHandler(
 //	@ID				bumd-index
 //	@Tags			BUMD
 //	@Produce		json
-//	@Param			nama	query		string				false	"Nama BUMD"
-//	@Param			page	query		int					false	"Halaman yang ditampilkan"
-//	@Param			limit	query		int					false	"Jumlah data per halaman, maksimal 5 data per halaman"
-//	@success		200		{object}	models.BumdModel	"Success"
-//	@Failure		400		{object}	utils.RequestError	"Bad request"
-//	@Failure		404		{object}	utils.RequestError	"Data not found"
-//	@Failure		422		{array}		utils.RequestError	"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError	"Server error"
+//	@Param			nama				query		string				false	"Nama BUMD"
+//	@Param			penerapan_spi		query		bool				false	"Penerapan SPI"
+//	@Param			induk_perusahaan	query		int					false	"Induk Perusahaan"
+//	@Param			page				query		int					false	"Halaman yang ditampilkan"
+//	@Param			limit				query		int					false	"Jumlah data per halaman, maksimal 5 data per halaman"
+//	@success		200					{object}	models.BumdModel	"Success"
+//	@Failure		400					{object}	utils.RequestError	"Bad request"
+//	@Failure		404					{object}	utils.RequestError	"Data not found"
+//	@Failure		422					{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500					{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd [get]
 func (h *BumdHandler) Index(c *fiber.Ctx) error {
 	nama := c.Query("nama")
+	penerapanSPI := c.QueryBool("penerapan_spi", false)
+	indukPerusahaan := c.QueryInt("induk_perusahaan", 0)
 	page := c.QueryInt("page", 1)
 	var limit int
 	limit = c.QueryInt("limit", 5)
@@ -65,6 +70,8 @@ func (h *BumdHandler) Index(c *fiber.Ctx) error {
 		page,
 		limit,
 		nama,
+		penerapanSPI,
+		indukPerusahaan,
 	)
 	if err != nil {
 		return err
@@ -81,6 +88,32 @@ func (h *BumdHandler) Index(c *fiber.Ctx) error {
 		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
 	}
 
+	return c.JSON(m)
+}
+
+// View func for get data bumd by id.
+//
+//	@Summary		get data bumd by id
+//	@Description	get data bumd by id.
+//	@ID				bumd-view
+//	@Tags			BUMD
+//	@Produce		json
+//	@Param			id	path		int					true	"Id untuk get data bumd"
+//	@success		200	{object}	models.BumdModel	"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id} [get]
+func (h *BumdHandler) View(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	if err != nil {
+		return err
+	}
 	return c.JSON(m)
 }
 

@@ -22,6 +22,7 @@ func NewBentukUsahaHandler(r fiber.Router, validator *validator.Validate, contro
 	}
 
 	rStrict := r.Group("bentuk_usaha")
+	rStrict.Get("/:id", handler.View)
 	rStrict.Get("/", handler.Index)
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
@@ -75,6 +76,32 @@ func (h *BentukUsahaHandler) Index(c *fiber.Ctx) error {
 	c.Append("x-pagination-current-page", strconv.Itoa(page))
 	if page < pageCount {
 		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
+	}
+	return c.JSON(m)
+}
+
+// View func for get data bentuk usaha by id.
+//
+//	@Summary		get data bentuk usaha by id
+//	@Description	get data bentuk usaha by id.
+//	@ID				bentuk_usaha-view
+//	@Tags			Bentuk Usaha
+//	@Produce		json
+//	@Param			id	path		int						true	"Id untuk get data bentuk usaha"
+//	@success		200	{object}	models.BentukUsahaModel	"Success"
+//	@Failure		400	{object}	utils.RequestError		"Bad request"
+//	@Failure		404	{object}	utils.RequestError		"Data not found"
+//	@Failure		500	{object}	utils.RequestError		"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bentuk_usaha/{id} [get]
+func (h *BentukUsahaHandler) View(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.View(c.Context(), id)
+	if err != nil {
+		return err
 	}
 	return c.JSON(m)
 }
