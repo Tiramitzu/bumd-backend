@@ -1,0 +1,1 @@
+up/000016_create_kinerja_table.up.sql

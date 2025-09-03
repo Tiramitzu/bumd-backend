@@ -1,0 +1,65 @@
+pipeline {
+
+  agent any
+
+  environment {
+    //BUILD_URL = "https://registry.gitlab.com"
+    //dockerImageName = "microdataindonesia/kemendagri/sipd/services/auth-service"
+    BUILD_URL = "https://registry-gitlab.kemendagri.go.id"
+    dockerImageName = "sipd/services/auth"
+    dockerImageTag = "latest"
+    dockerImage = ""
+  }
+
+  stages {
+
+    stage('Build Docker Image') {
+        steps {
+            script {
+                // Build the Docker image using Docker Pipeline plugin
+                dockerImage = docker.build("${dockerImageName}:${dockerImageTag}", "-f Dockerfile .")
+            }
+        }
+    }
+
+    stage('Pushing Image') {
+        environment {
+            //registryCredential = 'gitlab'
+            registryCredential = 'gitlab-kemendagri-herman-uwp'
+        }
+        steps{
+            script {
+              /*docker.withRegistry( 'https://registry.gitlab.com', registryCredential ) {
+                dockerImage.push("latest")
+              }*/
+              docker.withRegistry( 'https://registry-gitlab.kemendagri.go.id', registryCredential ) {
+                dockerImage.push(dockerImageTag)
+              }
+            }
+        }
+    }
+
+    stage('Deploying container to Kubernetes') {
+        steps {
+            withKubeConfig([credentialsId:'kubernetes-api-token', serverUrl:'https://192.168.128.100:6443', clusterName:'kubernetes', namespace:'default']) {
+                // untuk pertama kali deploy
+                //sh 'kubectl apply -f ./k8s-deployment/config_map.yaml'
+                //sh 'kubectl apply -f ./k8s-deployment/deployment.yaml'
+                //sh 'kubectl apply -f ./k8s-deployment/service.yaml'
+
+                // untuk deploy selanjutnya
+                sh 'kubectl rollout restart -n default deployment sipd-auth'
+            }
+        }
+    }
+
+    /*stage('Send notification to Discord') {
+        steps {
+            echo "Send notification to Discord.."
+            discordSend description: "Jenkins Pipeline Build ${dockerImageName}:${dockerImageTag}", footer: "Start Build", link: "${BUILD_URL}/${dockerImageName}", result: currentBuild.currentResult, title: JOB_NAME, webhookURL: "https://discord.com/api/webhooks/1146310354708746271/grUv6PYRQvsoMm5cqg5Rl8QgqKHP9iuWJKJdpMKCkzxe3N8R2GXUFjXX9rn3T6OMs6Ol"
+        }
+    }*/
+
+  }
+
+}

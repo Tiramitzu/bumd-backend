@@ -1,0 +1,61 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+    DOCKER_CONFIG_FILE: "--config .docker"
+    DOCKER_REGCRED: "regcred"
+    PROJECT_NAME: "auth"
+    PROJECT_GROUP_ID: "sipd"
+    K8S_NAMESPACE: "development"
+    MY_TRIGGER_TOKEN: "glptt-eb34428616c382d3240f1ae6a979e453504addee"
+
+# default:
+#     tags:
+#         - docker
+
+build:image:
+  stage: build
+  image: nexus.registry:8086/docker:stable
+  services:
+    - name: nexus.registry:8086/docker:18.09-dind
+      entrypoint: ["dockerd-entrypoint.sh"]
+      command: [
+        "--insecure-registry=nexus.registry:8087",
+        "--insecure-registry=nexus.registry:8086"
+      ]
+      alias: dockerd
+  variables:
+      DOCKER_HOST: tcp://dockerd:2375
+      DOCKER_DRIVER: overlay2
+      DOCKER_TAGS:
+        nexus.registry:8087/$PROJECT_GROUP_ID/$PROJECT_NAME
+  before_script:
+    - mkdir -p .docker/ && cat $DOCKER_CONF_JSON > .docker/config.json
+  script:
+    - echo $CI_COMMIT_SHORT_SHA
+
+    - docker $DOCKER_CONFIG_FILE build -q -f Dockerfile -t $DOCKER_TAGS:latest .
+    - docker image tag $DOCKER_TAGS:latest $DOCKER_TAGS:$CI_COMMIT_SHORT_SHA
+    - docker $DOCKER_CONFIG_FILE image push $DOCKER_TAGS:latest
+    - docker $DOCKER_CONFIG_FILE image push $DOCKER_TAGS:$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  #rules:
+  #  - if: $CI_COMMIT_TAG =~ /-release/
+  #    when: always
+  #  - when: never
+    #- if: $CI_COMMIT_SHORT_SHA
+      #when: manual
+
+deploy:
+  stage: deploy
+  script:
+    - echo $CI_SERVER_URL
+
+    - apk add curl
+    - 'curl -X POST --fail -F "token=$MY_TRIGGER_TOKEN" -F "ref=main" -F "variables[PROJECT_GROUP_ID]=$PROJECT_GROUP_ID" -F "variables[SERVICE_NAME]=$PROJECT_NAME" "$CI_SERVER_URL/api/v4/projects/3/trigger/pipeline"'
+    - echo "deploy success!"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

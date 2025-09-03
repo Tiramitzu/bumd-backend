@@ -1,0 +1,25 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sipd-jenkins-client
+  namespace: development
+rules:
+  - apiGroups: ["", "apps"]
+    resources: ["pods", "deployments"]
+    verbs: ["get", "list", "create", "patch"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sipd-jenkins-client-binding
+  namespace: development
+subjects:
+  - kind: ServiceAccount
+    name: default  # or the name of your service account
+    namespace: development
+roleRef:
+  kind: Role
+  name: sipd-jenkins-client
+  apiGroup: rbac.authorization.k8s.io

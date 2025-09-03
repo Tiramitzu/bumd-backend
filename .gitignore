@@ -1,0 +1,23 @@
+# macOS
+**/.DS_Store
+
+# Jetbrains
+.idea/
+
+# Run script
+Makefile
+Makefile.localhost
+Makefile.prod
+
+# Dev build
+build/
+tmp/
+
+# Test
+*.out
+
+# Gitlab
+gitlab-ci.yml
+
+# Jenkins
+Jenkinsfile

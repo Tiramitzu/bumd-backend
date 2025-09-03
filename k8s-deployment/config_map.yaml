@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sipd-auth-env-cmap
+data:
+  DB_SERVER_URL: host=192.168.128.105 port=5432 user=pusdatin password=sucE29m60p4F dbname=sipd_auth application_name=SIPD_AUTH_SERVICE sslmode=disable
+  DB_SERVER_URL_MST_DATA: host=192.168.128.105 port=5432 user=pusdatin password=sucE29m60p4F dbname=sipd_mst_data application_name=SIPD_AUTH_SERVICE sslmode=disable
+  JWT_SECRET_KEY: jwt_secret
+  JWT_SECRET_KEY_EXPIRE_MINUTES: '1200'
+  REFRESH_TOKEN_EXPIRE_HOUR: '260'
+  SERVER_NAME: SIPD Auth Service API
+  SERVER_READ_TIMEOUT: '60'
+  SERVER_URL: 0.0.0.0:3000
+  SERVICE_PEGAWAI: http://sipd-pegawai-service.default.svc.cluster.local:3000
+  SERVICE_RBAC: http://sipd-rbac-service.default.svc.cluster.local:3000
+  SERVICE_REFERENSI: http://sipd-referensi-service.default.svc.cluster.local:3000

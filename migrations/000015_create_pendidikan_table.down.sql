@@ -1,0 +1,1 @@
+down/000015_create_pendidikan_table.down.sql

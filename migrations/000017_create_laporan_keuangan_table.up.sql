@@ -1,0 +1,1 @@
+up/000017_create_laporan_keuangan_table.up.sql
