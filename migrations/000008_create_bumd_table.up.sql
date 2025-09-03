@@ -1,1 +1,0 @@
-up/000008_create_bumd_table.up.sql

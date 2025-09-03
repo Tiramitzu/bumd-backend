@@ -52,10 +52,18 @@ definitions:
         type: integer
       id_bentuk_usaha:
         type: integer
+      id_induk_perusahaan:
+        type: integer
       nama:
+        type: string
+      narahubung:
+        type: string
+      no_fax:
         type: string
       no_telp:
         type: string
+      penerapan_spi:
+        type: boolean
       website:
         type: string
     type: object
@@ -63,7 +71,7 @@ definitions:
     properties:
       alamat:
         type: string
-      bentuk_hukum:
+      bentuk_badan_hukum:
         type: string
       bentuk_usaha:
         type: string
@@ -79,11 +87,37 @@ definitions:
         type: integer
       id_daerah:
         type: integer
+      id_induk_perusahaan:
+        type: integer
       nama:
+        type: string
+      nama_induk_perusahaan:
+        type: string
+      narahubung:
+        type: string
+      no_fax:
         type: string
       no_telp:
         type: string
+      penerapan_spi:
+        type: boolean
       website:
+        type: string
+    type: object
+  models.JenisDokumenForm:
+    properties:
+      deskripsi:
+        type: string
+      nama:
+        type: string
+    type: object
+  models.JenisDokumenModel:
+    properties:
+      deskripsi:
+        type: string
+      id:
+        type: integer
+      nama:
         type: string
     type: object
   models.LoginForm:
@@ -98,6 +132,28 @@ definitions:
     required:
     - password
     - username
+    type: object
+  models.ProdukModel:
+    properties:
+      deskripsi:
+        type: string
+      gambar:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      id_daerah:
+        type: integer
+      nama:
+        type: string
+    type: object
+  models.RolesModel:
+    properties:
+      id:
+        type: integer
+      nama:
+        type: string
     type: object
   models.UserDetail:
     properties:
@@ -143,12 +199,12 @@ info:
   contact:
     email: lifelinejar@mail.com
     name: API Support
-  description: SIPD Service Auth Rest API.
+  description: BUMD Service Rest API.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: SIPD Service Auth
+  title: BUMD Service
   version: "1.0"
 paths:
   /auth/login:
@@ -364,6 +420,39 @@ paths:
       summary: delete data bentuk badan hukum
       tags:
       - Bentuk Badan Hukum
+    get:
+      description: get data bentuk badan hukum by id.
+      operationId: bentuk_badan_hukum-view
+      parameters:
+      - description: Id untuk get data bentuk badan hukum
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BentukBadanHukumModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bentuk badan hukum by id
+      tags:
+      - Bentuk Badan Hukum
     put:
       consumes:
       - application/json
@@ -542,6 +631,39 @@ paths:
       summary: delete data bentuk usaha
       tags:
       - Bentuk Usaha
+    get:
+      description: get data bentuk usaha by id.
+      operationId: bentuk_usaha-view
+      parameters:
+      - description: Id untuk get data bentuk usaha
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BentukUsahaModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bentuk usaha by id
+      tags:
+      - Bentuk Usaha
     put:
       consumes:
       - application/json
@@ -598,6 +720,14 @@ paths:
         in: query
         name: nama
         type: string
+      - description: Penerapan SPI
+        in: query
+        name: penerapan_spi
+        type: boolean
+      - description: Induk Perusahaan
+        in: query
+        name: induk_perusahaan
+        type: integer
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -720,6 +850,39 @@ paths:
       summary: delete data bumd
       tags:
       - BUMD
+    get:
+      description: get data bumd by id.
+      operationId: bumd-view
+      parameters:
+      - description: Id untuk get data bumd
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BumdModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bumd by id
+      tags:
+      - BUMD
     put:
       consumes:
       - application/json
@@ -767,6 +930,529 @@ paths:
       summary: update data bumd
       tags:
       - BUMD
+  /strict/jenis_dokumen:
+    get:
+      description: get data jenis dokumen.
+      operationId: jenis_dokumen-index
+      parameters:
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Nama Jenis dokumen
+        in: query
+        name: nama
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.JenisDokumenModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data jenis dokumen
+      tags:
+      - Jenis dokumen
+    post:
+      consumes:
+      - application/json
+      description: create data jenis dokumen.
+      operationId: jenis_dokumen-create
+      parameters:
+      - description: Create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.JenisDokumenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data jenis dokumen
+      tags:
+      - Jenis dokumen
+  /strict/jenis_dokumen/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data jenis dokumen.
+      operationId: jenis_dokumen-delete
+      parameters:
+      - description: Id untuk delete data jenis dokumen
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data jenis dokumen
+      tags:
+      - Jenis dokumen
+    get:
+      description: get data jenis dokumen by id.
+      operationId: jenis_dokumen-view
+      parameters:
+      - description: Id untuk get data jenis dokumen
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.JenisDokumenModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data jenis dokumen by id
+      tags:
+      - Jenis dokumen
+    put:
+      consumes:
+      - application/json
+      description: update data jenis dokumen.
+      operationId: jenis_dokumen-update
+      parameters:
+      - description: Id untuk update data jenis dokumen
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.JenisDokumenForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data jenis dokumen
+      tags:
+      - Jenis dokumen
+  /strict/produk:
+    get:
+      description: get data produk.
+      operationId: produk-index
+      parameters:
+      - description: Id BUMD
+        in: query
+        name: id_bumd
+        type: integer
+      - description: Nama Produk
+        in: query
+        name: nama
+        type: string
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.ProdukModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data produk
+      tags:
+      - Produk
+  /strict/roles:
+    get:
+      description: get data roles.
+      operationId: roles-index
+      parameters:
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Nama Roles
+        in: query
+        name: nama
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.RolesModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data roles
+      tags:
+      - Roles
+  /strict/roles/{id}:
+    get:
+      description: get data roles by id.
+      operationId: roles-view
+      parameters:
+      - description: Id untuk get data roles
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.RolesModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data roles by id
+      tags:
+      - Bentuk Usaha
+  /strict/user:
+    post:
+      consumes:
+      - multipart/form-data
+      description: create user.
+      operationId: user-create
+      parameters:
+      - description: Username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: Id Daerah
+        in: formData
+        name: id_daerah
+        required: true
+        type: integer
+      - description: Id Role
+        in: formData
+        name: id_role
+        required: true
+        type: integer
+      - description: Nama
+        in: formData
+        name: nama
+        required: true
+        type: string
+      - description: Logo
+        in: formData
+        name: logo
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create user
+      tags:
+      - User
+  /strict/user/{id}:
+    delete:
+      description: delete user.
+      operationId: user-delete
+      parameters:
+      - description: Id untuk delete data user
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete user
+      tags:
+      - User
+    put:
+      description: update user.
+      operationId: user-update
+      parameters:
+      - description: Id untuk update data user
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Username
+        in: formData
+        name: username
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: Id Daerah
+        in: formData
+        name: id_daerah
+        required: true
+        type: integer
+      - description: Id Role
+        in: formData
+        name: id_role
+        required: true
+        type: integer
+      - description: Nama
+        in: formData
+        name: nama
+        required: true
+        type: string
+      - description: Logo
+        in: formData
+        name: logo
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update user
+      tags:
+      - User
   /strict/user/logout:
     get:
       description: user logout.

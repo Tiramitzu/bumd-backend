@@ -17,3 +17,19 @@ CREATE INDEX idx_mst_bentuk_usaha_nama
 -- Add index on deleted_at for soft delete queries
 CREATE INDEX idx_mst_bentuk_usaha_deleted_at 
     ON mst_bentuk_usaha(deleted_at);
+
+-- Populate data
+INSERT INTO mst_bentuk_usaha (nama, deskripsi, created_by) VALUES
+('Air Minum', '', 1),
+('Aneka Usaha', '', 1),
+('BPD', '', 1),
+('BPR', '', 1),
+('JAMKRIDA', '', 1),
+('Pasar', '', 1),
+('Lainnya', '', 1),
+('Migas', '', 1),
+('Pariwisata', '', 1),
+('MINERBA', '', 1),
+('AGRO', '', 1),
+('Kepelabuhan', '', 1),
+('Transportasi', '', 1)

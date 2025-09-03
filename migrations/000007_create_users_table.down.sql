@@ -1,1 +1,0 @@
-down/000007_create_users_table.down.sql

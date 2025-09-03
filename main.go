@@ -217,9 +217,9 @@ func setupLogger() {
 	logger.SetFormatter(&logrus.JSONFormatter{})
 }
 
-// @title						SIPD Service Auth
+// @title						BUMD Service
 // @version					1.0
-// @description				SIPD Service Auth Rest API.
+// @description				BUMD Service Rest API.
 // @termsOfService				http://swagger.io/terms/
 // @contact.name				API Support
 // @contact.email				lifelinejar@mail.com
@@ -380,6 +380,12 @@ func main() {
 		rStrict,
 		vld,
 		controller_mst.NewBentukUsahaController(pgxConn),
+	)
+	// jenis_dokumen
+	http_master.NewJenisDokumenHandler(
+		rStrict,
+		vld,
+		controller_mst.NewJenisDokumenController(pgxConn),
 	)
 
 	http_util.StartServer(app)

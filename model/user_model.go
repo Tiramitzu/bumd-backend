@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"mime/multipart"
 )
 
 type User struct {
@@ -36,4 +37,13 @@ func (u *UserDetail) FromJSON(msg []byte) error {
 func (u *UserDetail) ToJSON() []byte {
 	str, _ := json.Marshal(u)
 	return str
+}
+
+type UserForm struct {
+	Username string                `json:"username" xml:"username"`
+	Password string                `json:"password" xml:"password"`
+	IdDaerah int                   `json:"id_daerah" xml:"id_daerah"`
+	IdRole   int                   `json:"id_role" xml:"id_role"`
+	Nama     string                `json:"nama" xml:"nama"`
+	Logo     *multipart.FileHeader `json:"logo" xml:"logo"`
 }

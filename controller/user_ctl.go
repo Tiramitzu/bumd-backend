@@ -4,11 +4,11 @@ import (
 	"context"
 	models "microdata/kemendagri/bumd/model"
 	"microdata/kemendagri/bumd/utils"
-	"net/http"
 	"time"
 
 	"github.com/gofiber/storage/redis/v3"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/valyala/fasthttp"
 
 	_ "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -36,7 +36,7 @@ func (c *UserController) Logout(idUser string) error {
 
 	if err != nil {
 		err = utils.RequestError{
-			Code:    http.StatusInternalServerError,
+			Code:    fasthttp.StatusInternalServerError,
 			Message: "Failed to remove token data. - " + err.Error(),
 		}
 		return err
@@ -64,11 +64,175 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 		Scan(&r.Username, &r.NamaUser, &r.NamaRole)
 	if err != nil {
 		err = utils.RequestError{
-			Code:    http.StatusNotFound,
+			Code:    fasthttp.StatusNotFound,
 			Message: err.Error(),
 		}
 		return
 	}
 
 	return
+}
+
+func (c *UserController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.UserForm) (r bool, err error) {
+	claims := user.Claims.(jwt.MapClaims)
+	idUser := int(claims["id_user"].(float64))
+	idRole := int(claims["id_role"].(float64))
+	idDaerah := int(claims["id_daerah"].(float64))
+
+	if idRole < payload.IdRole {
+		err = utils.RequestError{
+			Code:    fasthttp.StatusForbidden,
+			Message: "Anda tidak memiliki akses untuk membuat user dengan role ini",
+		}
+		return
+	}
+
+	q := `
+	INSERT INTO users (
+		username,
+		password,
+		id_daerah,
+		id_role,
+		nama,
+		logo,
+		created_by
+	) VALUES (
+		$1,
+		$2,
+		$3,
+		$4,
+		$5,
+		$6,
+		$7
+	)
+	`
+
+	_, err = c.pgxConn.Exec(fCtx, q, payload.Username, payload.Password, idDaerah, idRole, payload.Nama, payload.Logo, idUser)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal membuat user - " + err.Error(),
+		}
+	}
+
+	return true, err
+}
+
+func (c *UserController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.UserForm, id int) (r bool, err error) {
+	claims := user.Claims.(jwt.MapClaims)
+	idUser := int(claims["id_user"].(float64))
+	idRole := int(claims["id_role"].(float64))
+	idDaerah := int(claims["id_daerah"].(float64))
+
+	q := `
+	SELECT COALESCE(COUNT(*), 0) FROM users WHERE id = $1 AND id_daerah = $2
+	`
+	var count int
+	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghitung data User - " + err.Error(),
+		}
+	}
+
+	if count < 1 {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusBadRequest,
+			Message: "User tidak ditemukan.",
+		}
+	}
+
+	if idRole < payload.IdRole {
+		err = utils.RequestError{
+			Code:    fasthttp.StatusForbidden,
+			Message: "Anda tidak memiliki akses untuk mengubah user dengan role ini",
+		}
+		return
+	}
+
+	q = `
+	UPDATE users
+	SET
+		username = $1,
+		password = $2,
+		id_daerah = $3,
+		id_role = $4,
+		nama = $5,
+		logo = $6,
+		updated_by = $7
+	`
+
+	_, err = c.pgxConn.Exec(fCtx, q, payload.Username, payload.Password, idDaerah, idRole, payload.Nama, payload.Logo, idUser)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengubah User - " + err.Error(),
+		}
+	}
+
+	return true, err
+}
+
+func (c *UserController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int) (r bool, err error) {
+	claims := user.Claims.(jwt.MapClaims)
+	idUser := int(claims["id_user"].(float64))
+	idRole := int(claims["id_role"].(float64))
+	idDaerah := int(claims["id_daerah"].(float64))
+
+	q := `
+	SELECT COALESCE(COUNT(*), 0) FROM users WHERE id = $1 AND id_daerah = $2
+	`
+	var count int
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus data User - " + err.Error(),
+		}
+	}
+
+	if count < 1 {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusBadRequest,
+			Message: "User tidak ditemukan.",
+		}
+	}
+
+	var IdRole int
+	q = `
+	SELECT id_role FROM users WHERE id = $1 AND id_daerah = $2
+	`
+	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&IdRole)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus User - " + err.Error(),
+		}
+	}
+
+	if idRole < IdRole {
+		err = utils.RequestError{
+			Code:    fasthttp.StatusForbidden,
+			Message: "Anda tidak memiliki akses untuk menghapus User dengan role ini",
+		}
+		return
+	}
+
+	q = `
+	UPDATE users
+	SET
+		deleted_by = $1,
+		deleted_at = $2
+	`
+
+	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idDaerah)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus User - " + err.Error(),
+		}
+	}
+
+	return true, err
 }

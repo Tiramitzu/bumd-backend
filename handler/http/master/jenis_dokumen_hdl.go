@@ -10,43 +10,43 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type BentukBadanHukumHandler struct {
-	Controller *controller.BentukBadanHukumController
+type JenisDokumenHandler struct {
+	Controller *controller.JenisDokumenController
 	Validate   *validator.Validate
 }
 
-func NewBentukBadanHukumHandler(r fiber.Router, validator *validator.Validate, controller *controller.BentukBadanHukumController) {
-	handler := &BentukBadanHukumHandler{
+func NewJenisDokumenHandler(r fiber.Router, validator *validator.Validate, controller *controller.JenisDokumenController) {
+	handler := &JenisDokumenHandler{
 		Controller: controller,
 		Validate:   validator,
 	}
 
-	rStrict := r.Group("bentuk_badan_hukum")
-	rStrict.Get("/:id", handler.View)
+	rStrict := r.Group("jenis_dokumen")
 	rStrict.Get("/", handler.Index)
+	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
 }
 
-// Index func for get data bentuk badan hukum.
+// Index func for get data jenis dokumen.
 //
-//	@Summary		get data bentuk badan hukum
-//	@Description	get data bentuk badan hukum.
-//	@ID				bentuk_badan_hukum-index
-//	@Tags			Bentuk Badan Hukum
+//	@Summary		get data jenis dokumen
+//	@Description	get data jenis dokumen.
+//	@ID				jenis_dokumen-index
+//	@Tags			Jenis dokumen
 //	@Produce		json
-//	@Param			page	query		int								false	"Halaman yang ditampilkan"
-//	@Param			limit	query		int								false	"Jumlah data per halaman, maksimal 5 data per halaman"
-//	@Param			nama	query		string							false	"Nama Bentuk Badan Hukum"
-//	@success		200		{object}	models.BentukBadanHukumModel	"Success"
-//	@Failure		400		{object}	utils.RequestError				"Bad request"
-//	@Failure		404		{object}	utils.RequestError				"Data not found"
-//	@Failure		422		{array}		utils.RequestError				"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError				"Server error"
+//	@Param			page	query		int							false	"Halaman yang ditampilkan"
+//	@Param			limit	query		int							false	"Jumlah data per halaman, maksimal 5 data per halaman"
+//	@Param			nama	query		string						false	"Nama Jenis dokumen"
+//	@success		200		{object}	models.JenisDokumenModel	"Success"
+//	@Failure		400		{object}	utils.RequestError			"Bad request"
+//	@Failure		404		{object}	utils.RequestError			"Data not found"
+//	@Failure		422		{array}		utils.RequestError			"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError			"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bentuk_badan_hukum [get]
-func (h *BentukBadanHukumHandler) Index(c *fiber.Ctx) error {
+//	@Router			/strict/jenis_dokumen [get]
+func (h *JenisDokumenHandler) Index(c *fiber.Ctx) error {
 	page := c.QueryInt("page", 1)
 	nama := c.Query("nama")
 	var limit int
@@ -80,21 +80,21 @@ func (h *BentukBadanHukumHandler) Index(c *fiber.Ctx) error {
 	return c.JSON(m)
 }
 
-// View func for get data bentuk badan hukum by id.
+// View func for get data jenis dokumen by id.
 //
-//	@Summary		get data bentuk badan hukum by id
-//	@Description	get data bentuk badan hukum by id.
-//	@ID				bentuk_badan_hukum-view
-//	@Tags			Bentuk Badan Hukum
+//	@Summary		get data jenis dokumen by id
+//	@Description	get data jenis dokumen by id.
+//	@ID				jenis_dokumen-view
+//	@Tags			Jenis dokumen
 //	@Produce		json
-//	@Param			id	path		int								true	"Id untuk get data bentuk badan hukum"
-//	@success		200	{object}	models.BentukBadanHukumModel	"Success"
-//	@Failure		400	{object}	utils.RequestError				"Bad request"
-//	@Failure		404	{object}	utils.RequestError				"Data not found"
-//	@Failure		500	{object}	utils.RequestError				"Server error"
+//	@Param			id	path		int							true	"Id untuk get data jenis dokumen"
+//	@success		200	{object}	models.JenisDokumenModel	"Success"
+//	@Failure		400	{object}	utils.RequestError			"Bad request"
+//	@Failure		404	{object}	utils.RequestError			"Data not found"
+//	@Failure		500	{object}	utils.RequestError			"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bentuk_badan_hukum/{id} [get]
-func (h *BentukBadanHukumHandler) View(c *fiber.Ctx) error {
+//	@Router			/strict/jenis_dokumen/{id} [get]
+func (h *JenisDokumenHandler) View(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err
@@ -106,14 +106,14 @@ func (h *BentukBadanHukumHandler) View(c *fiber.Ctx) error {
 	return c.JSON(m)
 }
 
-// Create func for create data bentuk badan hukum.
+// Create func for create data jenis dokumen.
 //
-//	@Summary		create data bentuk badan hukum
-//	@Description	create data bentuk badan hukum.
-//	@ID				bentuk_badan_hukum-create
-//	@Tags			Bentuk Badan Hukum
+//	@Summary		create data jenis dokumen
+//	@Description	create data jenis dokumen.
+//	@ID				jenis_dokumen-create
+//	@Tags			Jenis dokumen
 //	@Accept			json
-//	@Param			payload	body	models.BentukBadanHukumForm	true	"Create payload"
+//	@Param			payload	body	models.JenisDokumenForm	true	"Create payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -121,9 +121,9 @@ func (h *BentukBadanHukumHandler) View(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bentuk_badan_hukum [post]
-func (h *BentukBadanHukumHandler) Create(c *fiber.Ctx) error {
-	payload := new(models.BentukBadanHukumForm)
+//	@Router			/strict/jenis_dokumen [post]
+func (h *JenisDokumenHandler) Create(c *fiber.Ctx) error {
+	payload := new(models.JenisDokumenForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
 	}
@@ -144,15 +144,15 @@ func (h *BentukBadanHukumHandler) Create(c *fiber.Ctx) error {
 	return c.JSON(m)
 }
 
-// Update func for update data bentuk badan hukum.
+// Update func for update data jenis dokumen.
 //
-//	@Summary		update data bentuk badan hukum
-//	@Description	update data bentuk badan hukum.
-//	@ID				bentuk_badan_hukum-update
-//	@Tags			Bentuk Badan Hukum
+//	@Summary		update data jenis dokumen
+//	@Description	update data jenis dokumen.
+//	@ID				jenis_dokumen-update
+//	@Tags			Jenis dokumen
 //	@Accept			json
-//	@Param			id		path	int							true	"Id untuk update data bentuk badan hukum"
-//	@Param			payload	body	models.BentukBadanHukumForm	true	"Update payload"
+//	@Param			id		path	int						true	"Id untuk update data jenis dokumen"
+//	@Param			payload	body	models.JenisDokumenForm	true	"Update payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -160,9 +160,9 @@ func (h *BentukBadanHukumHandler) Create(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bentuk_badan_hukum/{id} [put]
-func (h *BentukBadanHukumHandler) Update(c *fiber.Ctx) error {
-	payload := new(models.BentukBadanHukumForm)
+//	@Router			/strict/jenis_dokumen/{id} [put]
+func (h *JenisDokumenHandler) Update(c *fiber.Ctx) error {
+	payload := new(models.JenisDokumenForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
 	}
@@ -185,14 +185,14 @@ func (h *BentukBadanHukumHandler) Update(c *fiber.Ctx) error {
 	return c.JSON(m)
 }
 
-// Delete func for delete data bentuk badan hukum.
+// Delete func for delete data jenis dokumen.
 //
-//	@Summary		delete data bentuk badan hukum
-//	@Description	delete data bentuk badan hukum.
-//	@ID				bentuk_badan_hukum-delete
-//	@Tags			Bentuk Badan Hukum
+//	@Summary		delete data jenis dokumen
+//	@Description	delete data jenis dokumen.
+//	@ID				jenis_dokumen-delete
+//	@Tags			Jenis dokumen
 //	@Accept			json
-//	@Param			id	path	int	true	"Id untuk delete data bentuk badan hukum"
+//	@Param			id	path	int	true	"Id untuk delete data jenis dokumen"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -200,8 +200,8 @@ func (h *BentukBadanHukumHandler) Update(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bentuk_badan_hukum/{id} [delete]
-func (h *BentukBadanHukumHandler) Delete(c *fiber.Ctx) error {
+//	@Router			/strict/jenis_dokumen/{id} [delete]
+func (h *JenisDokumenHandler) Delete(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err

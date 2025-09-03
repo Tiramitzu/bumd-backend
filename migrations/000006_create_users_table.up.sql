@@ -1,0 +1,1 @@
+up/000006_create_users_table.up.sql

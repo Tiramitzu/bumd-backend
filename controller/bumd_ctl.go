@@ -5,7 +5,6 @@ import (
 	"math"
 	models "microdata/kemendagri/bumd/model"
 	"microdata/kemendagri/bumd/utils"
-	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -26,6 +25,8 @@ func (c *BumdController) Index(
 	user *jwt.Token,
 	page, limit int,
 	nama string,
+	penerapanSPI bool,
+	indukPerusahaan int,
 ) (r []models.BumdModel, totalCount, pageCount int, err error) {
 	r = make([]models.BumdModel, 0)
 	claims := user.Claims.(jwt.MapClaims)
@@ -41,7 +42,14 @@ func (c *BumdController) Index(
 		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
-
+	if penerapanSPI {
+		q += fmt.Sprintf(` AND penerapan_spi = $%d`, len(args)+1)
+		args = append(args, penerapanSPI)
+	}
+	if indukPerusahaan != 0 {
+		q += fmt.Sprintf(` AND id_induk_perusahaan = $%d`, len(args)+1)
+		args = append(args, indukPerusahaan)
+	}
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&totalCount)
 	if err != nil {
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data BUMD: %w", err)
@@ -49,22 +57,33 @@ func (c *BumdController) Index(
 
 	args = make([]interface{}, 0)
 	q = `
+	WITH t_induk_perusahaan AS (
+		SELECT id, nama as nama_induk_perusahaan
+		FROM bumd
+		WHERE id_daerah = $2 AND deleted_by = 0
+	)
 	SELECT
 		b.id,
 		b.id_daerah,
 		b.id_bentuk_hukum,
 		b.id_bentuk_usaha,
+		b.id_induk_perusahaan,
+		COALESCE(t_induk_perusahaan.nama_induk_perusahaan, '-') as nama_induk_perusahaan,
+		b.penerapan_spi,
 		mbbh.nama as bentuk_badan_hukum,
 		mbbu.nama as bentuk_usaha,
 		b.nama,
 		b.deskripsi,
 		b.alamat,
 		b.no_telp,
+		b.no_fax,
 		b.email,
-		b.website
+		b.website,
+		b.narahubung
 	FROM bumd b
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
 		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
+		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id = b.id_induk_perusahaan
 	WHERE b.id_daerah = $1
 		AND b.deleted_by = 0
 	`
@@ -72,6 +91,14 @@ func (c *BumdController) Index(
 	if nama != "" {
 		q += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
+	}
+	if penerapanSPI {
+		q += fmt.Sprintf(` AND b.penerapan_spi = $%d`, len(args)+1)
+		args = append(args, penerapanSPI)
+	}
+	if indukPerusahaan != 0 {
+		q += fmt.Sprintf(` AND b.id_induk_perusahaan = $%d`, len(args)+1)
+		args = append(args, indukPerusahaan)
 	}
 	q += fmt.Sprintf(`
 	ORDER BY id DESC
@@ -93,14 +120,19 @@ func (c *BumdController) Index(
 			&m.IDDaerah,
 			&m.IDBentukHukum,
 			&m.IDBentukUsaha,
+			&m.IDIndukPerusahaan,
+			&m.NamaIndukPerusahaan,
+			&m.PenerapanSPI,
 			&m.BentukBadanHukum,
 			&m.BentukUsaha,
 			&m.Nama,
 			&m.Deskripsi,
 			&m.Alamat,
 			&m.NoTelp,
+			&m.NoFax,
 			&m.Email,
 			&m.Website,
+			&m.Narahubung,
 		)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data BUMD: %w", err)
@@ -117,6 +149,72 @@ func (c *BumdController) Index(
 	return r, totalCount, pageCount, err
 }
 
+func (c *BumdController) View(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	id int,
+) (r models.BumdModel, err error) {
+	claims := user.Claims.(jwt.MapClaims)
+	idDaerah := int(claims["id_daerah"].(float64))
+
+	q := `
+	WITH t_induk_perusahaan AS (
+		SELECT id, nama as nama_induk_perusahaan
+		FROM bumd
+		WHERE id_daerah = $2 AND deleted_by = 0
+	)
+	SELECT
+		b.id,
+		b.id_daerah,
+		b.id_bentuk_hukum,
+		b.id_bentuk_usaha,
+		b.id_induk_perusahaan,
+		COALESCE(t_induk_perusahaan.nama_induk_perusahaan, '-') as nama_induk_perusahaan,
+		b.penerapan_spi,
+		mbbh.nama as bentuk_badan_hukum,
+		mbbu.nama as bentuk_usaha,
+		b.nama,
+		b.deskripsi,
+		b.alamat,
+		b.no_telp,
+		b.no_fax,
+		b.email,
+		b.website,
+		b.narahubung
+	FROM bumd b
+		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
+		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
+		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id = b.id_induk_perusahaan
+	WHERE b.id = $1 AND b.id_daerah = $2
+		AND b.deleted_by = 0
+	`
+
+	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(
+		&r.ID,
+		&r.IDDaerah,
+		&r.IDBentukHukum,
+		&r.IDBentukUsaha,
+		&r.IDIndukPerusahaan,
+		&r.NamaIndukPerusahaan,
+		&r.PenerapanSPI,
+		&r.BentukBadanHukum,
+		&r.BentukUsaha,
+		&r.Nama,
+		&r.Deskripsi,
+		&r.Alamat,
+		&r.NoTelp,
+		&r.NoFax,
+		&r.Email,
+		&r.Website,
+		&r.Narahubung,
+	)
+	if err != nil {
+		return r, fmt.Errorf("gagal mengambil data BUMD: %w", err)
+	}
+
+	return r, err
+}
+
 func (c *BumdController) Create(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
@@ -131,12 +229,16 @@ func (c *BumdController) Create(
 		id_daerah,
 		id_bentuk_hukum,
 		id_bentuk_usaha,
+		id_induk_perusahaan,
+		penerapan_spi,
 		nama,
 		deskripsi,
 		alamat,
 		no_telp,
+		no_fax,
 		email,
 		website,
+		narahubung,
 		created_by
 	) VALUES (
 		$1,
@@ -148,26 +250,37 @@ func (c *BumdController) Create(
 		$7,
 		$8,
 		$9,
-		$10
+		$10,
+		$11,
+		$12,
+		$13,
+		$14
 	)
 	`
 
 	_, err = c.pgxConn.Exec(
 		fCtx,
 		q,
-		idDaerah,              // 1
-		payload.IDBentukHukum, // 2
-		payload.IDBentukUsaha, // 3
-		payload.Nama,          // 4
-		payload.Deskripsi,     // 5
-		payload.Alamat,        // 6
-		payload.NoTelp,        // 7
-		payload.Email,         // 8
-		payload.Website,       // 9
-		idUser,                // 10
+		idDaerah,                  // 1
+		payload.IDBentukHukum,     // 2
+		payload.IDBentukUsaha,     // 3
+		payload.IDIndukPerusahaan, // 4
+		payload.PenerapanSPI,      // 5
+		payload.Nama,              // 6
+		payload.Deskripsi,         // 7
+		payload.Alamat,            // 8
+		payload.NoTelp,            // 9
+		payload.NoFax,             // 10
+		payload.Email,             // 11
+		payload.Website,           // 12
+		payload.Narahubung,        // 13
+		idUser,                    // 14
 	)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal membuat BUMD - " + err.Error(),
+		}
 	}
 
 	return true, err
@@ -190,12 +303,15 @@ func (c *BumdController) Update(
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengubah BUMD - " + err.Error(),
+		}
 	}
 
-	if count == 0 {
+	if count < 1 {
 		return false, utils.RequestError{
-			Code:    http.StatusNotFound,
+			Code:    fasthttp.StatusNotFound,
 			Message: "Data BUMD tidak ditemukan.",
 		}
 	}
@@ -205,33 +321,44 @@ func (c *BumdController) Update(
 	SET
 		id_bentuk_hukum = $1,
 		id_bentuk_usaha = $2,
-		nama = $3,
-		deskripsi = $4,
-		alamat = $5,
-		no_telp = $6,
-		email = $7,
-		website = $8,
-		updated_by = $9
-	WHERE id = $10 AND id_daerah = $11
+		id_induk_perusahaan = $3,
+		penerapan_spi = $4,
+		nama = $5,
+		deskripsi = $6,
+		alamat = $7,
+		no_telp = $8,
+		no_fax = $9,
+		email = $10,
+		website = $11,
+		narahubung = $12,
+		updated_by = $13
+	WHERE id = $14 AND id_daerah = $15
 	`
 
 	_, err = c.pgxConn.Exec(
 		fCtx,
 		q,
-		payload.IDBentukHukum,
-		payload.IDBentukUsaha,
-		payload.Nama,
-		payload.Deskripsi,
-		payload.Alamat,
-		payload.NoTelp,
-		payload.Email,
-		payload.Website,
-		idUser,
-		id,
-		idDaerah,
+		payload.IDBentukHukum,     // 1
+		payload.IDBentukUsaha,     // 2
+		payload.IDIndukPerusahaan, // 3
+		payload.PenerapanSPI,      // 4
+		payload.Nama,              // 5
+		payload.Deskripsi,         // 6
+		payload.Alamat,            // 7
+		payload.NoTelp,            // 8
+		payload.NoFax,             // 9
+		payload.Email,             // 10
+		payload.Website,           // 11
+		payload.Narahubung,        // 12
+		idUser,                    // 13
+		id,                        // 13
+		idDaerah,                  // 14
 	)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus BUMD - " + err.Error(),
+		}
 	}
 
 	return true, err
@@ -253,13 +380,34 @@ func (c *BumdController) Delete(
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus BUMD - " + err.Error(),
+		}
 	}
 
-	if count == 0 {
+	if count < 1 {
 		return false, utils.RequestError{
-			Code:    http.StatusNotFound,
+			Code:    fasthttp.StatusNotFound,
 			Message: "Data BUMD tidak ditemukan.",
+		}
+	}
+
+	q = `
+	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id_induk_perusahaan = $1 AND id_daerah = $2 AND deleted_by = 0
+	`
+	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus BUMD - " + err.Error(),
+		}
+	}
+
+	if count > 0 {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusBadRequest,
+			Message: "Data BUMD induk tidak dapat dihapus, karena masih ada data BUMD anak yang terkait.",
 		}
 	}
 
@@ -271,7 +419,10 @@ func (c *BumdController) Delete(
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idDaerah)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal menghapus BUMD - " + err.Error(),
+		}
 	}
 
 	return true, err
