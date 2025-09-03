@@ -1,0 +1,346 @@
+baf31c0 - cooljar, 2025-01-10 : -
+85252d3 - Yovie Alfa Guistuta, 2025-01-01 : Trigger build
+dfbdb9f - cooljar, 2024-12-24 : -
+df05f29 - Kurnia Adiyoga, 2024-12-18 : fix prepare 2025
+9a528e7 - Kurnia Adiyoga, 2024-12-18 : prepare penatausahan 2025
+9f0abea - Kurnia Adiyoga, 2024-12-12 : turn off single login
+a9b93a5 - cooljar, 2024-12-12 : prepare single device
+0e9c34c - cooljar, 2024-12-12 : prepare single device
+6715847 - cooljar, 2024-12-12 : prepare single device
+810da07 - Kurnia Adiyoga, 2024-12-09 : fix bugs ketika admin / lembaga login
+dd71d6f - Kurnia Adiyoga, 2024-12-09 : fix notif error
+ae68082 - Kurnia Adiyoga, 2024-12-09 : fix notif salah confirm
+2550b1b - Yovie Alfa Guistuta, 2024-12-05 : Trigger build 2
+5ba871e - Yovie Alfa Guistuta, 2024-12-05 : Merge main
+5804d58 - Yovie Alfa Guistuta, 2024-12-05 : Trigger build
+f0e0c82 - Yovie Alfa Guistuta, 2024-12-05 : Trigger build
+e140495 - Kurnia Adiyoga, 2024-12-05 : fix change password api
+ae1c4c0 - Kurnia Adiyoga, 2024-12-04 : ubah flow amankan password
+00161fc - Kurnia Adiyoga, 2024-12-03 : perbaikan gitlab ci if branch main
+cb62c3a - Yovie Alfa Guistuta, 2024-12-03 : Turn off validation password default
+b28116c - Kurnia Adiyoga, 2024-12-03 : tambah api untuk ganti password tanpa jwt
+96a2ff4 - Kurnia Adiyoga, 2024-12-03 : cek apakah deffault password
+b4814d1 - cooljar, 2024-10-30 : modify jwt
+9467314 - cooljar, 2024-10-29 : add kode ddn to jwt
+3a2127f - cooljar, 2024-10-13 : log number of cpu
+1120bac - cooljar, 2024-10-11 : change env
+7618608 - cooljar, 2024-09-18 : disable rate limiter
+df16a67 - cooljar, 2024-09-18 : enable redis
+9fcabf3 - cooljar, 2024-09-18 : disable redis
+fa2088b - cooljar, 2024-09-18 : change readme
+d3fdfdb - cooljar, 2024-09-18 : add redis
+0fba416 - cooljar, 2024-09-18 : implementasi redis p2
+aa693c4 - cooljar, 2024-09-18 : implementasi rete limiter
+259c134 - cooljar, 2024-09-11 : change readme
+7080a8e - cooljar, 2024-09-10 : optimize * to cors validation
+e2826bf - cooljar, 2024-09-10 : add * origin filter to cors
+e2b1d13 - cooljar, 2024-09-08 : move get pegawai detail to db connection
+17b777a - cooljar, 2024-09-08 : move get pegawai detail to db connection
+31f64e1 - cooljar, 2024-09-08 : edit message domain validation
+f65725f - cooljar, 2024-09-08 : validate origin
+6cb0095 - cooljar, 2024-09-08 : validate origin
+9165525 - cooljar, 2024-09-08 : rev validate domain
+b13ff2b - cooljar, 2024-09-08 : rev validate domain
+af5637d - cooljar, 2024-09-08 : rev validate domain
+a03c7e6 - cooljar, 2024-09-08 : whitelists domain
+3c31770 - kurniaadiyoga, 2024-09-03 : akses BPK Pemda
+4c1d723 - cooljar, 2024-09-01 : enable captcha
+27d0853 - Yovie Alfa Guistuta, 2024-09-01 : Adding Role BPK
+c07cdad - Yovie Alfa Guistuta, 2024-09-01 : Turn on captha
+5283a6c - cooljar, 2024-09-01 : filter pipeline to main
+eac6f87 - Yovie Alfa Guistuta, 2024-09-01 : Adding role BPK in profile
+dd8d13d - cooljar, 2024-09-01 : vallidate BPK Pusat
+3994595 - Administrator, 2024-07-15 : Update README.md
+353333e - cooljar, 2024-07-13 : test deploy
+742f491 - cooljar, 2024-07-08 : implementasi validasi captcha
+b8d087e - cooljar, 2024-07-08 : disable captcha
+0b6d673 - cooljar, 2024-07-08 : implement cptcha validation commented
+f03c774 - cooljar, 2024-07-08 : implement cptcha validation commented
+2b8ee75 - cooljar, 2024-07-08 : add captcha audio
+1618b47 - cooljar, 2024-07-08 : remove captcha render method
+229ed30 - cooljar, 2024-07-08 : add captcha test
+475b3c3 - cooljar, 2024-06-07 : disable rl
+c5b99d1 - cooljar, 2024-06-06 : enable rl
+7653d38 - cooljar, 2024-06-04 : disalbe rm
+03c8a31 - cooljar, 2024-06-03 : add security mdw
+dbfd55e - cooljar, 2024-06-02 : add security feature s2
+50172aa - cooljar, 2024-06-02 : add security feature
+37dc789 - cooljar, 2024-05-31 : modify update password
+cd8ad49 - cooljar, 2024-05-31 : modify update password
+def74ac - cooljar, 2024-05-22 : lock login id daerah
+ef6e707 - cooljar, 2024-05-21 : lock bypass role
+3a42f0d - Ade Muchlis, 2024-02-23 : add filter login check daerah  where  is_deleted=0
+6c297f1 - cooljar, 2024-02-21 : upgrade max conn to 1000
+fa88399 - cooljar, 2024-01-08 : validasi duplikasi nip di pembuatan jadwal 3
+f52e08b - cooljar, 2024-01-08 : validasi duplikasi nip di pembuatan jadwal 2
+908320a - cooljar, 2024-01-08 : validasi duplikasi nip di pembuatan jadwal
+bfa9819 - cooljar, 2024-01-03 : -
+5005fde - cooljar, 2024-01-03 : -
+a7493ab - cooljar, 2024-01-03 : -
+554d19e - cooljar, 2024-01-03 : -
+f682d26 - cooljar, 2024-01-03 : change db pool to default
+02969f9 - cooljar, 2024-01-03 : scale down to 1
+6831469 - cooljar, 2024-01-03 : restart deployment
+37e8fe9 - cooljar, 2024-01-02 : -
+6cf5869 - cooljar, 2024-01-02 : support jabatan pa pptk
+df348fe - cooljar, 2023-12-29 : tuning pgx pool 2
+8215288 - cooljar, 2023-12-29 : tuning pgx pool
+273991b - cooljar, 2023-12-26 : fix login super admin
+03c025d - cooljar, 2023-12-24 : add fitur upload avatar
+89ff6d4 - cooljar, 2023-12-22 : add fitur update profile revisi validasi npwp
+ec80052 - cooljar, 2023-12-22 : add fitur update profile
+f9affd1 - cooljar, 2023-12-22 : perbaikan filter kode prov
+14d55fa - cooljar, 2023-12-21 : -
+8a00f54 - cooljar, 2023-12-21 : -
+482c733 - cooljar, 2023-12-20 : -
+c229bdb - cooljar, 2023-12-17 : -
+1dd2092 - cooljar, 2023-12-15 : -
+46e0f91 - cooljar, 2023-12-15 : -
+6dd5bf5 - cooljar, 2023-12-15 : -
+c0cc460 - cooljar, 2023-12-14 : kode provinsi di jwt
+bef6c87 - cooljar, 2023-12-11 : -
+a019ff2 - cooljar, 2023-12-11 : -
+8425289 - cooljar, 2023-12-11 : -
+d21a0fc - cooljar, 2023-12-11 : -
+7041b80 - cooljar, 2023-12-11 : -
+2e35c99 - cooljar, 2023-12-11 : -
+a110b51 - cooljar, 2023-12-11 : -
+903412a - cooljar, 2023-12-11 : -
+5ff66a1 - cooljar, 2023-12-11 : -
+86e0b54 - cooljar, 2023-12-11 : -
+4f9fb9e - cooljar, 2023-12-11 : -
+313465a - cooljar, 2023-12-11 : -
+24031f2 - cooljar, 2023-12-11 : -
+26f88da - cooljar, 2023-12-11 : -
+266a5b9 - cooljar, 2023-12-11 : -
+6b21478 - cooljar, 2023-12-11 : -
+5fce4a7 - cooljar, 2023-12-11 : -
+7aef3e7 - cooljar, 2023-12-11 : -
+6f820f1 - cooljar, 2023-12-11 : -
+e0f7101 - cooljar, 2023-12-10 : -
+8bfb52d - cooljar, 2023-12-10 : -
+21aa1a7 - cooljar, 2023-12-10 : -
+9a2c773 - cooljar, 2023-12-10 : -
+dddf34a - cooljar, 2023-12-10 : -
+8cf73e1 - cooljar, 2023-12-10 : -
+3f4450b - cooljar, 2023-12-10 : -
+6bcc8a7 - cooljar, 2023-12-10 : -
+ec564c6 - Administrator, 2023-12-10 : Update file .gitlab-ci.yml
+23c8023 - Administrator, 2023-12-10 : Update .gitlab-ci.yml file
+87a2252 - Administrator, 2023-12-10 : Update file .gitlab-ci.yml
+d6ea1ed - cooljar, 2023-12-10 : -
+5d597c1 - cooljar, 2023-12-10 : -
+7b20468 - cooljar, 2023-12-10 : -
+21a9e2d - cooljar, 2023-12-10 : -
+e3bbf77 - cooljar, 2023-12-10 : -
+caaa516 - cooljar, 2023-12-10 : -
+b6ebf28 - cooljar, 2023-12-10 : -
+9f96198 - cooljar, 2023-12-10 : -
+ba33bbb - cooljar, 2023-12-10 : -
+aac2ec6 - cooljar, 2023-12-10 : -
+d682cae - cooljar, 2023-12-10 : -
+ed5f7d3 - cooljar, 2023-12-10 : -
+31a4ef2 - cooljar, 2023-12-10 : -
+b42308f - cooljar, 2023-12-10 : -
+c3a9d92 - cooljar, 2023-12-10 : -
+f833048 - cooljar, 2023-12-10 : -
+a403ac1 - Administrator, 2023-12-10 : Update file README.md
+8952359 - cooljar, 2023-12-10 : -
+676dd4d - cooljar, 2023-12-09 : -
+28f9873 - cooljar, 2023-11-26 : update migrations seed user
+822b5a3 - cooljar, 2023-11-26 : -
+e60fed0 - cooljar, 2023-11-25 : -
+5b9e5f7 - cooljar, 2023-11-25 : -
+e122486 - cooljar, 2023-11-25 : -
+fde26f8 - cooljar, 2023-11-25 : -
+f5af155 - cooljar, 2023-11-25 : -
+62c55b9 - cooljar, 2023-11-25 : -
+22fbdcc - cooljar, 2023-11-25 : -
+c3b107b - cooljar, 2023-11-25 : -
+61c473f - cooljar, 2023-11-25 : -
+c520aff - cooljar, 2023-11-22 : -
+3eac205 - cooljar, 2023-11-21 : -
+ab2b756 - cooljar, 2023-11-21 : -
+85f7f7e - cooljar, 2023-11-21 : -
+6b47400 - cooljar, 2023-11-21 : -
+b61efbf - cooljar, 2023-11-21 : -
+2cc75d6 - cooljar, 2023-11-21 : -
+259af70 - cooljar, 2023-11-20 : -
+6d4aeb7 - cooljar, 2023-11-20 : -
+ce8d6d1 - cooljar, 2023-11-20 : -
+0766397 - cooljar, 2023-11-11 : -
+3b71410 - cooljar, 2023-11-11 : -
+89ed74b - cooljar, 2023-11-09 : xx
+c8bb5a7 - cooljar, 2023-11-09 : modifikasi insert user jadi auto increment
+4dd740b - cooljar, 2023-11-09 : modifikasi insert user jadi auto increment
+5262e7a - cooljar, 2023-11-09 : -
+c95a386 - cooljar, 2023-11-05 : -
+74df643 - cooljar, 2023-11-03 : modifikasi insert user jadi auto increment
+45c0672 - cooljar, 2023-11-03 : modifikasi insert batch user jadi auto increment
+4d0c01a - cooljar, 2023-11-03 : modifikasi insert batch user jadi auto increment
+c029d0e - cooljar, 2023-11-03 : no msg
+6bb9c10 - cooljar, 2023-11-03 : no msg
+58a9c8f - cooljar, 2023-10-16 : no msg
+f7bd968 - cooljar, 2023-10-11 : no msg
+9ae267d - cooljar, 2023-10-11 : no msg
+7b276b6 - cooljar, 2023-10-11 : no msg
+f2ecbd4 - cooljar, 2023-10-11 : no msg
+c80b374 - cooljar, 2023-10-11 : no msg
+baab5b6 - cooljar, 2023-10-11 : no msg
+d712715 - cooljar, 2023-10-02 : no msg
+4c99e9a - cooljar, 2023-10-02 : no msg
+c8319f2 - cooljar, 2023-10-02 : no msg
+2acc5fa - cooljar, 2023-09-30 : no msg
+933c065 - cooljar, 2023-09-26 : no msg
+41a59b6 - cooljar, 2023-09-26 : no msg
+e87f4c9 - cooljar, 2023-09-25 : no msg
+95fa0eb - cooljar, 2023-09-21 : update swagger doc
+1d883f2 - cooljar, 2023-09-21 : jwt tambah field id_pegawai
+c174fe1 - cooljar, 2023-09-19 : no msg
+570220a - cooljar, 2023-09-17 : clean code
+0fed6f6 - cooljar, 2023-09-17 : test discord notifier
+2d45583 - cooljar, 2023-09-17 : fixed auth all module
+fdb769b - cooljar, 2023-09-17 : fixed user-manager index endpoint
+2bfb9a1 - cooljar, 2023-09-17 : no msg
+711d6a1 - cooljar, 2023-09-16 : modify Jenkinsfile
+a441dda - cooljar, 2023-09-16 : modify jenkinsfil & k8s
+edcd74a - cooljar, 2023-09-16 : penambahan endpoint detail dan list user di modul user manager
+b4df0d0 - cooljar, 2023-09-16 : penambahan fitur batch insert user
+be1767c - cooljar, 2023-09-15 : minor changes
+911d886 - cooljar, 2023-09-14 : switch coding to ubuntu
+3643e86 - cooljar, 2023-09-14 : edit migrations/000003_seed_user_data.up.sql
+888f760 - cooljar, 2023-09-12 : update deployment.yaml
+2a367cb - cooljar, 2023-09-11 : no msg
+cc4406f - cooljar, 2023-09-11 : no msg
+c0b76ae - cooljar, 2023-09-11 : no msg
+366d839 - cooljar, 2023-09-11 : no msg
+96e12c7 - cooljar, 2023-09-11 : no msg
+8704e65 - cooljar, 2023-09-11 : no msg
+31d116d - cooljar, 2023-09-11 : modify Jenkinsfile
+286a098 - cooljar, 2023-09-11 : modify Jenkinsfile
+c901c27 - cooljar, 2023-09-11 : modify Jenkinsfile
+e27d6ed - cooljar, 2023-09-11 : no msg
+b265354 - cooljar, 2023-09-11 : no msg
+5ca790d - cooljar, 2023-09-10 : no msg
+cbbb280 - cooljar, 2023-09-10 : no msg
+54e28c3 - cooljar, 2023-09-10 : no msg
+fb05cb9 - cooljar, 2023-09-10 : no msg
+18800c4 - cooljar, 2023-09-10 : no msg
+aff3ed8 - cooljar, 2023-09-09 : no msg
+190c382 - cooljar, 2023-09-08 : no msg
+703cfd7 - cooljar, 2023-09-07 : no msg
+9d2631e - cooljar, 2023-09-07 : no msg
+8b9327d - cooljar, 2023-09-07 : no msg
+ba45e80 - cooljar, 2023-09-07 : modify Jenkinsfile
+94045fe - cooljar, 2023-09-07 : no msg
+b45e338 - cooljar, 2023-09-07 : no msg
+8f0d7ac - cooljar, 2023-09-07 : no msg
+b4aaea5 - cooljar, 2023-09-07 : no msg
+a194d23 - cooljar, 2023-09-07 : suport siap
+9485db2 - cooljar, 2023-09-05 : modify Jenkinsfile
+9b98f70 - cooljar, 2023-09-03 : modify gitlab-ci.yaml
+4497ff9 - cooljar, 2023-09-02 : add Jenkinsfile
+b0f0ad5 - cooljar, 2023-09-02 : starting production version 1.0.0
+c24dafc - cooljar, 2023-09-01 : no msg
+ec77d52 - cooljar, 2023-08-31 : modify gitlab-ci.yml
+e922984 - cooljar, 2023-08-31 : modify gitlab-ci.yml
+f0f5adb - cooljar, 2023-08-31 : modify gitlab-ci.yml
+09cd298 - cooljar, 2023-08-31 : modify gitlab-ci.yml
+acd8fb1 - cooljar, 2023-08-31 : add gitlab-ci.yml
+62fb5d3 - cooljar, 2023-08-31 : penambahan tabel konfigurasi jwt pada service auth. Penyesuaian database table secara manual diperlukan
+3ebbac1 - cooljar, 2023-08-10 : minor changes, no need to update.
+b92ecfc - cooljar, 2023-08-10 : minor changes, no need to update.
+6b4700e - cooljar, 2023-02-16 : minor changes, no need to update. no message
+ceaee6c - cooljar, 2023-02-16 : minor changes, no need to update. no message
+7feb568 - cooljar, 2023-02-16 : Revert "minor changes, no need to update."
+590b75b - cooljar, 2023-02-16 : Merge remote-tracking branch 'origin/main' into main
+28fe4ef - cooljar, 2023-02-15 : minor changes, no need to update. no message
+b6a69f4 - cooljar, 2023-02-15 : minor changes, no need to update.
+9e24bee - cooljar, 2023-02-15 : minor changes, no need to update.
+9b60e78 - cooljar, 2023-02-14 : no msg
+8a01d25 - cooljar, 2023-02-12 : update readme
+35299ec - cooljar, 2023-02-12 : update readme
+57040b6 - cooljar, 2023-01-30 : update method edit user, penambahan parameter id_daerah
+ee30341 - cooljar, 2023-01-30 : update go mod
+e13bcf3 - cooljar, 2023-01-30 : revisi endpoint change active status user, semua parameter digabung kedalam payload.
+52d3c00 - cooljar, 2023-01-30 : validasi field is_locked dan is_deleted pada fungsi login
+cc26cec - cooljar, 2023-01-30 : validasi max limit pagination list users 50 records
+ea3e701 - cooljar, 2023-01-30 : downgrade to go1.8
+542d0e4 - cooljar, 2023-01-30 : dockerfile update
+86d0c63 - cooljar, 2023-01-29 : Penambahan fitur list user, setup status aktif user dan edit user data
+5d58600 - cooljar, 2022-11-23 : add fungsi ubah password
+f8dd332 - cooljar, 2022-11-19 : no msg
+b4c6824 - cooljar, 2022-11-10 : add hashed attribute to profile endpoint
+4f72990 - cooljar, 2022-11-06 : Penambahan attribute id_level kedalam jwt token.
+59706b0 - cooljar, 2022-11-01 : Penambahan fitur login attempt. kesempatan 5 kali salah login sebelum diblokir selama 5 menit.
+8384875 - cooljar, 2022-10-27 : no msg
+664a716 - cooljar, 2022-10-19 : change Makefile docker network to host.
+0a5e4e6 - cooljar, 2022-10-15 : adjust all rbac service handler and controller function based on user_id + id_daerah.
+17528e8 - cooljar, 2022-10-15 : update profile function and add profile role permission route to rbac migrations
+08ef3e4 - cooljar, 2022-10-15 : ignored
+33d4057 - cooljar, 2022-07-28 : no msg
+51706ef - cooljar, 2022-07-28 : no msg
+d16a717 - cooljar, 2022-07-28 : no msg
+db1a5ff - cooljar, 2022-07-28 : fixed login auth using id daerah.
+9c7b373 - cooljar, 2022-07-28 : fixed login auth using id daerah.
+21f80c1 - cooljar, 2022-07-28 : fixed login auth using id daerah.
+5a3adef - cooljar, 2022-07-20 : no msg
+a6e91c1 - cooljar, 2022-07-20 : no msg
+9d5ef56 - cooljar, 2022-06-30 : no msg
+8454a53 - cooljar, 2022-06-30 : Merge branch 'wasis' into main
+c3a4c55 - sigit wasis subekti, 2022-06-30 : add function for list all user by id_daerah
+27c3be8 - sigit wasis subekti, 2022-06-30 : remove tahun in authentication
+389f009 - cooljar, 2022-06-29 : no msg
+92bfade - cooljar, 2022-06-29 : no msg
+cb126a5 - cooljar, 2022-06-29 : no msg
+bd73e6a - cooljar, 2022-06-29 : no msg
+29cec64 - cooljar, 2022-06-29 : no msg
+3c5d92b - sigit wasis subekti, 2022-06-26 : no msg
+4cb6260 - sigit wasis subekti, 2022-06-26 : add fitur tahun pada login
+8e75555 - sigit wasis subekti, 2022-06-25 : add function checkAccess in func profile
+f527aff - sigit wasis subekti, 2022-06-25 : add function check access store user
+f5e7149 - cooljar, 2022-06-25 : penambahan env external url, salah satunya url ke service rbac.
+8cfbd0b - cooljar, 2022-06-25 : penambahan env external url, salah satunya url ke service rbac.
+c819b3b - cooljar, 2022-06-25 : to do untuk dihubungkan ke service rbac
+bdc0967 - cooljar, 2022-06-25 : to do untuk dihubungkan ke service rbac
+3732710 - cooljar, 2022-06-25 : to do untuk dihubungkan ke service rbac
+4295786 - cooljar, 2022-06-25 : revisi di controller user dan handler user. penamaan variable harus camel case
+453cab9 - sigit wasis subekti, 2022-06-22 : create modul insert new user
+68becf5 - sigit wasis subekti, 2022-06-21 : add comment in query register
+de6a506 - cooljar, 2022-06-21 : revisi model signup dan controller auth register, field jabatan dibuang.
+8308e82 - cooljar, 2022-06-21 : revisi model signup dan controller auth register, field jabatan dibuang.
+eb2403b - cooljar, 2022-06-21 : revisi model signup dan controller auth register, field jabatan dibuang.
+f3e06d0 - sigit wasis subekti, 2022-06-21 : update model signup
+f7be511 - cooljar, 2022-06-21 : comment on signup form model
+ae4ec6e - cooljar, 2022-06-21 : comment on signup form model
+c960ad0 - cooljar, 2022-06-21 : no msg
+72f2f8f - sigit wasis subekti, 2022-06-21 : create modul register user
+78dade4 - cooljar, 2022-06-18 : no msg
+bf02c96 - cooljar, 2022-06-07 : no msg
+4ccdd57 - cooljar, 2022-06-07 : no msg
+544393e - cooljar, 2022-06-07 : no msg
+2c298f1 - cooljar, 2022-06-06 : no msg
+14d34cf - cooljar, 2022-06-06 : no msg
+e8aef55 - cooljar, 2022-06-06 : no msg
+295758a - cooljar, 2022-05-28 : no msg
+f5720ce - cooljar, 2022-05-27 : no msg
+bd08575 - cooljar, 2022-05-23 : no msg
+0918376 - cooljar, 2022-05-23 : no msg
+a252639 - cooljar, 2022-05-23 : no msg
+cc0905c - cooljar, 2022-05-23 : no msg
+87198d7 - cooljar, 2022-05-18 : no msg
+74b3176 - cooljar, 2022-05-12 : no msg
+497a129 - cooljar, 2022-05-12 : no msg
+18bcc3c - cooljar, 2022-05-11 : no msg
+532fd28 - cooljar, 2022-05-11 : no msg
+4b5db7d - cooljar, 2022-05-11 : no msg
+893e676 - cooljar, 2022-05-11 : no msg
+e662f17 - cooljar, 2022-04-25 : no msg
+982559e - cooljar, 2022-04-25 : no msg
+435670b - cooljar, 2022-04-24 : no msg
+1ae7093 - cooljar, 2022-04-24 : no msg
+7e9df76 - cooljar, 2022-04-24 : no msg
+0baee00 - cooljar, 2022-04-23 : no msg
+ef0b6f5 - cooljar, 2022-04-23 : no msg
+a845306 - cooljar, 2022-04-23 : no msg
+ae3ba2d - cooljar, 2022-04-23 : Initial commit

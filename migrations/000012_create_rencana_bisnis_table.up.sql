@@ -1,0 +1,1 @@
+up/000012_create_rencana_bisnis_table.up.sql

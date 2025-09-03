@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sipd-auth
+  labels:
+    name: sipd-auth
+  annotations:
+    version: 1.0.0-beta-1
+    description: SIPD Service Auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: sipd-auth
+  template:
+    metadata:
+      name: sipd-auth
+      labels:
+        name: sipd-auth
+    spec:
+      containers:
+        - name: sipd-auth
+          image: 172.24.26.85:8086/sipd/auth:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: sipd-auth-env-cmap
+      imagePullSecrets:
+        - name: gitlab-auth-herman

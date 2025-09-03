@@ -1,0 +1,1 @@
+down/000006_create_sys_config_table.down.sql
