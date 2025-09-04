@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	models "microdata/kemendagri/bumd/model"
+	"microdata/kemendagri/bumd/models"
 	"microdata/kemendagri/bumd/utils"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofiber/storage/redis/v3"
@@ -21,23 +22,23 @@ import (
 type AuthController struct {
 	contextTimeout time.Duration
 	pgxConn        *pgxpool.Pool
-	// pgxConnMstData *pgxpool.Pool
-	jwtManager *utils.JWTManager
-	Validate   *validator.Validate
-	redisCl    *redis.Storage
+	pgxConnMstData *pgxpool.Pool
+	jwtManager     *utils.JWTManager
+	Validate       *validator.Validate
+	redisCl        *redis.Storage
 }
 
 func NewAuthController(
 	conn *pgxpool.Pool,
-	// connMstData *pgxpool.Pool,
+	connMstData *pgxpool.Pool,
 	timeout time.Duration,
 	jm *utils.JWTManager,
 	vld *validator.Validate,
 	redisClient *redis.Storage,
 ) (controller *AuthController) {
 	controller = &AuthController{
-		pgxConn: conn,
-		// pgxConnMstData: connMstData,
+		pgxConn:        conn,
+		pgxConnMstData: connMstData,
 		contextTimeout: timeout,
 		jwtManager:     jm,
 		Validate:       vld,
@@ -58,8 +59,18 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 	}
 
 	var passUser string
-	q = `SELECT id, id_daerah, id_role, password FROM "users" WHERE username = $1 and deleted_by=0`
-	err = ac.pgxConn.QueryRow(context.Background(), q, f.Username).Scan(&user.IdUser, &user.IdDaerah, &user.IdRole, &passUser)
+	q = `
+	SELECT 
+		id,
+		id_daerah,
+		id_role,
+		id_bumd,
+		password
+	FROM "users"
+	WHERE username = $1
+		AND deleted_by=0
+	`
+	err = ac.pgxConn.QueryRow(context.Background(), q, f.Username).Scan(&user.IdUser, &user.IdDaerah, &user.IdRole, &user.IdBumd, &passUser)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			err = utils.RequestError{
@@ -69,6 +80,25 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 			return
 		}
 		return
+	}
+
+	q = `
+		SELECT sub_domain, kode_ddn
+		FROM data.m_daerah
+		WHERE id_daerah = $1
+	`
+	err = ac.pgxConnMstData.QueryRow(context.Background(), q, user.IdDaerah).Scan(&user.SubDomainDaerah, &user.KodeDDN)
+	if err != nil {
+		err = utils.RequestError{
+			Code:    http.StatusInternalServerError,
+			Message: "Data Pemerintah Daerah Tidak Tersedia. - " + err.Error(),
+		}
+		return
+	}
+
+	user.KodeProvinsi = strings.Split(user.KodeDDN, ".")[0]
+	if len(user.KodeDDN) == 2 {
+		user.KodeDDN += ".00"
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(passUser), []byte(f.Password)); err != nil {
@@ -85,7 +115,7 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 	}
 
 	// Check and set active session in Redis
-	redisKey := fmt.Sprintf("peg:%d", user.IdUser)
+	redisKey := fmt.Sprintf("usr:%d", user.IdUser)
 	existingToken, err := ac.redisCl.Get(redisKey)
 	if err != nil {
 		err = utils.RequestError{

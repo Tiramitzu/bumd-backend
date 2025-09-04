@@ -3,7 +3,7 @@ package controller_mst
 import (
 	"fmt"
 	"math"
-	models "microdata/kemendagri/bumd/model/master"
+	models "microdata/kemendagri/bumd/models/master"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/jackc/pgx/v5/pgxpool"

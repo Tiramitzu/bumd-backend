@@ -1,1 +1,0 @@
-down/000004_create_mst_jenis_dokumen_table.down.sql

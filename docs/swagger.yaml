@@ -8,6 +8,25 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2
         type: string
     type: object
+  models.AktaNotarisForm:
+    type: object
+  models.AktaNotarisModel:
+    properties:
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      keterangan:
+        type: string
+      modal_dasar:
+        type: number
+      nomor_perda:
+        type: string
+      tanggal_perda:
+        type: string
+    type: object
   models.BentukBadanHukumForm:
     properties:
       deskripsi:
@@ -147,6 +166,10 @@ definitions:
         type: integer
       nama:
         type: string
+      nilai:
+        type: number
+      tampilkan:
+        type: boolean
     type: object
   models.RolesModel:
     properties:
@@ -155,11 +178,43 @@ definitions:
       nama:
         type: string
     type: object
+  models.User:
+    properties:
+      id_bumd:
+        type: integer
+      id_daerah:
+        type: integer
+      id_role:
+        type: integer
+      id_user:
+        type: integer
+    type: object
   models.UserDetail:
     properties:
+      nama_bumd:
+        type: string
       nama_role:
         type: string
       nama_user:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserModel:
+    properties:
+      id_bumd:
+        type: integer
+      id_daerah:
+        type: integer
+      id_role:
+        type: integer
+      id_user:
+        type: integer
+      logo:
+        type: string
+      nama:
+        type: string
+      role:
         type: string
       username:
         type: string
@@ -289,6 +344,276 @@ paths:
       summary: index
       tags:
       - Site
+  /strict/akta_notaris:
+    get:
+      description: get data akta notaris.
+      operationId: akta_notaris-index
+      parameters:
+      - description: Id BUMD
+        in: query
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Pencarian
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.AktaNotarisModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data akta notaris
+      tags:
+      - Akta Notaris
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data akta notaris.
+      operationId: akta_notaris-create
+      parameters:
+      - description: Nomor Perda
+        in: formData
+        name: nomor_perda
+        required: true
+        type: string
+      - description: Tanggal Perda
+        in: formData
+        name: tanggal_perda
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: string
+      - description: Modal Dasar
+        format: float64
+        in: formData
+        name: modal_dasar
+        required: true
+        type: number
+      - description: Id BUMD
+        in: formData
+        name: id_bumd
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data akta notaris
+      tags:
+      - Akta Notaris
+  /strict/akta_notaris/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data akta notaris.
+      operationId: akta_notaris-delete
+      parameters:
+      - description: Id untuk delete data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data akta notaris
+      tags:
+      - Akta Notaris
+    get:
+      description: get data akta notaris by id.
+      operationId: akta_notaris-view
+      parameters:
+      - description: Id untuk get data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.AktaNotarisModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data akta notaris by id
+      tags:
+      - Akta Notaris
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data akta notaris.
+      operationId: akta_notaris-update
+      parameters:
+      - description: Nomor Perda
+        in: formData
+        name: nomor_perda
+        required: true
+        type: string
+      - description: Tanggal Perda
+        in: formData
+        name: tanggal_perda
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: string
+      - description: Modal Dasar
+        format: float64
+        in: formData
+        name: modal_dasar
+        required: true
+        type: number
+      - description: Id BUMD
+        in: formData
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk update data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.AktaNotarisForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data akta notaris
+      tags:
+      - Akta Notaris
   /strict/bentuk_badan_hukum:
     get:
       description: get data bentuk badan hukum.
@@ -1268,6 +1593,55 @@ paths:
       tags:
       - Bentuk Usaha
   /strict/user:
+    get:
+      description: get all user.
+      operationId: user-index
+      parameters:
+      - description: Id Role
+        in: query
+        name: id_role
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get all user
+      tags:
+      - User
     post:
       consumes:
       - multipart/form-data
@@ -1285,11 +1659,13 @@ paths:
         required: true
         type: string
       - description: Id Daerah
+        format: int32
         in: formData
         name: id_daerah
         required: true
         type: integer
       - description: Id Role
+        format: int32
         in: formData
         name: id_role
         required: true
@@ -1302,7 +1678,12 @@ paths:
       - description: Logo
         in: formData
         name: logo
-        type: string
+        type: file
+      - description: Id BUMD
+        format: int32
+        in: formData
+        name: id_bumd
+        type: integer
       produces:
       - application/json
       responses:
@@ -1343,6 +1724,7 @@ paths:
       operationId: user-delete
       parameters:
       - description: Id untuk delete data user
+        format: int32
         in: path
         name: id
         required: true
@@ -1381,11 +1763,46 @@ paths:
       summary: delete user
       tags:
       - User
+    get:
+      description: get user by id.
+      operationId: user-view
+      parameters:
+      - description: Id untuk get data user
+        format: int32
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.UserModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get user by id
+      tags:
+      - User
     put:
       description: update user.
       operationId: user-update
       parameters:
       - description: Id untuk update data user
+        format: int32
         in: path
         name: id
         required: true
@@ -1401,11 +1818,13 @@ paths:
         required: true
         type: string
       - description: Id Daerah
+        format: int32
         in: formData
         name: id_daerah
         required: true
         type: integer
       - description: Id Role
+        format: int32
         in: formData
         name: id_role
         required: true
@@ -1418,7 +1837,12 @@ paths:
       - description: Logo
         in: formData
         name: logo
-        type: string
+        type: file
+      - description: Id BUMD
+        format: int32
+        in: formData
+        name: id_bumd
+        type: integer
       produces:
       - application/json
       responses:

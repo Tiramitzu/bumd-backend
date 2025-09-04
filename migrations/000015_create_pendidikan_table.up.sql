@@ -1,1 +1,0 @@
-up/000015_create_pendidikan_table.up.sql

@@ -1,1 +1,0 @@
-up/000010_create_mst_akta_notaris_table.up.sql

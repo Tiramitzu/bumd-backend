@@ -2,7 +2,7 @@ package http
 
 import (
 	"microdata/kemendagri/bumd/controller"
-	models "microdata/kemendagri/bumd/model"
+	"microdata/kemendagri/bumd/models"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"

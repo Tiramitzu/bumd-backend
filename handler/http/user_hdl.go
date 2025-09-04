@@ -3,9 +3,9 @@ package http
 import (
 	"fmt"
 	"microdata/kemendagri/bumd/controller"
-	models "microdata/kemendagri/bumd/model"
+	"microdata/kemendagri/bumd/models"
 	"microdata/kemendagri/bumd/utils"
-	"strings"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -29,11 +29,90 @@ func NewUserHandler(
 
 	// strict route
 	rStrict := r.Group("user")
+	rStrict.Get("/", handler.Index)
 	rStrict.Get("/logout", handler.Logout)
 	rStrict.Get("/profile", handler.Profile)
+	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
+}
+
+// Index func for get all user.
+//
+//	@Summary		get all user
+//	@Description	get all user.
+//	@ID				user-index
+//	@Tags			User
+//	@Produce		json
+//	@Param			id_role	query		int					true	"Id Role"
+//	@Param			page	query		int					false	"Halaman yang ditampilkan"
+//	@Param			limit	query		int					false	"Jumlah data per halaman, maksimal 5 data per halaman"
+//	@success		200		{object}	[]models.User		"Success"
+//	@Failure		400		{object}	utils.RequestError	"Bad request"
+//	@Failure		404		{object}	utils.RequestError	"Data not found"
+//	@Failure		422		{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/user [get]
+func (h *UserHandler) Index(c *fiber.Ctx) error {
+	idRole := c.QueryInt("id_role", 0)
+	page := c.QueryInt("page", 1)
+	var limit int
+	limit = c.QueryInt("limit", 5)
+
+	if limit > 5 {
+		limit = 5
+	}
+
+	m, totalCount, pageCount, err := h.Controller.Index(
+		c.Context(),
+		c.Locals("jwt").(*jwt.Token),
+		page,
+		limit,
+		idRole,
+	)
+	if err != nil {
+		return err
+	}
+
+	c.Append("x-pagination-total-count", strconv.Itoa(totalCount))
+	c.Append("x-pagination-page-count", strconv.Itoa(pageCount))
+	c.Append("x-pagination-page-size", strconv.Itoa(limit))
+	if page > 1 {
+		c.Append("x-pagination-previous-page", strconv.Itoa(page-1))
+	}
+	c.Append("x-pagination-current-page", strconv.Itoa(page))
+	if page < pageCount {
+		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
+	}
+	return c.JSON(m)
+}
+
+// View func for get user by id.
+//
+//	@Summary		get user by id
+//	@Description	get user by id.
+//	@ID				user-view
+//	@Tags			User
+//	@Produce		json
+//	@Param			id	path		int32				true	"Id untuk get data user"
+//	@success		200	{object}	models.UserModel	"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/user/{id} [get]
+func (h *UserHandler) View(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
 }
 
 // Logout User func for logout.
@@ -99,10 +178,11 @@ func (h *UserHandler) Profile(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Param			username	formData	string				true	"Username"
 //	@Param			password	formData	string				true	"Password"
-//	@Param			id_daerah	formData	int					true	"Id Daerah"
-//	@Param			id_role		formData	int					true	"Id Role"
+//	@Param			id_daerah	formData	int32				true	"Id Daerah"
+//	@Param			id_role		formData	int32				true	"Id Role"
 //	@Param			nama		formData	string				true	"Nama"
-//	@Param			logo		formData	string				false	"Logo"
+//	@Param			logo		formData	file				false	"Logo"
+//	@Param			id_bumd		formData	int32				false	"Id BUMD"
 //	@success		200			{object}	bool				"Success"
 //	@Failure		400			{object}	utils.RequestError	"Bad request"
 //	@Failure		403			{object}	utils.RequestError	"Forbidden"
@@ -122,17 +202,11 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 	}
 
 	if payload.Logo != nil {
-		if !strings.Contains(payload.Logo.Header.Get("Content-Type"), "image") {
-			return utils.RequestError{
-				Code:    fiber.StatusBadRequest,
-				Message: "Logo harus berupa gambar",
-			}
-		}
 		const maxFileSize = 2 * 1024 * 1024 // 2 MB
-		if payload.Logo.Size > maxFileSize {
+		if err := utils.ValidateFile(payload.Logo, maxFileSize, []string{"image/jpeg", "image/png", "image/jpg"}); err != nil {
 			return utils.RequestError{
 				Code:    fiber.StatusBadRequest,
-				Message: "Ukuran logo maksimal 2 MB",
+				Message: err.Error(),
 			}
 		}
 	}
@@ -156,13 +230,14 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 //	@ID				user-update
 //	@Tags			User
 //	@Produce		json
-//	@Param			id			path		int					true	"Id untuk update data user"
+//	@Param			id			path		int32				true	"Id untuk update data user"
 //	@Param			username	formData	string				true	"Username"
 //	@Param			password	formData	string				true	"Password"
-//	@Param			id_daerah	formData	int					true	"Id Daerah"
-//	@Param			id_role		formData	int					true	"Id Role"
+//	@Param			id_daerah	formData	int32				true	"Id Daerah"
+//	@Param			id_role		formData	int32				true	"Id Role"
 //	@Param			nama		formData	string				true	"Nama"
-//	@Param			logo		formData	string				false	"Logo"
+//	@Param			logo		formData	file				false	"Logo"
+//	@Param			id_bumd		formData	int32				false	"Id BUMD"
 //	@success		200			{object}	bool				"Success"
 //	@Failure		400			{object}	utils.RequestError	"Bad request"
 //	@Failure		403			{object}	utils.RequestError	"Forbidden"
@@ -187,17 +262,11 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	}
 
 	if payload.Logo != nil {
-		if !strings.Contains(payload.Logo.Header.Get("Content-Type"), "image") {
-			return utils.RequestError{
-				Code:    fiber.StatusBadRequest,
-				Message: "Logo harus berupa gambar",
-			}
-		}
 		const maxFileSize = 2 * 1024 * 1024 // 2 MB
-		if payload.Logo.Size > maxFileSize {
+		if err := utils.ValidateFile(payload.Logo, maxFileSize, []string{"image/jpeg", "image/png", "image/jpg"}); err != nil {
 			return utils.RequestError{
 				Code:    fiber.StatusBadRequest,
-				Message: "Ukuran logo maksimal 2 MB",
+				Message: err.Error(),
 			}
 		}
 	}
@@ -222,7 +291,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 //	@ID				user-delete
 //	@Tags			User
 //	@Produce		json
-//	@Param			id	path		int					true	"Id untuk delete data user"
+//	@Param			id	path		int32				true	"Id untuk delete data user"
 //	@success		200	{object}	bool				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
 //	@Failure		403	{object}	utils.RequestError	"Forbidden"

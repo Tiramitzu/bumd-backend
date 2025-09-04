@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"math"
-	models "microdata/kemendagri/bumd/model"
+	"microdata/kemendagri/bumd/models"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
@@ -35,9 +35,12 @@ func (c *BumdController) Index(
 
 	var args []interface{}
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id_daerah = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE deleted_by = 0
 	`
-	args = append(args, idDaerah)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
 	if nama != "" {
 		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
@@ -60,7 +63,7 @@ func (c *BumdController) Index(
 	WITH t_induk_perusahaan AS (
 		SELECT id, nama as nama_induk_perusahaan
 		FROM bumd
-		WHERE id_daerah = $2 AND deleted_by = 0
+		WHERE deleted_by = 0
 	)
 	SELECT
 		b.id,
@@ -84,10 +87,12 @@ func (c *BumdController) Index(
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
 		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
 		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id = b.id_induk_perusahaan
-	WHERE b.id_daerah = $1
-		AND b.deleted_by = 0
+	WHERE b.deleted_by = 0
 	`
-	args = append(args, idDaerah)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
 	if nama != "" {
 		q += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
@@ -157,11 +162,12 @@ func (c *BumdController) View(
 	claims := user.Claims.(jwt.MapClaims)
 	idDaerah := int(claims["id_daerah"].(float64))
 
+	var args []interface{}
 	q := `
 	WITH t_induk_perusahaan AS (
 		SELECT id, nama as nama_induk_perusahaan
 		FROM bumd
-		WHERE id_daerah = $2 AND deleted_by = 0
+		WHERE deleted_by = 0
 	)
 	SELECT
 		b.id,
@@ -185,11 +191,15 @@ func (c *BumdController) View(
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
 		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
 		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id = b.id_induk_perusahaan
-	WHERE b.id = $1 AND b.id_daerah = $2
-		AND b.deleted_by = 0
+	WHERE b.id = $1 AND b.deleted_by = 0
 	`
+	args = append(args, id)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(
+	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(
 		&r.ID,
 		&r.IDDaerah,
 		&r.IDBentukHukum,
@@ -296,12 +306,18 @@ func (c *BumdController) Update(
 	idUser := int(claims["id_user"].(float64))
 	idDaerah := int(claims["id_daerah"].(float64))
 
+	var args []interface{}
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id = $1 AND id_daerah = $2
+	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id = $1 AND deleted_by = 0
 	`
+	args = append(args, id)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
 
 	var count int
-	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
+	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&count)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -332,12 +348,9 @@ func (c *BumdController) Update(
 		website = $11,
 		narahubung = $12,
 		updated_by = $13
-	WHERE id = $14 AND id_daerah = $15
+	WHERE id = $14 AND deleted_by = 0
 	`
-
-	_, err = c.pgxConn.Exec(
-		fCtx,
-		q,
+	args = append(args,
 		payload.IDBentukHukum,     // 1
 		payload.IDBentukUsaha,     // 2
 		payload.IDIndukPerusahaan, // 3
@@ -351,8 +364,17 @@ func (c *BumdController) Update(
 		payload.Website,           // 11
 		payload.Narahubung,        // 12
 		idUser,                    // 13
-		id,                        // 13
-		idDaerah,                  // 14
+		id,                        // 14
+	)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
+
+	_, err = c.pgxConn.Exec(
+		fCtx,
+		q,
+		args...,
 	)
 	if err != nil {
 		return false, utils.RequestError{
@@ -373,12 +395,18 @@ func (c *BumdController) Delete(
 	idUser := int(claims["id_user"].(float64))
 	idDaerah := int(claims["id_daerah"].(float64))
 
+	var args []interface{}
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id = $1 AND id_daerah = $2
+	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id = $1 AND deleted_by = 0
 	`
+	args = append(args, id)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
 
 	var count int
-	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
+	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&count)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -394,9 +422,9 @@ func (c *BumdController) Delete(
 	}
 
 	q = `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id_induk_perusahaan = $1 AND id_daerah = $2 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id_induk_perusahaan = $1 AND deleted_by = 0
 	`
-	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
+	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&count)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -414,10 +442,15 @@ func (c *BumdController) Delete(
 	q = `
 	UPDATE bumd
 		SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3 AND id_daerah = $4
+	WHERE id = $3 AND deleted_by = 0
 	`
+	args = append(args, idUser, time.Now(), id)
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
 
-	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idDaerah)
+	_, err = c.pgxConn.Exec(fCtx, q, args...)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,

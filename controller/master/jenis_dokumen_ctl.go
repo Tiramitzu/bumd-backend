@@ -3,7 +3,7 @@ package controller_mst
 import (
 	"fmt"
 	"math"
-	models "microdata/kemendagri/bumd/model/master"
+	models "microdata/kemendagri/bumd/models/master"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
@@ -54,6 +54,9 @@ func (c *JenisDokumenController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return r, totalCount, pageCount, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
+		}
 		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Jenis Dokumen: %w", err)
 	}
 
@@ -84,6 +87,9 @@ func (c *JenisDokumenController) View(fCtx *fasthttp.RequestCtx, id int) (r mode
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama, &r.Deskripsi)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return r, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
+		}
 		return r, fmt.Errorf("gagal mengambil data Jenis Dokumen: %w", err)
 	}
 
@@ -103,7 +109,7 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE nama = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE nama = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -149,7 +155,7 @@ func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE nama = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE nama = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -197,14 +203,14 @@ func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE id = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE id = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghapus data Jenis Dokumen - " + err.Error(),
+			Message: "Gagal menghitung data Jenis Dokumen - " + err.Error(),
 		}
 	}
 

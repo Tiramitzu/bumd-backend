@@ -2,7 +2,7 @@ package http_mst
 
 import (
 	controller "microdata/kemendagri/bumd/controller/master"
-	models "microdata/kemendagri/bumd/model/master"
+	models "microdata/kemendagri/bumd/models/master"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
