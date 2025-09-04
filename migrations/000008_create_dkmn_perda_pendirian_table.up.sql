@@ -1,0 +1,1 @@
+up/000008_create_dkmn_perda_pendirian_table.up.sql

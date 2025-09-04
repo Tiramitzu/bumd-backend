@@ -1,1 +1,0 @@
-down/000014_create_peraturan_table.down.sql

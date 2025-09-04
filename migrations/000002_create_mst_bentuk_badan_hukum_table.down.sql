@@ -1,1 +1,0 @@
-down/000002_create_mst_bentuk_badan_hukum_table.down.sql

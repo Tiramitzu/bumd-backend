@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	models "microdata/kemendagri/bumd/model"
+	"microdata/kemendagri/bumd/models"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -13,9 +13,13 @@ import (
 
 type MyCustomClaim struct {
 	jwt.RegisteredClaims
-	IdUser   uint64 `json:"id_user"`
-	IdDaerah uint64 `json:"id_daerah"`
-	IdRole   int    `json:"id_role"`
+	KodeDDN         string `json:"kode_ddn"`
+	KodeProvinsi    string `json:"kode_provinsi"`
+	SubDomainDaerah string `json:"sub_domain_daerah"`
+	IdUser          int64  `json:"id_user"`
+	IdDaerah        int32  `json:"id_daerah"`
+	IdRole          int32  `json:"id_role"`
+	IdBumd          int32  `json:"id_bumd"`
 }
 
 type JWTManager struct {
@@ -36,7 +40,7 @@ func (m *JWTManager) Generate(dbConn *pgxpool.Pool, user models.User) (token, re
 		return
 	}
 
-	jwtSub := fmt.Sprintf("%d.%d", user.IdUser, user.IdDaerah)
+	jwtSub := fmt.Sprintf("%d.%d.%d.%d", user.IdUser, user.IdDaerah, user.IdRole, user.IdBumd)
 
 	jwtExpDuration = time.Duration(jwtExpiredMinutes) * time.Minute
 
@@ -48,9 +52,13 @@ func (m *JWTManager) Generate(dbConn *pgxpool.Pool, user models.User) (token, re
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(jwtExpDuration)),
 			IssuedAt:  &jwt.NumericDate{Time: time.Now()},
 		},
-		IdUser:   user.IdUser,
-		IdDaerah: user.IdDaerah,
-		IdRole:   user.IdRole,
+		KodeDDN:         user.KodeDDN,
+		KodeProvinsi:    user.KodeProvinsi,
+		SubDomainDaerah: user.SubDomainDaerah,
+		IdUser:          user.IdUser,
+		IdDaerah:        user.IdDaerah,
+		IdRole:          user.IdRole,
+		IdBumd:          user.IdBumd,
 	}
 	token, err = jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims).SignedString([]byte(m.secretKey))
 	if err != nil {
@@ -65,9 +73,13 @@ func (m *JWTManager) Generate(dbConn *pgxpool.Pool, user models.User) (token, re
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(refreshTokenExpiredHour))),
 			IssuedAt:  &jwt.NumericDate{Time: time.Now()},
 		},
-		IdUser:   user.IdUser,
-		IdDaerah: user.IdDaerah,
-		IdRole:   user.IdRole,
+		KodeDDN:         user.KodeDDN,
+		KodeProvinsi:    user.KodeProvinsi,
+		SubDomainDaerah: user.SubDomainDaerah,
+		IdUser:          user.IdUser,
+		IdDaerah:        user.IdDaerah,
+		IdRole:          user.IdRole,
+		IdBumd:          user.IdBumd,
 	}
 	/*refreshTokenClaims := jwt.RegisteredClaims{
 		Issuer:    m.issuer,

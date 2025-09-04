@@ -3,7 +3,7 @@ package controller_mst
 import (
 	"fmt"
 	"math"
-	models "microdata/kemendagri/bumd/model/master"
+	models "microdata/kemendagri/bumd/models/master"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
@@ -54,6 +54,9 @@ func (c *BentukBadanHukumController) Index(fCtx *fasthttp.RequestCtx, user *jwt.
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return r, totalCount, pageCount, fmt.Errorf("data Bentuk Badan Hukum tidak ditemukan")
+		}
 		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Bentuk Badan Hukum: %w", err)
 	}
 
@@ -84,6 +87,9 @@ func (c *BentukBadanHukumController) View(fCtx *fasthttp.RequestCtx, id int) (r 
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama, &r.Deskripsi)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return r, fmt.Errorf("data Bentuk Badan Hukum tidak ditemukan")
+		}
 		return r, fmt.Errorf("gagal mengambil data Bentuk Badan Hukum: %w", err)
 	}
 
@@ -103,7 +109,7 @@ func (c *BentukBadanHukumController) Create(fCtx *fasthttp.RequestCtx, user *jwt
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_badan_hukum WHERE nama = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_badan_hukum WHERE nama = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -149,7 +155,7 @@ func (c *BentukBadanHukumController) Update(fCtx *fasthttp.RequestCtx, user *jwt
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_badan_hukum WHERE nama = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_badan_hukum WHERE nama = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -197,7 +203,7 @@ func (c *BentukBadanHukumController) Delete(fCtx *fasthttp.RequestCtx, user *jwt
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_badan_hukum WHERE id = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_badan_hukum WHERE id = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)

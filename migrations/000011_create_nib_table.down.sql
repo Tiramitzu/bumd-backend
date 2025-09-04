@@ -1,1 +1,0 @@
-down/000011_create_nib_table.down.sql

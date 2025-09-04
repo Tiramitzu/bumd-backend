@@ -3,7 +3,7 @@ package controller_mst
 import (
 	"fmt"
 	"math"
-	models "microdata/kemendagri/bumd/model/master"
+	models "microdata/kemendagri/bumd/models/master"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
@@ -54,6 +54,9 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return r, totalCount, pageCount, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
+		}
 		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
 	}
 
@@ -84,6 +87,9 @@ func (c *BentukUsahaController) View(fCtx *fasthttp.RequestCtx, id int) (r model
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama, &r.Deskripsi)
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return r, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
+		}
 		return r, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
 	}
 
@@ -103,7 +109,7 @@ func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE nama = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE nama = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -197,7 +203,7 @@ func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE id = $1
+	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE id = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)

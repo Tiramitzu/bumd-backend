@@ -17,8 +17,6 @@ import (
 	"strings"
 	"time"
 
-	graylog "github.com/gemnasium/logrus-graylog-hook"
-
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -38,8 +36,7 @@ var serverName,
 	serverUrl,
 	serverReadTimeout,
 	dbServerUrl,
-	// dbServerUrlPegawai,
-	// dbServerUrlMstData,
+	dbServerUrlMstData,
 	jwtSecertKey,
 	alwOrg,
 	redisHost,
@@ -49,10 +46,8 @@ var serverName,
 var redisPort int
 
 var db *sql.DB
-var pgxConn *pgxpool.Pool
-
-// pgxConnPegawai,
-// pgxConnMstData *pgxpool.Pool
+var pgxConn,
+	pgxConnMstData *pgxpool.Pool
 var driver database.Driver
 var migration *migrate.Migrate
 var jwtMgr *utils.JWTManager
@@ -93,10 +88,10 @@ func init() {
 	if dbServerUrl == "" {
 		exitf("DB_SERVER_URL config is required")
 	}
-	// dbServerUrlMstData = os.Getenv("DB_SERVER_URL_MST_DATA")
-	// if dbServerUrlMstData == "" {
-	// 	exitf("DB_SERVER_URL_MST_DATA config is required")
-	// }
+	dbServerUrlMstData = os.Getenv("DB_SERVER_URL_MST_DATA")
+	if dbServerUrlMstData == "" {
+		exitf("DB_SERVER_URL_MST_DATA config is required")
+	}
 
 	// Redis
 	redisHost = os.Getenv("REDIS_HOST")
@@ -129,9 +124,8 @@ func dbConnection() {
 	maxConnIdleTime = 2 * time.Minute
 	maxPoolConn = 1000
 
-	var cfg *pgxpool.Config
-	// cfgPegawai,
-	// cfgMstData *pgxpool.Config
+	var cfg,
+		cfgMstData *pgxpool.Config
 
 	// auth
 	cfg, err = pgxpool.ParseConfig(dbServerUrl + " application_name=" + serverName)
@@ -160,7 +154,7 @@ func dbConnection() {
 	// }
 
 	// mst_data
-	/*cfgMstData, err = pgxpool.ParseConfig(dbServerUrlMstData + " application_name=" + serverName)
+	cfgMstData, err = pgxpool.ParseConfig(dbServerUrlMstData + " application_name=" + serverName)
 	if err != nil {
 		exitf("Unable to create db pool config mst_data %v\n", err)
 	}
@@ -170,21 +164,21 @@ func dbConnection() {
 	pgxConnMstData, err = pgxpool.NewWithConfig(context.Background(), cfgMstData)
 	if err != nil {
 		exitf("Unable to connect to database mst_data: %v\n", err)
-	}*/
-}
-
-func dbConnectionSimple() {
-	pgxConn, err = pgxpool.New(context.Background(), dbServerUrl+" application_name="+serverName)
-	if err != nil {
-		exitf("Unable to connect to database auth: %v\n", err)
 	}
-
-	// mst_data
-	/*pgxConnMstData, err = pgxpool.New(context.Background(), dbServerUrlMstData+" application_name="+serverName)
-	if err != nil {
-		exitf("Unable to connect to database mst_data: %v\n", err)
-	}*/
 }
+
+// func dbConnectionSimple() {
+// 	pgxConn, err = pgxpool.New(context.Background(), dbServerUrl+" application_name="+serverName)
+// 	if err != nil {
+// 		exitf("Unable to connect to database auth: %v\n", err)
+// 	}
+
+// 	// mst_data
+// 	pgxConnMstData, err = pgxpool.New(context.Background(), dbServerUrlMstData+" application_name="+serverName)
+// 	if err != nil {
+// 		exitf("Unable to connect to database mst_data: %v\n", err)
+// 	}
+// }
 
 func redisConnection() {
 	redisCl = redis.New(redis.Config{
@@ -199,23 +193,23 @@ func redisConnection() {
 	})
 }
 
-func setupLogger() {
-	// Create a new instance of Logrus logger
-	logger = logrus.New()
+// func setupLogger() {
+// 	// Create a new instance of Logrus logger
+// 	logger = logrus.New()
 
-	// Configure the Graylog hook
-	graylogHost := "127.0.0.1:12201" // Replace with your Graylog server's address and port
-	hook := graylog.NewGraylogHook(graylogHost, map[string]interface{}{
-		"environment": "production", // Custom fields
-		"app":         "my-golang-app",
-	})
+// 	// Configure the Graylog hook
+// 	graylogHost := "127.0.0.1:12201" // Replace with your Graylog server's address and port
+// 	hook := graylog.NewGraylogHook(graylogHost, map[string]interface{}{
+// 		"environment": "production", // Custom fields
+// 		"app":         "my-golang-app",
+// 	})
 
-	// Add the Graylog hook to the logger
-	logger.Hooks.Add(hook)
+// 	// Add the Graylog hook to the logger
+// 	logger.Hooks.Add(hook)
 
-	// Set Logrus Formatter (optional)
-	logger.SetFormatter(&logrus.JSONFormatter{})
-}
+// 	// Set Logrus Formatter (optional)
+// 	logger.SetFormatter(&logrus.JSONFormatter{})
+// }
 
 // @title						BUMD Service
 // @version					1.0
@@ -267,7 +261,8 @@ func main() {
 	dbConnection()
 	defer func() {
 		pgxConn.Close()
-		// pgxConnMstData.Close()
+		redisCl.Close()
+		pgxConnMstData.Close()
 	}()
 
 	serverReadTimeoutInt, err := strconv.Atoi(serverReadTimeout)
@@ -339,7 +334,7 @@ func main() {
 
 	authController := controller.NewAuthController(
 		pgxConn,
-		// pgxConnMstData,
+		pgxConnMstData,
 		timeoutContext,
 		jwtMgr,
 		vld,

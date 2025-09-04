@@ -1,1 +1,0 @@
-down/000007_create_bumd_table.down.sql

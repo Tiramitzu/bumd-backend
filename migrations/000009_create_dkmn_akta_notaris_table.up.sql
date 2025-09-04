@@ -1,0 +1,1 @@
+up/000009_create_dkmn_akta_notaris_table.up.sql

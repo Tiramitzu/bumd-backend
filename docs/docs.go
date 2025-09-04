@@ -146,6 +146,414 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/akta_notaris": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data akta notaris.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Akta Notaris"
+                ],
+                "summary": "get data akta notaris",
+                "operationId": "akta_notaris-index",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pencarian",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.AktaNotarisModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create data akta notaris.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Akta Notaris"
+                ],
+                "summary": "create data akta notaris",
+                "operationId": "akta_notaris-create",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nomor Perda",
+                        "name": "nomor_perda",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Perda",
+                        "name": "tanggal_perda",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Keterangan",
+                        "name": "keterangan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "format": "float64",
+                        "description": "Modal Dasar",
+                        "name": "modal_dasar",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/akta_notaris/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data akta notaris by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Akta Notaris"
+                ],
+                "summary": "get data akta notaris by id",
+                "operationId": "akta_notaris-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id untuk get data akta notaris",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.AktaNotarisModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data akta notaris.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Akta Notaris"
+                ],
+                "summary": "update data akta notaris",
+                "operationId": "akta_notaris-update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nomor Perda",
+                        "name": "nomor_perda",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Perda",
+                        "name": "tanggal_perda",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Keterangan",
+                        "name": "keterangan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "format": "float64",
+                        "description": "Modal Dasar",
+                        "name": "modal_dasar",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id untuk update data akta notaris",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AktaNotarisForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete data akta notaris.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Akta Notaris"
+                ],
+                "summary": "delete data akta notaris",
+                "operationId": "akta_notaris-delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id untuk delete data akta notaris",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bentuk_badan_hukum": {
             "get": {
                 "security": [
@@ -1659,6 +2067,81 @@ const docTemplate = `{
             }
         },
         "/strict/user": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all user.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get all user",
+                "operationId": "user-index",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Role",
+                        "name": "id_role",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -1694,6 +2177,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Id Daerah",
                         "name": "id_daerah",
                         "in": "formData",
@@ -1701,6 +2185,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Id Role",
                         "name": "id_role",
                         "in": "formData",
@@ -1714,9 +2199,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "file",
                         "description": "Logo",
                         "name": "logo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
                         "in": "formData"
                     }
                 ],
@@ -1876,6 +2368,58 @@ const docTemplate = `{
             }
         },
         "/strict/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get user by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get user by id",
+                "operationId": "user-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Id untuk get data user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -1894,6 +2438,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Id untuk update data user",
                         "name": "id",
                         "in": "path",
@@ -1915,6 +2460,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Id Daerah",
                         "name": "id_daerah",
                         "in": "formData",
@@ -1922,6 +2468,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Id Role",
                         "name": "id_role",
                         "in": "formData",
@@ -1935,9 +2482,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "file",
                         "description": "Logo",
                         "name": "logo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int32",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
                         "in": "formData"
                     }
                 ],
@@ -2001,6 +2555,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int32",
                         "description": "Id untuk delete data user",
                         "name": "id",
                         "in": "path",
@@ -2062,6 +2617,35 @@ const docTemplate = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2"
+                }
+            }
+        },
+        "models.AktaNotarisForm": {
+            "type": "object"
+        },
+        "models.AktaNotarisModel": {
+            "type": "object",
+            "properties": {
+                "file": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "keterangan": {
+                    "type": "string"
+                },
+                "modal_dasar": {
+                    "type": "number"
+                },
+                "nomor_perda": {
+                    "type": "string"
+                },
+                "tanggal_perda": {
+                    "type": "string"
                 }
             }
         },
@@ -2275,6 +2859,12 @@ const docTemplate = `{
                 },
                 "nama": {
                     "type": "string"
+                },
+                "nilai": {
+                    "type": "number"
+                },
+                "tampilkan": {
+                    "type": "boolean"
                 }
             }
         },
@@ -2289,13 +2879,62 @@ const docTemplate = `{
                 }
             }
         },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "id_daerah": {
+                    "type": "integer"
+                },
+                "id_role": {
+                    "type": "integer"
+                },
+                "id_user": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.UserDetail": {
             "type": "object",
             "properties": {
+                "nama_bumd": {
+                    "type": "string"
+                },
                 "nama_role": {
                     "type": "string"
                 },
                 "nama_user": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserModel": {
+            "type": "object",
+            "properties": {
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "id_daerah": {
+                    "type": "integer"
+                },
+                "id_role": {
+                    "type": "integer"
+                },
+                "id_user": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "nama": {
+                    "type": "string"
+                },
+                "role": {
                     "type": "string"
                 },
                 "username": {

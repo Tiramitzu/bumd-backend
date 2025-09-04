@@ -1,0 +1,1 @@
+up/000010_create_dkmn_nib_table.up.sql

@@ -1,1 +1,0 @@
-down/000016_create_kinerja_table.down.sql

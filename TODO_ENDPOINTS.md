@@ -71,12 +71,12 @@
 ## 🏢 **CORE BUSINESS ENDPOINTS**
 
 ### 8. **bumd** - BUMD Entities
-- [ ] `GET /api/bumd` - List all BUMD
-- [ ] `GET /api/bumd/:id` - Get BUMD by ID
-- [ ] `POST /api/bumd` - Create new BUMD
-- [ ] `PUT /api/bumd/:id` - Update BUMD
-- [ ] `DELETE /api/bumd/:id` - Delete BUMD (soft delete)
-- [ ] `GET /api/bumd/search` - Search BUMD by criteria
+- [x] `GET /api/bumd` ✅ - List all BUMD
+- [x] `GET /api/bumd/:id` ✅ - Get BUMD by ID
+- [x] `POST /api/bumd` ✅ - Create new BUMD
+- [x] `PUT /api/bumd/:id` ✅ - Update BUMD
+- [x] `DELETE /api/bumd/:id` ✅ - Delete BUMD (soft delete)
+- [x] `GET /api/bumd/search` ✅ - Search BUMD by criteria
 
 ---
 
