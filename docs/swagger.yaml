@@ -175,6 +175,48 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2
         type: string
     type: object
+  keuangan.KeuModalForm:
+    properties:
+      id_kab:
+        type: integer
+      id_prov:
+        type: integer
+      jumlah:
+        type: number
+      keterangan:
+        type: string
+      no_ba:
+        type: string
+      pemegang:
+        type: string
+      tanggal:
+        type: string
+    type: object
+  keuangan.KeuModalModel:
+    properties:
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      id_kab:
+        type: integer
+      id_prov:
+        type: integer
+      jumlah:
+        type: number
+      keterangan:
+        type: string
+      nama_kab:
+        type: string
+      nama_prov:
+        type: string
+      no_ba:
+        type: string
+      pemegang:
+        type: string
+      tanggal:
+        type: string
+    type: object
   models.BentukBadanHukumForm:
     properties:
       deskripsi:
@@ -1081,6 +1123,11 @@ paths:
         name: id_bumd
         required: true
         type: integer
+      - description: Id untuk update data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Nomor Akta notaris
         in: formData
         name: nomor
@@ -1100,11 +1147,6 @@ paths:
         in: formData
         name: file
         type: file
-      - description: Id untuk update data akta notaris
-        in: formData
-        name: id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -1220,6 +1262,223 @@ paths:
       summary: get data akta notaris by id
       tags:
       - Akta Notaris
+  /strict/bumd/{id_bumd}/modal:
+    get:
+      description: get data modal.
+      operationId: modal-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Pencarian
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/keuangan.KeuModalModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data modal
+      tags:
+      - Modal
+    post:
+      consumes:
+      - application/json
+      description: create data modal.
+      operationId: modal-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/keuangan.KeuModalForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data modal
+      tags:
+      - Modal
+  /strict/bumd/{id_bumd}/modal/{id}:
+    delete:
+      description: delete data modal.
+      operationId: modal-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id Modal
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data modal
+      tags:
+      - Modal
+    get:
+      description: get data modal by id.
+      operationId: modal-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id Modal
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/keuangan.KeuModalModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data modal by id
+      tags:
+      - Modal
+    put:
+      consumes:
+      - application/json
+      description: update data modal.
+      operationId: modal-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/keuangan.KeuModalForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data modal
+      tags:
+      - Modal
   /strict/bumd/{id_bumd}/nib:
     get:
       description: get data nib.
@@ -1446,7 +1705,7 @@ paths:
         required: true
         type: integer
       - description: Id NIB
-        in: formData
+        in: path
         name: id
         required: true
         type: integer
@@ -1645,6 +1904,12 @@ paths:
       - description: Id BUMD
         in: path
         name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk update data perda pendirian
+        in: path
+        name: id
+        required: true
         type: integer
       - description: Nomor Perda
         in: formData
@@ -1671,11 +1936,6 @@ paths:
         name: modal_dasar
         required: true
         type: number
-      - description: Id untuk update data perda pendirian
-        in: formData
-        name: id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -2017,7 +2277,7 @@ paths:
         required: true
         type: integer
       - description: Id SIUP
-        in: formData
+        in: path
         name: id
         required: true
         type: integer
@@ -2305,7 +2565,7 @@ paths:
         required: true
         type: integer
       - description: Id TDP
-        in: formData
+        in: path
         name: id
         required: true
         type: integer

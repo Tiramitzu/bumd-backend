@@ -30,7 +30,7 @@ func NewAktaNotarisHandler(
 	rStrict.Get("/", handler.Index)
 	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
-	rStrict.Put("/", handler.Update)
+	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
 }
 
@@ -188,11 +188,11 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@Tags			Akta Notaris
 //	@Accept			multipart/form-data
 //	@Param			id_bumd		path		int		true	"Id BUMD"
+//	@Param			id			path		int		true	"Id untuk update data akta notaris"
 //	@Param			nomor		formData	string	true	"Nomor Akta notaris"
 //	@Param			tanggal		formData	string	true	"Tanggal Akta notaris"
 //	@Param			keterangan	formData	string	true	"Keterangan"
 //	@Param			file		formData	file	false	"File"
-//	@Param			id			formData	int		true	"Id untuk update data akta notaris"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -203,6 +203,10 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@Router			/strict/bumd/{id_bumd}/akta_notaris [put]
 func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
+	}
+	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err
 	}
@@ -230,6 +234,7 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		idBumd,
+		id,
 		payload,
 	)
 	if err != nil {

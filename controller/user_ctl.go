@@ -49,24 +49,11 @@ func (c *UserController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page,
 	}
 
 	var args []interface{}
-	q := `
+	qCount := `
 	SELECT COALESCE(COUNT(*), 0) FROM users WHERE deleted_by = 0
 	`
-	if IdRoleFilter > idRole {
-		q += fmt.Sprintf(` AND users.id_role = $%d`, len(args)+1)
-		args = append(args, IdRoleFilter)
-	}
-	if IdRoleFilter == idRole && idRole != 1 {
-		q += fmt.Sprintf(` AND users.id = $%d`, len(args)+1)
-		args = append(args, idUser)
-	}
-	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&totalCount)
-	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data User: %w", err)
-	}
 
-	args = make([]interface{}, 0)
-	q = `
+	q := `
 	SELECT
 		users.id,
 		users.id_daerah,
@@ -81,13 +68,21 @@ func (c *UserController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page,
 	WHERE users.deleted_by = 0
 	`
 	if IdRoleFilter > idRole {
+		qCount += fmt.Sprintf(` AND users.id_role = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND users.id_role = $%d`, len(args)+1)
 		args = append(args, IdRoleFilter)
 	}
 	if IdRoleFilter == idRole && idRole != 1 {
+		qCount += fmt.Sprintf(` AND users.id = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND users.id = $%d`, len(args)+1)
 		args = append(args, idUser)
 	}
+
+	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
+	if err != nil {
+		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data User: %w", err)
+	}
+
 	q += fmt.Sprintf(` LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 	rows, err := c.pgxConn.Query(fCtx, q, args...)

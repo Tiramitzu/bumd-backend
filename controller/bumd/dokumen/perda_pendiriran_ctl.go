@@ -73,13 +73,13 @@ func (c *PerdaPendirianController) Index(
 		args = append(args, modalDasarMax)
 	}
 
-	q += fmt.Sprintf(`ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
-	args = append(args, limit, offset)
-
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Akta Notaris: %w", err)
 	}
+
+	q += fmt.Sprintf(`ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
@@ -153,7 +153,7 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 	return true, err
 }
 
-func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *dokumen.PerdaPendirianForm) (r bool, err error) {
+func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *dokumen.PerdaPendirianForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
@@ -168,7 +168,7 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 	SET nomor = $1, tanggal = $2, keterangan = $3, file = $4, modal_dasar = $5, updated_by = $6
 	WHERE id = $7 AND id_bumd = $8
 	`
-	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.File, payload.ModalDasar, idUser, payload.ID, idBumd)
+	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.File, payload.ModalDasar, idUser, id, idBumd)
 
 	_, err = c.pgxConn.Exec(fCtx, q, args...)
 	if err != nil {

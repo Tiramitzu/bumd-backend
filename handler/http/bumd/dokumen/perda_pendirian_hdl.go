@@ -30,7 +30,7 @@ func NewPerdaPendirianHandler(
 	rStrict.Get("/", handler.Index)
 	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
-	rStrict.Put("/", handler.Update)
+	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
 }
 
@@ -193,13 +193,13 @@ func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
 //	@ID				perda_pendirian-update
 //	@Tags			Perda Pendirian
 //	@Accept			multipart/form-data
-//	@Param			id_bumd			path		int		false	"Id BUMD"
+//	@Param			id_bumd			path		int		true	"Id BUMD"
+//	@Param			id				path		int		true	"Id untuk update data perda pendirian"
 //	@Param			nomor_perda		formData	string	true	"Nomor Perda"
 //	@Param			tanggal_perda	formData	string	true	"Tanggal Perda"
 //	@Param			keterangan		formData	string	true	"Keterangan"
 //	@Param			file			formData	file	false	"File"
 //	@Param			modal_dasar		formData	float64	true	"Modal Dasar"
-//	@Param			id				formData	int		true	"Id untuk update data perda pendirian"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -210,6 +210,10 @@ func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
 //	@Router			/strict/bumd/{id_bumd}/perda_pendirian [put]
 func (h *PerdaPendirianHandler) Update(c *fiber.Ctx) error {
 	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
+	}
+	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err
 	}
@@ -236,6 +240,7 @@ func (h *PerdaPendirianHandler) Update(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		idBumd,
+		id,
 		payload,
 	)
 	if err != nil {

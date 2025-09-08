@@ -16,7 +16,6 @@ type SiupModel struct {
 }
 
 type SiupForm struct {
-	ID              *int64                `json:"id" xml:"id"`
 	Nomor           string                `json:"nomor" xml:"nomor"`
 	InstansiPemberi string                `json:"instansi_pemberi" xml:"instansi_pemberi"`
 	Tanggal         string                `json:"tanggal" xml:"tanggal"`

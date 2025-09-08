@@ -183,7 +183,7 @@ func (h *SiupHandler) Create(c *fiber.Ctx) error {
 //	@Tags			Siup
 //	@Accept			multipart/form-data
 //	@Param			id_bumd				path		int					true	"Id BUMD"
-//	@Param			id					formData	int					true	"Id SIUP"
+//	@Param			id					path		int					true	"Id SIUP"
 //	@Param			nomor				formData	string				true	"Nomor"
 //	@Param			instansi_pemberi	formData	string				true	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				true	"Tanggal"
@@ -199,6 +199,10 @@ func (h *SiupHandler) Create(c *fiber.Ctx) error {
 //	@Router			/strict/bumd/{id_bumd}/siup/{id} [put]
 func (h *SiupHandler) Update(c *fiber.Ctx) error {
 	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
+	}
+	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err
 	}
@@ -221,7 +225,7 @@ func (h *SiupHandler) Update(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, payload)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, payload)
 	if err != nil {
 		return err
 	}
