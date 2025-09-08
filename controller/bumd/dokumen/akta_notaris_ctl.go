@@ -63,13 +63,13 @@ func (c *AktaNotarisController) Index(
 		args = append(args, "%"+search+"%")
 	}
 
-	q += fmt.Sprintf(`ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
-	args = append(args, limit, offset)
-
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Akta Notaris: %w", err)
 	}
+
+	q += fmt.Sprintf(`ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
@@ -143,7 +143,7 @@ func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	return true, err
 }
 
-func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *dokumen.AktaNotarisForm) (r bool, err error) {
+func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *dokumen.AktaNotarisForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
@@ -158,7 +158,7 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	SET nomor = $1, notaris = $2, tanggal = $3, keterangan = $4, file = $5, updated_by = $6
 	WHERE id = $7 AND id_bumd = $8
 	`
-	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, payload.File, idUser, payload.ID, idBumd)
+	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, payload.File, idUser, id, idBumd)
 
 	_, err = c.pgxConn.Exec(fCtx, q, args...)
 	if err != nil {

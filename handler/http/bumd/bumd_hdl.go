@@ -3,7 +3,9 @@ package bumd
 import (
 	ctl "microdata/kemendagri/bumd/controller/bumd"
 	ctl_dkmn "microdata/kemendagri/bumd/controller/bumd/dokumen"
+	ctl_keu "microdata/kemendagri/bumd/controller/bumd/keuangan"
 	"microdata/kemendagri/bumd/handler/http/bumd/dokumen"
+	"microdata/kemendagri/bumd/handler/http/bumd/keuangan"
 	"microdata/kemendagri/bumd/models/bumd"
 	"strconv"
 
@@ -48,6 +50,27 @@ func NewBumdHandler(
 		rData,
 		validator,
 		ctl_dkmn.NewAktaNotarisController(pgxConn),
+	)
+	dokumen.NewSiupHandler(
+		rData,
+		validator,
+		ctl_dkmn.NewSiupController(pgxConn),
+	)
+	dokumen.NewNibHandler(
+		rData,
+		validator,
+		ctl_dkmn.NewNibController(pgxConn),
+	)
+	dokumen.NewTdpHandler(
+		rData,
+		validator,
+		ctl_dkmn.NewTdpController(pgxConn),
+	)
+
+	keuangan.NewModalHandler(
+		rData,
+		validator,
+		ctl_keu.NewModalController(pgxConn),
 	)
 }
 

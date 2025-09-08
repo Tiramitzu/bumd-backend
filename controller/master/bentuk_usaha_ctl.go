@@ -25,27 +25,24 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 	offset := limit * (page - 1)
 
 	var args []interface{}
-	q := `
+	qCount := `
 	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE deleted_by = 0
 	`
+
+	q := `
+	SELECT id, nama, deskripsi FROM mst_bentuk_usaha WHERE deleted_by = 0
+	`
 	if nama != "" {
+		qCount += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
 
-	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&totalCount)
+	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Bentuk Usaha: %w", err)
 	}
 
-	args = make([]interface{}, 0)
-	q = `
-	SELECT id, nama, deskripsi FROM mst_bentuk_usaha WHERE deleted_by = 0
-	`
-	if nama != "" {
-		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
-		args = append(args, "%"+nama+"%")
-	}
 	q += fmt.Sprintf(`
 	ORDER BY id DESC
 	LIMIT $%d OFFSET $%d

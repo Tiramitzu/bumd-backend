@@ -13,7 +13,6 @@ type AktaNotarisModel struct {
 }
 
 type AktaNotarisForm struct {
-	ID         *int64                `json:"id" xml:"id"`
 	Nomor      string                `json:"nomor" xml:"nomor"`
 	Notaris    string                `json:"notaris" xml:"notaris"`
 	Tanggal    string                `json:"tanggal" xml:"tanggal"`

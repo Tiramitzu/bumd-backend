@@ -1054,6 +1054,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "Id untuk update data akta notaris",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "type": "string",
                         "description": "Nomor Akta notaris",
                         "name": "nomor",
@@ -1079,13 +1086,6 @@ const docTemplate = `{
                         "description": "File",
                         "name": "file",
                         "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Id untuk update data akta notaris",
-                        "name": "id",
-                        "in": "formData",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1341,6 +1341,339 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/utils.RequestError"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/modal": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data modal.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Modal"
+                ],
+                "summary": "get data modal",
+                "operationId": "modal-index",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pencarian",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.KeuModalModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create data modal.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Modal"
+                ],
+                "summary": "create data modal",
+                "operationId": "modal-create",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.KeuModalForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/modal/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data modal by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Modal"
+                ],
+                "summary": "get data modal by id",
+                "operationId": "modal-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id Modal",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.KeuModalModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data modal.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Modal"
+                ],
+                "summary": "update data modal",
+                "operationId": "modal-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.KeuModalForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete data modal.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Modal"
+                ],
+                "summary": "delete data modal",
+                "operationId": "modal-delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id Modal",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
                         }
                     },
                     "500": {
@@ -1638,7 +1971,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id NIB",
                         "name": "id",
-                        "in": "formData",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -1904,7 +2237,15 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id BUMD",
                         "name": "id_bumd",
-                        "in": "path"
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id untuk update data perda pendirian",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     },
                     {
                         "type": "string",
@@ -1938,13 +2279,6 @@ const docTemplate = `{
                         "format": "float64",
                         "description": "Modal Dasar",
                         "name": "modal_dasar",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Id untuk update data perda pendirian",
-                        "name": "id",
                         "in": "formData",
                         "required": true
                     }
@@ -2500,7 +2834,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id SIUP",
                         "name": "id",
-                        "in": "formData",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -2936,7 +3270,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id TDP",
                         "name": "id",
-                        "in": "formData",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -4601,6 +4935,70 @@ const docTemplate = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2"
+                }
+            }
+        },
+        "keuangan.KeuModalForm": {
+            "type": "object",
+            "properties": {
+                "id_kab": {
+                    "type": "integer"
+                },
+                "id_prov": {
+                    "type": "integer"
+                },
+                "jumlah": {
+                    "type": "number"
+                },
+                "keterangan": {
+                    "type": "string"
+                },
+                "no_ba": {
+                    "type": "string"
+                },
+                "pemegang": {
+                    "type": "string"
+                },
+                "tanggal": {
+                    "type": "string"
+                }
+            }
+        },
+        "keuangan.KeuModalModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "id_kab": {
+                    "type": "integer"
+                },
+                "id_prov": {
+                    "type": "integer"
+                },
+                "jumlah": {
+                    "type": "number"
+                },
+                "keterangan": {
+                    "type": "string"
+                },
+                "nama_kab": {
+                    "type": "string"
+                },
+                "nama_prov": {
+                    "type": "string"
+                },
+                "no_ba": {
+                    "type": "string"
+                },
+                "pemegang": {
+                    "type": "string"
+                },
+                "tanggal": {
+                    "type": "string"
                 }
             }
         },

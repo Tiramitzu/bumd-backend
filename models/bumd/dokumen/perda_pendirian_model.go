@@ -13,7 +13,6 @@ type PerdaPendirianModel struct {
 }
 
 type PerdaPendirianForm struct {
-	ID         *int64                `json:"id" xml:"id"`
 	Nomor      string                `json:"nomor" xml:"nomor"`
 	Tanggal    string                `json:"tanggal" xml:"tanggal"`
 	Keterangan string                `json:"keterangan" xml:"keterangan"`

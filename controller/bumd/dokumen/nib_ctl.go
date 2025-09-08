@@ -53,20 +53,22 @@ func (c *NibController) Index(
 	args := make([]interface{}, 0)
 	args = append(args, idBumd)
 	if search != "" {
+		qCount += fmt.Sprintf(` AND nomor ILIKE $%d OR instansi_pemberi ILIKE $%d OR tanggal ILIKE $%d OR klasifikasi ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
 		q += fmt.Sprintf(` AND nomor ILIKE $%d OR instansi_pemberi ILIKE $%d OR tanggal ILIKE $%d OR klasifikasi ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
 		args = append(args, "%"+search+"%")
 	}
 	if isSeumurHidup != 0 {
+		qCount += ` AND masa_berlaku IS NULL`
 		q += ` AND masa_berlaku IS NULL`
 	}
-
-	q += fmt.Sprintf(` ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
-	args = append(args, limit, offset)
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data NIB: %w", err)
 	}
+
+	q += fmt.Sprintf(` ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
@@ -143,7 +145,7 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	return true, err
 }
 
-func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *dokumen.NibForm) (r bool, err error) {
+func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *dokumen.NibForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
@@ -158,7 +160,7 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, file = $7, updated_by = $8
 	WHERE id = $9 AND id_bumd = $10
 	`
-	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, payload.File, idUser, payload.ID, idBumd)
+	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, payload.File, idUser, id, idBumd)
 	_, err = c.pgxConn.Exec(fCtx, q, args...)
 	if err != nil {
 		return false, err

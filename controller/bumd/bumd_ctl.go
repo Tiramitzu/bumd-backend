@@ -34,32 +34,11 @@ func (c *BumdController) Index(
 	offset := limit * (page - 1)
 
 	var args []interface{}
-	q := `
+	qCount := `
 	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE deleted_by = 0
 	`
-	if idDaerah > 0 {
-		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
-		args = append(args, idDaerah)
-	}
-	if nama != "" {
-		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
-		args = append(args, "%"+nama+"%")
-	}
-	if penerapanSPI {
-		q += fmt.Sprintf(` AND penerapan_spi = $%d`, len(args)+1)
-		args = append(args, penerapanSPI)
-	}
-	if indukPerusahaan != 0 {
-		q += fmt.Sprintf(` AND id_induk_perusahaan = $%d`, len(args)+1)
-		args = append(args, indukPerusahaan)
-	}
-	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&totalCount)
-	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data BUMD: %w", err)
-	}
 
-	args = make([]interface{}, 0)
-	q = `
+	q := `
 	WITH t_induk_perusahaan AS (
 		SELECT id, nama as nama_induk_perusahaan
 		FROM bumd
@@ -90,21 +69,31 @@ func (c *BumdController) Index(
 	WHERE b.deleted_by = 0
 	`
 	if idDaerah > 0 {
+		qCount += fmt.Sprintf(` ADN b.id_daerah = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
 		args = append(args, idDaerah)
 	}
 	if nama != "" {
+		qCount += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
 	if penerapanSPI {
+		qCount += fmt.Sprintf(` AND b.penerapan_spi = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.penerapan_spi = $%d`, len(args)+1)
 		args = append(args, penerapanSPI)
 	}
 	if indukPerusahaan != 0 {
+		qCount += fmt.Sprintf(` AND b.id_induk_perusahaan = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.id_induk_perusahaan = $%d`, len(args)+1)
 		args = append(args, indukPerusahaan)
 	}
+
+	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
+	if err != nil {
+		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data BUMD: %w", err)
+	}
+
 	q += fmt.Sprintf(`
 	ORDER BY id DESC
 	LIMIT $%d OFFSET $%d
@@ -117,7 +106,6 @@ func (c *BumdController) Index(
 	}
 
 	defer rows.Close()
-
 	for rows.Next() {
 		var m bumd.BumdModel
 		err = rows.Scan(
