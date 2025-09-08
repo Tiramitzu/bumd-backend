@@ -24,11 +24,11 @@ FOREIGN KEY (id_bumd) REFERENCES bumd(id);
 CREATE INDEX idx_dkmn_perda_pendirian_id_bumd 
     ON dkmn_perda_pendirian(id_bumd);
 
-CREATE INDEX idx_dkmn_perda_pendirian_nomor_perda 
-    ON dkmn_perda_pendirian(nomor_perda);
+CREATE INDEX idx_dkmn_perda_pendirian_nomor
+    ON dkmn_perda_pendirian(nomor);
 
-CREATE INDEX idx_dkmn_perda_pendirian_tanggal_perda 
-    ON dkmn_perda_pendirian(tanggal_perda);
+CREATE INDEX idx_dkmn_perda_pendirian_tanggal 
+    ON dkmn_perda_pendirian(tanggal);
 
 CREATE INDEX idx_dkmn_perda_pendirian_deleted_at 
     ON dkmn_perda_pendirian(deleted_at);

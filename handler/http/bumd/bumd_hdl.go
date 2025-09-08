@@ -1,28 +1,34 @@
-package http
+package bumd
 
 import (
-	"microdata/kemendagri/bumd/controller"
-	"microdata/kemendagri/bumd/models"
+	ctl "microdata/kemendagri/bumd/controller/bumd"
+	ctl_dkmn "microdata/kemendagri/bumd/controller/bumd/dokumen"
+	"microdata/kemendagri/bumd/handler/http/bumd/dokumen"
+	"microdata/kemendagri/bumd/models/bumd"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type BumdHandler struct {
-	Controller *controller.BumdController
+	Controller *ctl.BumdController
 	Validate   *validator.Validate
+	pgxConn    *pgxpool.Pool
 }
 
 func NewBumdHandler(
 	r fiber.Router,
 	validator *validator.Validate,
-	controller *controller.BumdController,
+	controller *ctl.BumdController,
+	pgxConn *pgxpool.Pool,
 ) {
 	handler := &BumdHandler{
 		Controller: controller,
 		Validate:   validator,
+		pgxConn:    pgxConn,
 	}
 
 	rStrict := r.Group("bumd")
@@ -31,6 +37,18 @@ func NewBumdHandler(
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
+
+	rData := rStrict.Group("/:id_bumd")
+	dokumen.NewPerdaPendirianHandler(
+		rData,
+		validator,
+		ctl_dkmn.NewPerdaPendirianController(pgxConn),
+	)
+	dokumen.NewAktaNotarisHandler(
+		rData,
+		validator,
+		ctl_dkmn.NewAktaNotarisController(pgxConn),
+	)
 }
 
 // Index func for get data bumd.
@@ -45,7 +63,7 @@ func NewBumdHandler(
 //	@Param			induk_perusahaan	query		int					false	"Induk Perusahaan"
 //	@Param			page				query		int					false	"Halaman yang ditampilkan"
 //	@Param			limit				query		int					false	"Jumlah data per halaman, maksimal 5 data per halaman"
-//	@success		200					{object}	models.BumdModel	"Success"
+//	@success		200					{object}	bumd.BumdModel		"Success"
 //	@Failure		400					{object}	utils.RequestError	"Bad request"
 //	@Failure		404					{object}	utils.RequestError	"Data not found"
 //	@Failure		422					{array}		utils.RequestError	"Data validation failed"
@@ -99,7 +117,7 @@ func (h *BumdHandler) Index(c *fiber.Ctx) error {
 //	@Tags			BUMD
 //	@Produce		json
 //	@Param			id	path		int					true	"Id untuk get data bumd"
-//	@success		200	{object}	models.BumdModel	"Success"
+//	@success		200	{object}	bumd.BumdModel		"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
 //	@Failure		404	{object}	utils.RequestError	"Data not found"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
@@ -124,7 +142,7 @@ func (h *BumdHandler) View(c *fiber.Ctx) error {
 //	@ID				bumd-create
 //	@Tags			BUMD
 //	@Accept			json
-//	@Param			payload	body	models.BumdForm	true	"Create payload"
+//	@Param			payload	body	bumd.BumdForm	true	"Create payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -134,7 +152,7 @@ func (h *BumdHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd [post]
 func (h *BumdHandler) Create(c *fiber.Ctx) error {
-	payload := new(models.BumdForm)
+	payload := new(bumd.BumdForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
 	}
@@ -163,7 +181,7 @@ func (h *BumdHandler) Create(c *fiber.Ctx) error {
 //	@Tags			BUMD
 //	@Accept			json
 //	@Param			id		path	int				true	"Id untuk update data bumd"
-//	@Param			payload	body	models.BumdForm	true	"Update payload"
+//	@Param			payload	body	bumd.BumdForm	true	"Update payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -178,7 +196,7 @@ func (h *BumdHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	payload := new(models.BumdForm)
+	payload := new(bumd.BumdForm)
 
 	if err := c.BodyParser(payload); err != nil {
 		return err

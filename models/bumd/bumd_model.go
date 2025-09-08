@@ -1,4 +1,4 @@
-package models
+package bumd
 
 type BumdModel struct {
 	ID                  int64  `json:"id" xml:"id"`

@@ -1,65 +1,5 @@
 definitions:
-  http_util.JSONResultLogin:
-    properties:
-      refresh_token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYxNjgyMjksImlk._aYI7pV2c9SU9VOp3RY_mxtFenYFQuKPJtVfk
-        type: string
-      token:
-        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2
-        type: string
-    type: object
-  models.AktaNotarisForm:
-    type: object
-  models.AktaNotarisModel:
-    properties:
-      file:
-        type: string
-      id:
-        type: integer
-      id_bumd:
-        type: integer
-      keterangan:
-        type: string
-      modal_dasar:
-        type: number
-      nomor_perda:
-        type: string
-      tanggal_perda:
-        type: string
-    type: object
-  models.BentukBadanHukumForm:
-    properties:
-      deskripsi:
-        type: string
-      nama:
-        type: string
-    type: object
-  models.BentukBadanHukumModel:
-    properties:
-      deskripsi:
-        type: string
-      id:
-        type: integer
-      nama:
-        type: string
-    type: object
-  models.BentukUsahaForm:
-    properties:
-      deskripsi:
-        type: string
-      nama:
-        type: string
-    type: object
-  models.BentukUsahaModel:
-    properties:
-      deskripsi:
-        type: string
-      id:
-        type: integer
-      nama:
-        type: string
-    type: object
-  models.BumdForm:
+  bumd.BumdForm:
     properties:
       alamat:
         type: string
@@ -86,7 +26,7 @@ definitions:
       website:
         type: string
     type: object
-  models.BumdModel:
+  bumd.BumdModel:
     properties:
       alamat:
         type: string
@@ -121,6 +61,150 @@ definitions:
       penerapan_spi:
         type: boolean
       website:
+        type: string
+    type: object
+  dokumen.AktaNotarisModel:
+    properties:
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      keterangan:
+        type: string
+      nomor:
+        type: string
+      notaris:
+        type: string
+      tanggal:
+        type: string
+    type: object
+  dokumen.NibModel:
+    properties:
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      instansi_pemberi:
+        type: string
+      is_seumur_hidup:
+        type: integer
+      klasifikasi:
+        type: string
+      kualifikasi:
+        type: integer
+      masa_berlaku:
+        type: string
+      nomor:
+        type: string
+      tanggal:
+        type: string
+    type: object
+  dokumen.PerdaPendirianModel:
+    properties:
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      keterangan:
+        type: string
+      modal_dasar:
+        type: number
+      nomor:
+        type: string
+      tanggal:
+        type: string
+    type: object
+  dokumen.SiupModel:
+    properties:
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      instansi_pemberi:
+        type: string
+      is_seumur_hidup:
+        type: integer
+      klasifikasi:
+        type: string
+      kualifikasi:
+        type: integer
+      masa_berlaku:
+        type: string
+      nomor:
+        type: string
+      tanggal:
+        type: string
+    type: object
+  dokumen.TdpModel:
+    properties:
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      instansi_pemberi:
+        type: string
+      is_seumur_hidup:
+        type: integer
+      klasifikasi:
+        type: string
+      kualifikasi:
+        type: integer
+      masa_berlaku:
+        type: string
+      nomor:
+        type: string
+      tanggal:
+        type: string
+    type: object
+  http_util.JSONResultLogin:
+    properties:
+      refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYxNjgyMjksImlk._aYI7pV2c9SU9VOp3RY_mxtFenYFQuKPJtVfk
+        type: string
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2
+        type: string
+    type: object
+  models.BentukBadanHukumForm:
+    properties:
+      deskripsi:
+        type: string
+      nama:
+        type: string
+    type: object
+  models.BentukBadanHukumModel:
+    properties:
+      deskripsi:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+    type: object
+  models.BentukUsahaForm:
+    properties:
+      deskripsi:
+        type: string
+      nama:
+        type: string
+    type: object
+  models.BentukUsahaModel:
+    properties:
+      deskripsi:
+        type: string
+      id:
+        type: integer
+      nama:
         type: string
     type: object
   models.JenisDokumenForm:
@@ -188,6 +272,12 @@ definitions:
         type: integer
       id_user:
         type: integer
+      kode_ddn:
+        type: string
+      kode_provinsi:
+        type: string
+      sub_domain_daerah:
+        type: string
     type: object
   models.UserDetail:
     properties:
@@ -344,276 +434,6 @@ paths:
       summary: index
       tags:
       - Site
-  /strict/akta_notaris:
-    get:
-      description: get data akta notaris.
-      operationId: akta_notaris-index
-      parameters:
-      - description: Id BUMD
-        in: query
-        name: id_bumd
-        required: true
-        type: integer
-      - description: Halaman yang ditampilkan
-        in: query
-        name: page
-        type: integer
-      - description: Jumlah data per halaman, maksimal 5 data per halaman
-        in: query
-        name: limit
-        type: integer
-      - description: Pencarian
-        in: query
-        name: search
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/models.AktaNotarisModel'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "422":
-          description: Data validation failed
-          schema:
-            items:
-              $ref: '#/definitions/utils.RequestError'
-            type: array
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: get data akta notaris
-      tags:
-      - Akta Notaris
-    post:
-      consumes:
-      - multipart/form-data
-      description: create data akta notaris.
-      operationId: akta_notaris-create
-      parameters:
-      - description: Nomor Perda
-        in: formData
-        name: nomor_perda
-        required: true
-        type: string
-      - description: Tanggal Perda
-        in: formData
-        name: tanggal_perda
-        required: true
-        type: string
-      - description: Keterangan
-        in: formData
-        name: keterangan
-        required: true
-        type: string
-      - description: File
-        in: formData
-        name: file
-        type: string
-      - description: Modal Dasar
-        format: float64
-        in: formData
-        name: modal_dasar
-        required: true
-        type: number
-      - description: Id BUMD
-        in: formData
-        name: id_bumd
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: boolean
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "422":
-          description: Data validation failed
-          schema:
-            items:
-              $ref: '#/definitions/utils.RequestError'
-            type: array
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: create data akta notaris
-      tags:
-      - Akta Notaris
-  /strict/akta_notaris/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: delete data akta notaris.
-      operationId: akta_notaris-delete
-      parameters:
-      - description: Id untuk delete data akta notaris
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: boolean
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "422":
-          description: Data validation failed
-          schema:
-            items:
-              $ref: '#/definitions/utils.RequestError'
-            type: array
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: delete data akta notaris
-      tags:
-      - Akta Notaris
-    get:
-      description: get data akta notaris by id.
-      operationId: akta_notaris-view
-      parameters:
-      - description: Id untuk get data akta notaris
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/models.AktaNotarisModel'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: get data akta notaris by id
-      tags:
-      - Akta Notaris
-    put:
-      consumes:
-      - multipart/form-data
-      description: update data akta notaris.
-      operationId: akta_notaris-update
-      parameters:
-      - description: Nomor Perda
-        in: formData
-        name: nomor_perda
-        required: true
-        type: string
-      - description: Tanggal Perda
-        in: formData
-        name: tanggal_perda
-        required: true
-        type: string
-      - description: Keterangan
-        in: formData
-        name: keterangan
-        required: true
-        type: string
-      - description: File
-        in: formData
-        name: file
-        type: string
-      - description: Modal Dasar
-        format: float64
-        in: formData
-        name: modal_dasar
-        required: true
-        type: number
-      - description: Id BUMD
-        in: formData
-        name: id_bumd
-        required: true
-        type: integer
-      - description: Id untuk update data akta notaris
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update payload
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/models.AktaNotarisForm'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: boolean
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "422":
-          description: Data validation failed
-          schema:
-            items:
-              $ref: '#/definitions/utils.RequestError'
-            type: array
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: update data akta notaris
-      tags:
-      - Akta Notaris
   /strict/bentuk_badan_hukum:
     get:
       description: get data bentuk badan hukum.
@@ -1067,7 +887,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/models.BumdModel'
+            $ref: '#/definitions/bumd.BumdModel'
         "400":
           description: Bad request
           schema:
@@ -1102,7 +922,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.BumdForm'
+          $ref: '#/definitions/bumd.BumdForm'
       produces:
       - application/json
       responses:
@@ -1133,6 +953,1420 @@ paths:
       summary: create data bumd
       tags:
       - BUMD
+  /strict/bumd/{id_bumd}/akta_notaris:
+    get:
+      description: get data akta notaris.
+      operationId: akta_notaris-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Pencarian
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.AktaNotarisModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data akta notaris
+      tags:
+      - Akta Notaris
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data akta notaris.
+      operationId: akta_notaris-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nomor Akta notaris
+        in: formData
+        name: nomor
+        required: true
+        type: string
+      - description: Notaris
+        in: formData
+        name: notaris
+        required: true
+        type: string
+      - description: Tanggal Akta notaris
+        in: formData
+        name: tanggal
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data akta notaris
+      tags:
+      - Akta Notaris
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data akta notaris.
+      operationId: akta_notaris-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nomor Akta notaris
+        in: formData
+        name: nomor
+        required: true
+        type: string
+      - description: Tanggal Akta notaris
+        in: formData
+        name: tanggal
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      - description: Id untuk update data akta notaris
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data akta notaris
+      tags:
+      - Akta Notaris
+  /strict/bumd/{id_bumd}/akta_notaris/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data akta notaris.
+      operationId: akta_notaris-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk delete data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data akta notaris
+      tags:
+      - Akta Notaris
+    get:
+      description: get data akta notaris by id.
+      operationId: akta_notaris-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk get data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.AktaNotarisModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data akta notaris by id
+      tags:
+      - Akta Notaris
+  /strict/bumd/{id_bumd}/nib:
+    get:
+      description: get data nib.
+      operationId: nib-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Kualifikasi, 1 = Kecil, 2 = Non Kecil
+        in: query
+        name: kualifikasi
+        type: integer
+      - description: Is Seumur Hidup
+        in: query
+        name: is_seumur_hidup
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/dokumen.NibModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data nib
+      tags:
+      - Nib
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data nib.
+      operationId: nib-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nomor
+        in: formData
+        name: nomor
+        type: string
+      - description: Instansi Pemberi
+        in: formData
+        name: instansi_pemberi
+        type: string
+      - description: Tanggal
+        in: formData
+        name: tanggal
+        type: string
+      - description: Klasifikasi
+        in: formData
+        name: klasifikasi
+        type: string
+      - description: Kualifikasi
+        in: formData
+        name: kualifikasi
+        type: integer
+      - description: Masa Berlaku
+        in: formData
+        name: masa_berlaku
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data nib
+      tags:
+      - Nib
+  /strict/bumd/{id_bumd}/nib/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data nib.
+      operationId: nib-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id NIB
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data nib
+      tags:
+      - Nib
+    get:
+      description: get data nib.
+      operationId: nib-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id NIB
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.NibModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data nib
+      tags:
+      - Nib
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data nib.
+      operationId: nib-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id NIB
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: Nomor
+        in: formData
+        name: nomor
+        required: true
+        type: string
+      - description: Instansi Pemberi
+        in: formData
+        name: instansi_pemberi
+        required: true
+        type: string
+      - description: Tanggal
+        in: formData
+        name: tanggal
+        required: true
+        type: string
+      - description: Klasifikasi
+        in: formData
+        name: klasifikasi
+        required: true
+        type: string
+      - description: Kualifikasi
+        in: formData
+        name: kualifikasi
+        required: true
+        type: integer
+      - description: Masa Berlaku
+        in: formData
+        name: masa_berlaku
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data nib
+      tags:
+      - Nib
+  /strict/bumd/{id_bumd}/perda_pendirian:
+    get:
+      description: get data perda pendirian.
+      operationId: perda_pendirian-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Pencarian
+        in: query
+        name: search
+        type: string
+      - description: Modal Dasar Min
+        format: float64
+        in: query
+        name: modal_dasar_min
+        type: number
+      - description: Modal Dasar Max
+        format: float64
+        in: query
+        name: modal_dasar_max
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.PerdaPendirianModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data perda pendirian
+      tags:
+      - Perda Pendirian
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data perda pendirian.
+      operationId: perda_pendirian-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nomor Perda
+        in: formData
+        name: nomor_perda
+        required: true
+        type: string
+      - description: Tanggal Perda
+        in: formData
+        name: tanggal_perda
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      - description: Modal Dasar
+        format: float64
+        in: formData
+        name: modal_dasar
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data perda pendirian
+      tags:
+      - Perda Pendirian
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data perda pendirian.
+      operationId: perda_pendirian-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        type: integer
+      - description: Nomor Perda
+        in: formData
+        name: nomor_perda
+        required: true
+        type: string
+      - description: Tanggal Perda
+        in: formData
+        name: tanggal_perda
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      - description: Modal Dasar
+        format: float64
+        in: formData
+        name: modal_dasar
+        required: true
+        type: number
+      - description: Id untuk update data perda pendirian
+        in: formData
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data perda pendirian
+      tags:
+      - Perda Pendirian
+  /strict/bumd/{id_bumd}/perda_pendirian/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data perda pendirian.
+      operationId: perda_pendirian-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk delete data perda pendirian
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data perda pendirian
+      tags:
+      - Perda Pendirian
+    get:
+      description: get data perda pendirian by id.
+      operationId: perda_pendirian-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk get data perda pendirian
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.PerdaPendirianModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data perda pendirian by id
+      tags:
+      - Perda Pendirian
+  /strict/bumd/{id_bumd}/siup:
+    get:
+      description: get data siup.
+      operationId: siup-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Kualifikasi, 1 = Kecil, 2 = Non Kecil
+        in: query
+        name: kualifikasi
+        type: integer
+      - description: Is Seumur Hidup
+        in: query
+        name: is_seumur_hidup
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/dokumen.SiupModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data siup
+      tags:
+      - Siup
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data siup.
+      operationId: siup-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nomor
+        in: formData
+        name: nomor
+        type: string
+      - description: Instansi Pemberi
+        in: formData
+        name: instansi_pemberi
+        type: string
+      - description: Tanggal
+        in: formData
+        name: tanggal
+        type: string
+      - description: Klasifikasi
+        in: formData
+        name: klasifikasi
+        type: string
+      - description: Kualifikasi
+        in: formData
+        name: kualifikasi
+        type: integer
+      - description: Masa Berlaku
+        in: formData
+        name: masa_berlaku
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data siup
+      tags:
+      - Siup
+  /strict/bumd/{id_bumd}/siup/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data siup.
+      operationId: siup-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id SIUP
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data siup
+      tags:
+      - Siup
+    get:
+      description: get data siup.
+      operationId: siup-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id SIUP
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.SiupModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data siup
+      tags:
+      - Siup
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data siup.
+      operationId: siup-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id SIUP
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: Nomor
+        in: formData
+        name: nomor
+        required: true
+        type: string
+      - description: Instansi Pemberi
+        in: formData
+        name: instansi_pemberi
+        required: true
+        type: string
+      - description: Tanggal
+        in: formData
+        name: tanggal
+        required: true
+        type: string
+      - description: Klasifikasi
+        in: formData
+        name: klasifikasi
+        required: true
+        type: string
+      - description: Kualifikasi
+        in: formData
+        name: kualifikasi
+        required: true
+        type: integer
+      - description: Masa Berlaku
+        in: formData
+        name: masa_berlaku
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data siup
+      tags:
+      - Siup
+  /strict/bumd/{id_bumd}/tdp:
+    get:
+      description: get data tdp.
+      operationId: tdp-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Kualifikasi, 1 = Kecil, 2 = Non Kecil
+        in: query
+        name: kualifikasi
+        type: integer
+      - description: Is Seumur Hidup
+        in: query
+        name: is_seumur_hidup
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/dokumen.TdpModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data tdp
+      tags:
+      - Tdp
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data tdp.
+      operationId: tdp-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nomor
+        in: formData
+        name: nomor
+        type: string
+      - description: Instansi Pemberi
+        in: formData
+        name: instansi_pemberi
+        type: string
+      - description: Tanggal
+        in: formData
+        name: tanggal
+        type: string
+      - description: Klasifikasi
+        in: formData
+        name: klasifikasi
+        type: string
+      - description: Kualifikasi
+        in: formData
+        name: kualifikasi
+        type: integer
+      - description: Masa Berlaku
+        in: formData
+        name: masa_berlaku
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data tdp
+      tags:
+      - Tdp
+  /strict/bumd/{id_bumd}/tdp/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data tdp.
+      operationId: tdp-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id TDP
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data tdp
+      tags:
+      - Tdp
+    get:
+      description: get data tdp.
+      operationId: tdp-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id TDP
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/dokumen.TdpModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data tdp
+      tags:
+      - Tdp
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data tdp.
+      operationId: tdp-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id TDP
+        in: formData
+        name: id
+        required: true
+        type: integer
+      - description: Nomor
+        in: formData
+        name: nomor
+        required: true
+        type: string
+      - description: Instansi Pemberi
+        in: formData
+        name: instansi_pemberi
+        required: true
+        type: string
+      - description: Tanggal
+        in: formData
+        name: tanggal
+        required: true
+        type: string
+      - description: Klasifikasi
+        in: formData
+        name: klasifikasi
+        required: true
+        type: string
+      - description: Kualifikasi
+        in: formData
+        name: kualifikasi
+        required: true
+        type: integer
+      - description: Masa Berlaku
+        in: formData
+        name: masa_berlaku
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data tdp
+      tags:
+      - Tdp
   /strict/bumd/{id}:
     delete:
       consumes:
@@ -1190,7 +2424,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/models.BumdModel'
+            $ref: '#/definitions/bumd.BumdModel'
         "400":
           description: Bad request
           schema:
@@ -1224,7 +2458,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/models.BumdForm'
+          $ref: '#/definitions/bumd.BumdForm'
       produces:
       - application/json
       responses:
