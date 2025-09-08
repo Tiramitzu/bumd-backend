@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"log"
 	"microdata/kemendagri/bumd/controller"
+	controller_bumd "microdata/kemendagri/bumd/controller/bumd"
 	controller_mst "microdata/kemendagri/bumd/controller/master"
 	"microdata/kemendagri/bumd/handler/http"
+	"microdata/kemendagri/bumd/handler/http/bumd"
 	"microdata/kemendagri/bumd/handler/http/configs"
 	"microdata/kemendagri/bumd/handler/http/http_util"
 	http_master "microdata/kemendagri/bumd/handler/http/master"
@@ -357,10 +359,11 @@ func main() {
 	)
 
 	// bumd_handler
-	http.NewBumdHandler(
+	bumd.NewBumdHandler(
 		rStrict,
 		vld,
-		controller.NewBumdController(pgxConn),
+		controller_bumd.NewBumdController(pgxConn),
+		pgxConn,
 	)
 
 	// master

@@ -1,8 +1,8 @@
-package http
+package dokumen
 
 import (
-	"microdata/kemendagri/bumd/controller"
-	"microdata/kemendagri/bumd/models"
+	ctl "microdata/kemendagri/bumd/controller/bumd/dokumen"
+	"microdata/kemendagri/bumd/models/bumd/dokumen"
 	"microdata/kemendagri/bumd/utils"
 	"strconv"
 
@@ -12,14 +12,14 @@ import (
 )
 
 type AktaNotarisHandler struct {
-	Controller *controller.AktaNotarisController
+	Controller *ctl.AktaNotarisController
 	Validate   *validator.Validate
 }
 
 func NewAktaNotarisHandler(
 	r fiber.Router,
 	validator *validator.Validate,
-	controller *controller.AktaNotarisController,
+	controller *ctl.AktaNotarisController,
 ) {
 	handler := &AktaNotarisHandler{
 		Controller: controller,
@@ -30,7 +30,7 @@ func NewAktaNotarisHandler(
 	rStrict.Get("/", handler.Index)
 	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
-	rStrict.Put("/:id", handler.Update)
+	rStrict.Put("/", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
 }
 
@@ -41,30 +41,21 @@ func NewAktaNotarisHandler(
 //	@ID				akta_notaris-index
 //	@Tags			Akta Notaris
 //	@Produce		json
-//	@Param			id_bumd	query		int						true	"Id BUMD"
-//	@Param			page	query		int						false	"Halaman yang ditampilkan"
-//	@Param			limit	query		int						false	"Jumlah data per halaman, maksimal 5 data per halaman"
-//	@Param			search	query		string					false	"Pencarian"
-//	@success		200		{object}	models.AktaNotarisModel	"Success"
-//	@Failure		400		{object}	utils.RequestError		"Bad request"
-//	@Failure		404		{object}	utils.RequestError		"Data not found"
-//	@Failure		422		{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd	path		int							true	"Id BUMD"
+//	@Param			page	query		int							false	"Halaman yang ditampilkan"
+//	@Param			limit	query		int							false	"Jumlah data per halaman, maksimal 5 data per halaman"
+//	@Param			search	query		string						false	"Pencarian"
+//	@success		200		{object}	dokumen.AktaNotarisModel	"Success"
+//	@Failure		400		{object}	utils.RequestError			"Bad request"
+//	@Failure		404		{object}	utils.RequestError			"Data not found"
+//	@Failure		422		{array}		utils.RequestError			"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError			"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/akta_notaris [get]
+//	@Router			/strict/bumd/{id_bumd}/akta_notaris [get]
 func (h *AktaNotarisHandler) Index(c *fiber.Ctx) error {
-	idBumd := c.QueryInt("id_bumd")
-	if idBumd < 1 {
-		return utils.RequestError{
-			Code:    fiber.StatusBadRequest,
-			Message: "Salah satu field tidak valid",
-			Fields: []utils.DataValidationError{
-				{
-					Field:   "id_bumd",
-					Message: "Id BUMD harus harus diisi",
-				},
-			},
-		}
+	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
 	}
 	page := c.QueryInt("page", 1)
 	var limit int
@@ -107,19 +98,24 @@ func (h *AktaNotarisHandler) Index(c *fiber.Ctx) error {
 //	@ID				akta_notaris-view
 //	@Tags			Akta Notaris
 //	@Produce		json
-//	@Param			id	path		int						true	"Id untuk get data akta notaris"
-//	@success		200	{object}	models.AktaNotarisModel	"Success"
-//	@Failure		400	{object}	utils.RequestError		"Bad request"
-//	@Failure		404	{object}	utils.RequestError		"Data not found"
-//	@Failure		500	{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd	path		int							true	"Id BUMD"
+//	@Param			id		path		int							true	"Id untuk get data akta notaris"
+//	@success		200		{object}	dokumen.AktaNotarisModel	"Success"
+//	@Failure		400		{object}	utils.RequestError			"Bad request"
+//	@Failure		404		{object}	utils.RequestError			"Data not found"
+//	@Failure		500		{object}	utils.RequestError			"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/akta_notaris/{id} [get]
+//	@Router			/strict/bumd/{id_bumd}/akta_notaris/{id} [get]
 func (h *AktaNotarisHandler) View(c *fiber.Ctx) error {
+	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
+	}
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
 	if err != nil {
 		return err
 	}
@@ -133,12 +129,12 @@ func (h *AktaNotarisHandler) View(c *fiber.Ctx) error {
 //	@ID				akta_notaris-create
 //	@Tags			Akta Notaris
 //	@Accept			multipart/form-data
-//	@Param			nomor_perda		formData	string	true	"Nomor Perda"
-//	@Param			tanggal_perda	formData	string	true	"Tanggal Perda"
-//	@Param			keterangan		formData	string	true	"Keterangan"
-//	@Param			file			formData	string	false	"File"
-//	@Param			modal_dasar		formData	float64	true	"Modal Dasar"
-//	@Param			id_bumd			formData	int		true	"Id BUMD"
+//	@Param			id_bumd		path		int		true	"Id BUMD"
+//	@Param			nomor		formData	string	true	"Nomor Akta notaris"
+//	@Param			notaris		formData	string	true	"Notaris"
+//	@Param			tanggal		formData	string	true	"Tanggal Akta notaris"
+//	@Param			keterangan	formData	string	true	"Keterangan"
+//	@Param			file		formData	file	false	"File"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -146,9 +142,13 @@ func (h *AktaNotarisHandler) View(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/akta_notaris [post]
+//	@Router			/strict/bumd/{id_bumd}/akta_notaris [post]
 func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
-	payload := new(models.AktaNotarisForm)
+	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
+	}
+	payload := new(dokumen.AktaNotarisForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
 	}
@@ -170,6 +170,7 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 	m, err := h.Controller.Create(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
+		idBumd,
 		payload,
 	)
 	if err != nil {
@@ -186,14 +187,12 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@ID				akta_notaris-update
 //	@Tags			Akta Notaris
 //	@Accept			multipart/form-data
-//	@Param			nomor_perda		formData	string					true	"Nomor Perda"
-//	@Param			tanggal_perda	formData	string					true	"Tanggal Perda"
-//	@Param			keterangan		formData	string					true	"Keterangan"
-//	@Param			file			formData	string					false	"File"
-//	@Param			modal_dasar		formData	float64					true	"Modal Dasar"
-//	@Param			id_bumd			formData	int						true	"Id BUMD"
-//	@Param			id				path		int						true	"Id untuk update data akta notaris"
-//	@Param			payload			body		models.AktaNotarisForm	true	"Update payload"
+//	@Param			id_bumd		path		int		true	"Id BUMD"
+//	@Param			nomor		formData	string	true	"Nomor Akta notaris"
+//	@Param			tanggal		formData	string	true	"Tanggal Akta notaris"
+//	@Param			keterangan	formData	string	true	"Keterangan"
+//	@Param			file		formData	file	false	"File"
+//	@Param			id			formData	int		true	"Id untuk update data akta notaris"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -201,14 +200,14 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/akta_notaris/{id} [put]
+//	@Router			/strict/bumd/{id_bumd}/akta_notaris [put]
 func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	idBumd, err := c.ParamsInt("id_bumd")
 	if err != nil {
 		return err
 	}
 
-	payload := new(models.AktaNotarisForm)
+	payload := new(dokumen.AktaNotarisForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
 	}
@@ -230,8 +229,8 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 	m, err := h.Controller.Update(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
+		idBumd,
 		payload,
-		id,
 	)
 	if err != nil {
 		return err
@@ -247,7 +246,8 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 //	@ID				akta_notaris-delete
 //	@Tags			Akta Notaris
 //	@Accept			json
-//	@Param			id	path	int	true	"Id untuk delete data akta notaris"
+//	@Param			id_bumd	path	int	true	"Id BUMD"
+//	@Param			id		path	int	true	"Id untuk delete data akta notaris"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -255,8 +255,12 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/akta_notaris/{id} [delete]
+//	@Router			/strict/bumd/{id_bumd}/akta_notaris/{id} [delete]
 func (h *AktaNotarisHandler) Delete(c *fiber.Ctx) error {
+	idBumd, err := c.ParamsInt("id_bumd")
+	if err != nil {
+		return err
+	}
 	id, err := c.ParamsInt("id")
 	if err != nil {
 		return err
@@ -265,6 +269,7 @@ func (h *AktaNotarisHandler) Delete(c *fiber.Ctx) error {
 	m, err := h.Controller.Delete(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
+		idBumd,
 		id,
 	)
 	if err != nil {

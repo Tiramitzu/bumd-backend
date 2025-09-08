@@ -19,16 +19,38 @@ CREATE TABLE users (
 -- Populate data
 INSERT INTO users (username, password, id_role, nama) VALUES
 ('admin', '$2a$12$c1oTnbMoQM/VuwAW2xXNhehGlTecToWCyfF1gKiv0wFg47BAc0abu', 1, 'Admin Pusat');
+INSERT INTO users (username, password, id_role, nama, id_daerah)
+SELECT 
+    -- username normalization
+    REGEXP_REPLACE(
+    LOWER(
+        REGEXP_REPLACE(
+          REGEXP_REPLACE(
+            REGEXP_REPLACE(
+              REGEXP_REPLACE(nama_daerah, '\.', '', 'g'),   -- remove dots
+              'provinsi', 'prov', 'i'                      -- provinsi → prov
+            ),
+            'kabupaten', 'kab_', 'i'                       -- kabupaten → kab_
+          ),
+          '\bkab\b', 'kab_', 'i'                           -- kab → kab_
+        )
+      ),
+      '\s+', '_', 'g'                                     -- spaces → underscore
+    ) AS username,
+    '$2a$12$c1oTnbMoQM/VuwAW2xXNhehGlTecToWCyfF1gKiv0wFg47BAc0abu' AS password,
+    2 AS id_role,
+    nama_daerah,
+    id_daerah
+FROM dblink(
+  'dbname=mst_data user=postgres password=postgres host=192.168.191.10',
+  'SELECT id_daerah, nama_daerah FROM "data".m_daerah WHERE is_deleted = 0'
+) AS t(id_daerah int, nama_daerah text);
+
 
 -- Add foreign key constraint to roles table
 ALTER TABLE users 
 ADD CONSTRAINT fk_users_id_role 
 FOREIGN KEY (id_role) REFERENCES roles(id);
-
--- Add foreign key constraint to bumd table
-ALTER TABLE users 
-ADD CONSTRAINT fk_users_id_bumd 
-FOREIGN KEY (id_bumd) REFERENCES bumd(id);
 
 -- Add unique constraint to username
 ALTER TABLE users 

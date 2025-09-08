@@ -7,7 +7,6 @@ CREATE TABLE dkmn_tdp (
     kualifikasi        int4 NOT NULL DEFAULT 0,
     klasifikasi        varchar(100) NOT NULL DEFAULT ''::character varying,
     masa_berlaku       date NULL,
-    is_seumur_hidup    int4 NOT NULL DEFAULT 0,
     file               text NOT NULL DEFAULT '',
     created_at         timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by         int4 NOT NULL DEFAULT 0,

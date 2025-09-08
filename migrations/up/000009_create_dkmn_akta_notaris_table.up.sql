@@ -24,11 +24,11 @@ FOREIGN KEY (id_bumd) REFERENCES bumd(id);
 CREATE INDEX idx_dkmn_akta_notaris_id_bumd 
     ON dkmn_akta_notaris(id_bumd);
 
-CREATE INDEX idx_dkmn_akta_notaris_nomor_perda 
-    ON dkmn_akta_notaris(nomor_perda);
+CREATE INDEX idx_dkmn_akta_notaris_nomor
+    ON dkmn_akta_notaris(nomor);
 
-CREATE INDEX idx_dkmn_akta_notaris_tanggal_perda 
-    ON dkmn_akta_notaris(tanggal_perda);
+CREATE INDEX idx_dkmn_akta_notaris_tanggal 
+    ON dkmn_akta_notaris(tanggal);
 
 CREATE INDEX idx_dkmn_akta_notaris_deleted_at 
     ON dkmn_akta_notaris(deleted_at);

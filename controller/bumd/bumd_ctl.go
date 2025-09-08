@@ -1,9 +1,9 @@
-package controller
+package bumd
 
 import (
 	"fmt"
 	"math"
-	"microdata/kemendagri/bumd/models"
+	"microdata/kemendagri/bumd/models/bumd"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
@@ -27,8 +27,8 @@ func (c *BumdController) Index(
 	nama string,
 	penerapanSPI bool,
 	indukPerusahaan int,
-) (r []models.BumdModel, totalCount, pageCount int, err error) {
-	r = make([]models.BumdModel, 0)
+) (r []bumd.BumdModel, totalCount, pageCount int, err error) {
+	r = make([]bumd.BumdModel, 0)
 	claims := user.Claims.(jwt.MapClaims)
 	idDaerah := int(claims["id_daerah"].(float64))
 	offset := limit * (page - 1)
@@ -119,7 +119,7 @@ func (c *BumdController) Index(
 	defer rows.Close()
 
 	for rows.Next() {
-		var m models.BumdModel
+		var m bumd.BumdModel
 		err = rows.Scan(
 			&m.ID,
 			&m.IDDaerah,
@@ -158,7 +158,7 @@ func (c *BumdController) View(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
 	id int,
-) (r models.BumdModel, err error) {
+) (r bumd.BumdModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idDaerah := int(claims["id_daerah"].(float64))
 
@@ -228,7 +228,7 @@ func (c *BumdController) View(
 func (c *BumdController) Create(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	payload *models.BumdForm,
+	payload *bumd.BumdForm,
 ) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
@@ -299,7 +299,7 @@ func (c *BumdController) Create(
 func (c *BumdController) Update(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	payload *models.BumdForm,
+	payload *bumd.BumdForm,
 	id int,
 ) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
