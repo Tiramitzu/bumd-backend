@@ -69,22 +69,22 @@ func (c *BumdController) Index(
 	WHERE b.deleted_by = 0
 	`
 	if idDaerah > 0 {
-		qCount += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND d_daerah = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
 		args = append(args, idDaerah)
 	}
 	if nama != "" {
-		qCount += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
 	if penerapanSPI {
-		qCount += fmt.Sprintf(` AND b.penerapan_spi = $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND penerapan_spi = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.penerapan_spi = $%d`, len(args)+1)
 		args = append(args, penerapanSPI)
 	}
 	if indukPerusahaan != 0 {
-		qCount += fmt.Sprintf(` AND b.id_induk_perusahaan = $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND id_induk_perusahaan = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.id_induk_perusahaan = $%d`, len(args)+1)
 		args = append(args, indukPerusahaan)
 	}
