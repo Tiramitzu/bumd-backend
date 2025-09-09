@@ -42,7 +42,7 @@ func (c *PerdaPendirianController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM dkmn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id, nomor_perda, tanggal_perda, keterangan, file, modal_dasar FROM dkmn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1
+	SELECT id, nomor, tanggal, keterangan, file, modal_dasar FROM dkmn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
