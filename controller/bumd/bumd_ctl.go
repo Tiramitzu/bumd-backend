@@ -69,7 +69,7 @@ func (c *BumdController) Index(
 	WHERE b.deleted_by = 0
 	`
 	if idDaerah > 0 {
-		qCount += fmt.Sprintf(` ADN b.id_daerah = $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.id_daerah = $%d`, len(args)+1)
 		args = append(args, idDaerah)
 	}
