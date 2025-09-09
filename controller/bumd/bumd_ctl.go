@@ -127,6 +127,21 @@ func (c *BumdController) Index(
 			&m.Website,
 			&m.Narahubung,
 		)
+
+		q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id = $1`
+		err = c.pgxConn.QueryRow(fCtx, q, m.IDDaerah).Scan(&m.NamaDaerah, &m.IDProvinsi)
+		if err != nil {
+			return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+		}
+
+		if m.IDDaerah != m.IDProvinsi {
+			q = `SELECT nama_daerah FROM data.m_daerah WHERE id = $1`
+			err = c.pgxConn.QueryRow(fCtx, q, m.IDProvinsi).Scan(&m.NamaProvinsi)
+			if err != nil {
+				return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+			}
+		}
+
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data BUMD: %w", err)
 		}

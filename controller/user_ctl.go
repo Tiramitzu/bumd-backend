@@ -317,13 +317,12 @@ func (c *UserController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payl
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int32(claims["id_role"].(float64))
-	idDaerah := int32(claims["id_daerah"].(float64))
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM users WHERE id = $1 AND id_daerah = $2 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM users WHERE id = $1 AND deleted_by = 0
 	`
 	var count int
-	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&count)
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -359,15 +358,14 @@ func (c *UserController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payl
 	SET
 		username = $1,
 		password = $2,
-		id_daerah = $3,
-		id_role = $4,
-		id_bumd = $5,
-		nama = $6,
-		logo = $7,
-		updated_by = $8
+		id_role = $3,
+		id_bumd = $4,
+		nama = $5,
+		logo = $6,
+		updated_by = $7
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Username, pHash, idDaerah, idRole, payload.IdBumd, payload.Nama, payload.Logo, idUser)
+	_, err = c.pgxConn.Exec(fCtx, q, payload.Username, pHash, idRole, payload.IdBumd, payload.Nama, payload.Logo, idUser)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -382,10 +380,9 @@ func (c *UserController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id i
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
-	idDaerah := int(claims["id_daerah"].(float64))
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM users WHERE id = $1 AND id_daerah = $2
+	SELECT COALESCE(COUNT(*), 0) FROM users WHERE id = $1
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
@@ -405,9 +402,9 @@ func (c *UserController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id i
 
 	var IdRole int
 	q = `
-	SELECT id_role FROM users WHERE id = $1 AND id_daerah = $2
+	SELECT id_role FROM users WHERE id = $1
 	`
-	err = c.pgxConn.QueryRow(fCtx, q, id, idDaerah).Scan(&IdRole)
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&IdRole)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -428,10 +425,10 @@ func (c *UserController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id i
 	SET
 		deleted_by = $1,
 		deleted_at = $2
-	WHERE id = $3 AND id_daerah = $4
+	WHERE id = $3
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idDaerah)
+	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
