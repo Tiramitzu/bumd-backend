@@ -16,6 +16,11 @@ type BumdModel struct {
 	Email               string `json:"email" xml:"email"`
 	Website             string `json:"website" xml:"website"`
 	Narahubung          string `json:"narahubung" xml:"narahubung"`
+	NPWP                string `json:"npwp" xml:"npwp"`
+	NPWP_Pemberi        string `json:"npwp_pemberi" xml:"npwp_pemberi"`
+	NPWP_File           string `json:"npwp_file" xml:"npwp_file"`
+	SPI_File            string `json:"spi_file" xml:"spi_file"`
+	Logo                string `json:"logo" xml:"logo"`
 	IDDaerah            int32  `json:"id_daerah" xml:"id_daerah"`
 	IDProvinsi          int32  `json:"id_provinsi" xml:"id_provinsi"`
 	NamaProvinsi        string `json:"nama_provinsi" xml:"nama_provinsi"`

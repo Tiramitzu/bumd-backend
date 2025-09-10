@@ -64,7 +64,12 @@ func (c *BumdController) Index(
 		b.no_fax,
 		b.email,
 		b.website,
-		b.narahubung
+		b.narahubung,
+		b.npwp,
+		b.npwp_pemberi,
+		b.npwp_file,
+		b.spi_file,
+		b.logo
 	FROM bumd b
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
 		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
@@ -129,6 +134,11 @@ func (c *BumdController) Index(
 			&m.Email,
 			&m.Website,
 			&m.Narahubung,
+			&m.NPWP,
+			&m.NPWP_Pemberi,
+			&m.NPWP_File,
+			&m.SPI_File,
+			&m.Logo,
 		)
 
 		q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
@@ -192,7 +202,12 @@ func (c *BumdController) View(
 		b.no_fax,
 		b.email,
 		b.website,
-		b.narahubung
+		b.narahubung,
+		b.npwp,
+		b.npwp_pemberi,
+		b.npwp_file,
+		b.spi_file,
+		b.logo
 	FROM bumd b
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
 		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
@@ -223,6 +238,11 @@ func (c *BumdController) View(
 		&r.Email,
 		&r.Website,
 		&r.Narahubung,
+		&r.NPWP,
+		&r.NPWP_Pemberi,
+		&r.NPWP_File,
+		&r.SPI_File,
+		&r.Logo,
 	)
 	if err != nil {
 		return r, fmt.Errorf("gagal mengambil data BUMD: %w", err)
