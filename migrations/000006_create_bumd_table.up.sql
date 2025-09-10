@@ -17,6 +17,7 @@ CREATE TABLE bumd (
     npwp            varchar(20) NOT NULL DEFAULT ''::character varying,
     npwp_pemberi    varchar(250) NOT NULL DEFAULT ''::character varying,
     npwp_file       text NOT NULL DEFAULT '',
+    logo            text NOT NULL DEFAULT '',
     created_at      timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by      int4 NOT NULL DEFAULT 0,
     updated_at      timestamp NOT NULL DEFAULT '0001-01-01 00:00:00'::timestamp without time zone,
