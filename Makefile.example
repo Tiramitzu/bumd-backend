@@ -21,20 +21,14 @@ SERVER_URL="0.0.0.0:3000"
 SERVER_READ_TIMEOUT=60
 JWT_SECRET_KEY="jwt_secret"
 
-DB_SERVER_URL="host=x.x.x.x port=5432 user=xxxx password=xxxx dbname=sipd_auth sslmode=disable"
-DB_SERVER_URL_MST_DATA="host=x.x.x.x port=5432 user=x password=x dbname=sipd_mst_data sslmode=disable"
-DB_SIPD_PEGAWAI="host=x.x.x.x port=5432 user=x password=x dbname=sipd_pegawai sslmode=disable"
-SERVICE_RBAC="http://localhost:3001"
-SERVICE_PEGAWAI="http://localhost:3031"
-SERVICE_REFERENSI="http://localhost:3032"
+DB_SERVER_URL="host=x.x.x.x port=5432 user=xxxx password=xxxx dbname=bumd sslmode=disable"
+DB_SERVER_URL_MST_DATA="host=x.x.x.x port=5432 user=x password=x dbname=mst_data sslmode=disable"
+
 SIPD_CORS_WHITELISTS="*"
-
-GRAYLOG_HOST="127.0.0.1:12201"
-
 MINIO_ENDPOINT="filestorage.kemendagri.go.id:9000" #filestorage.kemendagri.go.id / 192.168.128.106:9000
 MINIO_ACCESS_KEY="x"
 MINIO_SECRET_KEY="x"
-MINIO_BUCKET_NAME="sipd-auth"
+MINIO_BUCKET_NAME="bumd"
 
 REDIS_HOST="127.0.0.1"
 REDIS_PORT="6379"
@@ -61,26 +55,21 @@ swag:
 	swag fmt && swag init
 
 go:
-	export SERVER_NAME=$(SERVER_NAME);\
+	xport SERVER_NAME=$(SERVER_NAME);\
     export SERVER_URL=$(SERVER_URL);\
-	export GRAYLOG_HOST=$(GRAYLOG_HOST);\
-	export REDIS_HOST=$(REDIS_HOST);\
-    export REDIS_PORT=$(REDIS_PORT);\
-    export REDIS_USERNAME=$(REDIS_USERNAME);\
-    export REDIS_PASSWORD=$(REDIS_PASSWORD);\
     export SERVER_READ_TIMEOUT=$(SERVER_READ_TIMEOUT);\
     export JWT_SECRET_KEY=$(JWT_SECRET_KEY);\
     export DB_SERVER_URL=$(DB_SERVER_URL);\
-	export DB_SIPD_PEGAWAI=$(DB_SIPD_PEGAWAI);\
-    export DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA);\
-    export SERVICE_RBAC=$(SERVICE_RBAC);\
-    export SERVICE_PEGAWAI=$(SERVICE_PEGAWAI);\
-	export SERVICE_REFERENSI=$(SERVICE_REFERENSI);\
+	export DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA);\
+	export SIPD_CORS_WHITELISTS=$(SIPD_CORS_WHITELISTS);\
+	export USED_PROV=$(USED_PROV);\
+	export REDIS_HOST=$(REDIS_HOST);\
+	export REDIS_PORT=$(REDIS_PORT);\
+	export REDIS_PASSWORD=$(REDIS_PASSWORD);\
 	export MINIO_ENDPOINT=$(MINIO_ENDPOINT);\
 	export MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY);\
 	export MINIO_SECRET_KEY=$(MINIO_SECRET_KEY);\
 	export MINIO_BUCKET_NAME=$(MINIO_BUCKET_NAME);\
-	export SIPD_CORS_WHITELISTS=$(SIPD_CORS_WHITELISTS);\
     go mod tidy;\
     go run main.go
 
@@ -95,15 +84,12 @@ run: swag build
     export SERVER_READ_TIMEOUT=$(SERVER_READ_TIMEOUT);\
     export JWT_SECRET_KEY=$(JWT_SECRET_KEY);\
     export DB_SERVER_URL=$(DB_SERVER_URL);\
-	export DB_SIPD_PEGAWAI=$(DB_SIPD_PEGAWAI);\
     export DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA);\
-    export SERVICE_RBAC=$(SERVICE_RBAC);\
-    export SERVICE_PEGAWAI=$(SERVICE_PEGAWAI);\
-	export SERVICE_REFERENSI=$(SERVICE_REFERENSI);\
+	export DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA);\
 	export MINIO_ENDPOINT=$(MINIO_ENDPOINT);\
-    export MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY);\
-    export MINIO_SECRET_KEY=$(MINIO_SECRET_KEY);\
-    export MINIO_BUCKET_NAME=$(MINIO_BUCKET_NAME);\
+	export MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY);\
+	export MINIO_SECRET_KEY=$(MINIO_SECRET_KEY);\
+	export MINIO_BUCKET_NAME=$(MINIO_BUCKET_NAME);\
 	$(BUILD_DIR)/$(IMAGE_NAME)
 
 docker_build_image:
@@ -127,10 +113,7 @@ docker_app: docker_build_image
         		-e JWT_SECRET_KEY=$(JWT_SECRET_KEY) \
         		-e DB_SERVER_URL=$(DB_SERVER_URL) \
         		-e DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA) \
-				-e DB_SIPD_PEGAWAI=$(DB_SIPD_PEGAWAI) \
-        		-e SERVICE_RBAC=$(SERVICE_RBAC) \
-        		-e SERVICE_PEGAWAI=$(SERVICE_PEGAWAI) \
-				-e SERVICE_REFERENSI=$(SERVICE_REFERENSI) \
+				-e DB_SERVER_URL_MST_DATA=$(DB_SERVER_URL_MST_DATA) \
 				-e MINIO_ENDPOINT=$(MINIO_ENDPOINT) \
 				-e MINIO_ACCESS_KEY=$(MINIO_ACCESS_KEY) \
 				-e MINIO_SECRET_KEY=$(MINIO_SECRET_KEY) \

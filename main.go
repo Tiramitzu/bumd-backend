@@ -43,7 +43,11 @@ var serverName,
 	alwOrg,
 	redisHost,
 	redisUsername,
-	redisPassword string
+	redisPassword,
+	minioEndpoint,
+	minioAccessKey,
+	minioSecretKey,
+	minioBucketName string
 
 var redisPort int
 
@@ -57,6 +61,7 @@ var vld *validator.Validate
 var redisCl *redis.Storage
 var logger *logrus.Logger
 var err error
+var minioConn *utils.MinioConn
 
 func init() {
 	// Server Env
@@ -117,6 +122,24 @@ func init() {
 	if redisPassword == "" {
 		exitf("REDIS_PASSWORD env is required")
 	}
+
+	// Minio
+	minioEndpoint = os.Getenv("MINIO_ENDPOINT")
+	if minioEndpoint == "" {
+		exitf("MINIO_ENDPOINT config is required")
+	}
+	minioAccessKey = os.Getenv("MINIO_ACCESS_KEY")
+	if minioAccessKey == "" {
+		exitf("MINIO_ACCESS_KEY config is required")
+	}
+	minioSecretKey = os.Getenv("MINIO_SECRET_KEY")
+	if minioSecretKey == "" {
+		exitf("MINIO_SECRET_KEY config is required")
+	}
+	minioBucketName = os.Getenv("MINIO_BUCKET_NAME")
+	if minioBucketName == "" {
+		exitf("MINIO_BUCKET_NAME config is required")
+	}
 }
 
 func dbConnection() {
@@ -166,6 +189,17 @@ func dbConnection() {
 	pgxConnMstData, err = pgxpool.NewWithConfig(context.Background(), cfgMstData)
 	if err != nil {
 		exitf("Unable to connect to database mst_data: %v\n", err)
+	}
+
+	// Minio
+	minioConn, err = utils.NewMinIOConn(
+		minioEndpoint,
+		minioAccessKey,
+		minioSecretKey,
+		minioBucketName,
+	)
+	if err != nil {
+		exitf("Unable to connect to minio: %v\n", err)
 	}
 }
 
@@ -267,6 +301,16 @@ func main() {
 		pgxConnMstData.Close()
 	}()
 
+	minioConn, err = utils.NewMinIOConn(
+		os.Getenv("MINIO_ENDPOINT"),
+		os.Getenv("MINIO_ACCESS_KEY"),
+		os.Getenv("MINIO_SECRET_KEY"),
+		os.Getenv("MINIO_BUCKET_NAME"),
+	)
+	if err != nil {
+		exitf("Unable to connect to object storage: %v\n", err)
+	}
+
 	serverReadTimeoutInt, err := strconv.Atoi(serverReadTimeout)
 	if err != nil {
 		exitf("Failed casting timeout context: ", err)
@@ -362,8 +406,9 @@ func main() {
 	bumd.NewBumdHandler(
 		rStrict,
 		vld,
-		controller_bumd.NewBumdController(pgxConn),
+		controller_bumd.NewBumdController(pgxConn, pgxConnMstData),
 		pgxConn,
+		minioConn,
 	)
 
 	// master
