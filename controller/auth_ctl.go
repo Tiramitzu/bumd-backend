@@ -82,23 +82,25 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 		return
 	}
 
-	q = `
+	if user.IdDaerah > 0 {
+		q = `
 		SELECT sub_domain, kode_ddn
 		FROM data.m_daerah
 		WHERE id_daerah = $1
 	`
-	err = ac.pgxConnMstData.QueryRow(context.Background(), q, user.IdDaerah).Scan(&user.SubDomainDaerah, &user.KodeDDN)
-	if err != nil {
-		err = utils.RequestError{
-			Code:    http.StatusInternalServerError,
-			Message: "Data Pemerintah Daerah Tidak Tersedia. - " + err.Error(),
+		err = ac.pgxConnMstData.QueryRow(context.Background(), q, user.IdDaerah).Scan(&user.SubDomainDaerah, &user.KodeDDN)
+		if err != nil {
+			err = utils.RequestError{
+				Code:    http.StatusInternalServerError,
+				Message: "Data Pemerintah Daerah Tidak Tersedia. - " + err.Error(),
+			}
+			return
 		}
-		return
-	}
 
-	user.KodeProvinsi = strings.Split(user.KodeDDN, ".")[0]
-	if len(user.KodeDDN) == 2 {
-		user.KodeDDN += ".00"
+		user.KodeProvinsi = strings.Split(user.KodeDDN, ".")[0]
+		if len(user.KodeDDN) == 2 {
+			user.KodeDDN += ".00"
+		}
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(passUser), []byte(f.Password)); err != nil {
