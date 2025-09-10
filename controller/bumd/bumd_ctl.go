@@ -352,6 +352,7 @@ func (c *BumdController) Update(
 		}
 	}
 
+	args = []interface{}{}
 	q = `
 	UPDATE bumd
 	SET
