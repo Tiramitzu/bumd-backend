@@ -1,6 +1,7 @@
 package dokumen
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/dokumen"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -129,17 +131,67 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		err = utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+		return false, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO dkmn_nib (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, file, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	INSERT INTO dkmn_nib (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, payload.File, idBumd, idUser)
+	var id int
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idBumd, idUser).Scan(&id)
 	if err != nil {
+		err = utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memasukkan data NIB. - " + err.Error(),
+		}
 		return false, err
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			err = utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+			return false, err
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_nib/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_nib SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
+		if err != nil {
+			err = utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+			return false, err
+		}
 	}
 
 	return true, err
@@ -150,6 +202,22 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		err = utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+		return false, err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
@@ -157,13 +225,42 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	var args []interface{}
 	q := `
 	UPDATE dkmn_nib
-	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, file = $7, updated_by = $8
-	WHERE id = $9 AND id_bumd = $10
+	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7
+	WHERE id = $8 AND id_bumd = $9
 	`
-	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, payload.File, idUser, id, idBumd)
-	_, err = c.pgxConn.Exec(fCtx, q, args...)
+	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idUser, id, idBumd)
+	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, err
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			err = utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+			return false, err
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_nib/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_nib SET file=$1 WHERE id=$2`
+		_, err = tx.Exec(context.Background(), q, objectName, id)
+		if err != nil {
+			err = utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+			return false, err
+		}
 	}
 
 	return true, err
@@ -177,13 +274,12 @@ func (c *NibController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
-
 	q := `
 	UPDATE dkmn_nib
 	SET deleted_by = $1, deleted_at = $2
 	WHERE id = $3 AND id_bumd = $4
 	`
-	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idBumd)
+	_, err = c.pgxConn.Exec(context.Background(), q, idUser, time.Now(), id, idBumd)
 	if err != nil {
 		return false, err
 	}

@@ -1,6 +1,7 @@
 package dokumen
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/dokumen"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -129,17 +131,63 @@ func (c *SiupController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO dkmn_siup (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, file, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	INSERT INTO dkmn_siup (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, payload.File, idBumd, idUser)
+	var id int
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idBumd, idUser).Scan(&id)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memasukkan data SIUP. - " + err.Error(),
+		}
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_siup/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_siup SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
 	}
 
 	return true, err
@@ -154,16 +202,61 @@ func (c *SiupController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 		idBumd = idBumdClaims
 	}
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	var args []interface{}
 	q := `
 	UPDATE dkmn_siup
-	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, file = $7, updated_by = $8
-	WHERE id = $9 AND id_bumd = $10
+	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7
+	WHERE id = $8 AND id_bumd = $9
 	`
-	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, payload.File, idUser, id, idBumd)
-	_, err = c.pgxConn.Exec(fCtx, q, args...)
+	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idUser, id, idBumd)
+	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data SIUP. - " + err.Error(),
+		}
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_siup/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_siup SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
 	}
 
 	return true, err

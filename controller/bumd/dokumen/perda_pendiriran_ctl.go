@@ -1,6 +1,7 @@
 package dokumen
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/dokumen"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -141,13 +143,59 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 		idBumd = idBumdClaims
 	}
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	q := `
-	INSERT INTO dkmn_perda_pendirian (nomor, tanggal, keterangan, file, modal_dasar, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7)
+	INSERT INTO dkmn_perda_pendirian (nomor, tanggal, keterangan, modal_dasar, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.File, payload.ModalDasar, idBumd, idUser)
+	var id int
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.ModalDasar, idBumd, idUser).Scan(&id)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memasukkan data Perda Pendirian. - " + err.Error(),
+		}
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_perda_pendirian/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_perda_pendirian SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
 	}
 
 	return true, err
@@ -158,6 +206,21 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
@@ -165,14 +228,41 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 	var args []interface{}
 	q := `
 	UPDATE dkmn_perda_pendirian
-	SET nomor = $1, tanggal = $2, keterangan = $3, file = $4, modal_dasar = $5, updated_by = $6
-	WHERE id = $7 AND id_bumd = $8
+	SET nomor = $1, tanggal = $2, keterangan = $3, modal_dasar = $4, updated_by = $5
+	WHERE id = $6 AND id_bumd = $7
 	`
-	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.File, payload.ModalDasar, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.ModalDasar, idUser, id, idBumd)
 
-	_, err = c.pgxConn.Exec(fCtx, q, args...)
+	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, err
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_perda_pendirian/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_perda_pendirian SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
 	}
 
 	return true, err

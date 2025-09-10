@@ -1,6 +1,7 @@
 package dokumen
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/dokumen"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -127,17 +129,63 @@ func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO dkmn_akta_notaris (nomor, notaris, tanggal, keterangan, file, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7)
+	INSERT INTO dkmn_akta_notaris (nomor, notaris, tanggal, keterangan, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, payload.File, idBumd, idUser)
+	var id int
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idBumd, idUser).Scan(&id)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memasukkan data Akta Notaris. - " + err.Error(),
+		}
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_akta_notaris/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_akta_notaris SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
 	}
 
 	return true, err
@@ -148,6 +196,21 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal memulai transaksi. - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
 	if idBumdClaims > 0 {
 		idBumd = idBumdClaims
 	}
@@ -155,14 +218,41 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	var args []interface{}
 	q := `
 	UPDATE dkmn_akta_notaris
-	SET nomor = $1, notaris = $2, tanggal = $3, keterangan = $4, file = $5, updated_by = $6
-	WHERE id = $7 AND id_bumd = $8
+	SET nomor = $1, notaris = $2, tanggal = $3, keterangan = $4, updated_by = $5
+	WHERE id = $6 AND id_bumd = $7
 	`
-	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, payload.File, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idUser, id, idBumd)
 
-	_, err = c.pgxConn.Exec(fCtx, q, args...)
+	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, err
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "dkmn_akta_notaris/" + fileName
+
+		// update file
+		q = `UPDATE dkmn_akta_notaris SET file=$1 WHERE id=$2`
+		_, err = tx.Exec(context.Background(), q, objectName, id)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
 	}
 
 	return true, err
