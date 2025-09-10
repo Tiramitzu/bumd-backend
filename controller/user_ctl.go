@@ -181,18 +181,41 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 	idRole := int(claims["id_role"].(float64))
 	userId := uint64(claims["id_user"].(float64))
 
-	qStr := `
+	qStr := `WITH t_daerah AS (
+		SELECT id_daerah, nama, kode_ddn, kode_provinsi, sub_domain_daerah FROM data.m_daerah WHERE id_daerah = $2
+	)
 	SELECT
+		users.id,
+		users.id_daerah,
+		users.id_role,
+		users.id_bumd,
 		users.username,
 		users.nama,
 		roles.nama as role,
-		COALESCE(bumd.nama, '-') as nama_bumd
+		COALESCE(bumd.nama, '-') as nama_bumd,
+		t_daerah.nama as nama_daerah,
+		t_daerah.kode_ddn as kode_ddn,
+		t_daerah.kode_provinsi as kode_provinsi,
+		t_daerah.sub_domain_daerah as sub_domain_daerah
 	FROM users
 	LEFT JOIN roles ON roles.id = users.id_role
 	LEFT JOIN bumd ON bumd.id = users.id_bumd
+	LEFT JOIN t_daerah ON t_daerah.id_daerah = users.id_daerah
 		WHERE users.id=$1 AND users.id_daerah=$2 AND users.id_role=$3`
-	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole).
-		Scan(&r.Username, &r.NamaUser, &r.NamaRole, &r.NamaBumd)
+	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole).Scan(
+		&r.IdUser,
+		&r.IdDaerah,
+		&r.IdRole,
+		&r.IdBumd,
+		&r.Username,
+		&r.NamaUser,
+		&r.NamaRole,
+		&r.NamaBumd,
+		&r.NamaDaerah,
+		&r.KodeDDN,
+		&r.KodeProvinsi,
+		&r.SubDomainDaerah,
+	)
 	if err != nil {
 		err = utils.RequestError{
 			Code:    fasthttp.StatusNotFound,

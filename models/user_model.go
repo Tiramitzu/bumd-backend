@@ -27,10 +27,18 @@ func (u *User) ToJSON() []byte {
 }
 
 type UserDetail struct {
-	Username string `json:"username"          xml:"username"`
-	NamaUser string `json:"nama_user"         xml:"nama_user"`
-	NamaRole string `json:"nama_role"         xml:"nama_role"`
-	NamaBumd string `json:"nama_bumd"         xml:"nama_bumd"`
+	Username        string `json:"username"          xml:"username"`
+	NamaUser        string `json:"nama_user"         xml:"nama_user"`
+	NamaRole        string `json:"nama_role"         xml:"nama_role"`
+	NamaBumd        string `json:"nama_bumd"         xml:"nama_bumd"`
+	NamaDaerah      string `json:"nama_daerah"       xml:"nama_daerah"`
+	IdUser          int64  `json:"id_user"           xml:"id_user"`
+	IdDaerah        int32  `json:"id_daerah"         xml:"id_daerah"`
+	IdRole          int32  `json:"id_role"           xml:"id_role"`
+	IdBumd          int32  `json:"id_bumd"           xml:"id_bumd"`
+	KodeDDN         string `json:"kode_ddn"          xml:"kode_ddn"`
+	KodeProvinsi    string `json:"kode_provinsi"    xml:"kode_provinsi"`
+	SubDomainDaerah string `json:"sub_domain_daerah" xml:"sub_domain_daerah"`
 }
 
 // FromJSON decode json to user struct
