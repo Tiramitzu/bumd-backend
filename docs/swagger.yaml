@@ -48,9 +48,15 @@ definitions:
         type: integer
       id_induk_perusahaan:
         type: integer
+      id_provinsi:
+        type: integer
       nama:
         type: string
+      nama_daerah:
+        type: string
       nama_induk_perusahaan:
+        type: string
+      nama_provinsi:
         type: string
       narahubung:
         type: string
@@ -62,6 +68,26 @@ definitions:
         type: boolean
       website:
         type: string
+    type: object
+  bumd.NPWPForm:
+    type: object
+  bumd.NPWPModel:
+    properties:
+      file:
+        type: string
+      npwp:
+        type: string
+      pemberi:
+        type: string
+    type: object
+  bumd.SPIForm:
+    type: object
+  bumd.SPIModel:
+    properties:
+      file_spi:
+        type: string
+      penerapan_spi:
+        type: boolean
     type: object
   dokumen.AktaNotarisModel:
     properties:
@@ -323,11 +349,27 @@ definitions:
     type: object
   models.UserDetail:
     properties:
+      id_bumd:
+        type: integer
+      id_daerah:
+        type: integer
+      id_role:
+        type: integer
+      id_user:
+        type: integer
+      kode_ddn:
+        type: string
+      kode_provinsi:
+        type: string
       nama_bumd:
+        type: string
+      nama_daerah:
         type: string
       nama_role:
         type: string
       nama_user:
+        type: string
+      sub_domain_daerah:
         type: string
       username:
         type: string
@@ -2747,6 +2789,168 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: update data bumd
+      tags:
+      - BUMD
+  /strict/bumd/{id}/npwp:
+    get:
+      description: get data npwp by id.
+      operationId: npwp-view
+      parameters:
+      - description: Id untuk get data npwp
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/bumd.NPWPModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data npwp by id
+      tags:
+      - BUMD
+    put:
+      consumes:
+      - application/json
+      description: update data npwp by id.
+      operationId: npwp-update
+      parameters:
+      - description: Id untuk update data npwp
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/bumd.NPWPForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data npwp by id
+      tags:
+      - BUMD
+  /strict/bumd/{id}/spi:
+    get:
+      description: get data spi by id.
+      operationId: spi-view
+      parameters:
+      - description: Id untuk get data spi
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/bumd.SPIModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data spi by id
+      tags:
+      - BUMD
+    put:
+      consumes:
+      - application/json
+      description: update data spi by id.
+      operationId: spi-update
+      parameters:
+      - description: Id untuk update data spi
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/bumd.SPIForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data spi by id
       tags:
       - BUMD
   /strict/jenis_dokumen:

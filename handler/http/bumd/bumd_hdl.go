@@ -7,6 +7,7 @@ import (
 	"microdata/kemendagri/bumd/handler/http/bumd/dokumen"
 	"microdata/kemendagri/bumd/handler/http/bumd/keuangan"
 	"microdata/kemendagri/bumd/models/bumd"
+	"microdata/kemendagri/bumd/utils"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -19,6 +20,7 @@ type BumdHandler struct {
 	Controller *ctl.BumdController
 	Validate   *validator.Validate
 	pgxConn    *pgxpool.Pool
+	minioConn  *utils.MinioConn
 }
 
 func NewBumdHandler(
@@ -26,11 +28,13 @@ func NewBumdHandler(
 	validator *validator.Validate,
 	controller *ctl.BumdController,
 	pgxConn *pgxpool.Pool,
+	minioConn *utils.MinioConn,
 ) {
 	handler := &BumdHandler{
 		Controller: controller,
 		Validate:   validator,
 		pgxConn:    pgxConn,
+		minioConn:  minioConn,
 	}
 
 	rStrict := r.Group("bumd")
@@ -39,6 +43,12 @@ func NewBumdHandler(
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
+
+	rStrict.Get("/:id/spi", handler.SPI)
+	rStrict.Put("/:id/spi", handler.SPIUpdate)
+
+	rStrict.Get("/:id/npwp", handler.NPWP)
+	rStrict.Put("/:id/npwp", handler.NPWPUpdate)
 
 	rData := rStrict.Group("/:id_bumd")
 	dokumen.NewPerdaPendirianHandler(
@@ -273,5 +283,167 @@ func (h *BumdHandler) Delete(c *fiber.Ctx) error {
 		return err
 	}
 
+	return c.JSON(m)
+}
+
+// SPI func for get data spi by id.
+//
+//	@Summary		get data spi by id
+//	@Description	get data spi by id.
+//	@ID				spi-view
+//	@Tags			BUMD
+//	@Produce		json
+//	@Param			id	path		int					true	"Id untuk get data spi"
+//	@success		200	{object}	bumd.SPIModel		"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id}/spi [get]
+func (h *BumdHandler) SPI(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.SPI(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
+}
+
+// SPIUpdate func for update data spi by id.
+//
+//	@Summary		update data spi by id
+//	@Description	update data spi by id.
+//	@ID				spi-update
+//	@Tags			BUMD
+//	@Accept			json
+//	@Param			id		path	int				true	"Id untuk update data spi"
+//	@Param			payload	body	bumd.SPIForm	true	"Update payload"
+//	@Produce		json
+//	@success		200	{object}	boolean				"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		422	{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id}/spi [put]
+func (h *BumdHandler) SPIUpdate(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	payload := new(bumd.SPIForm)
+
+	if err := c.BodyParser(payload); err != nil {
+		return err
+	}
+
+	if err := h.Validate.Struct(payload); err != nil {
+		return err
+	}
+
+	if payload.FileSPI != nil {
+		const maxFileSize = 2 * 1024 * 1024 // 2 MB
+		if err := utils.ValidateFile(payload.FileSPI, maxFileSize, []string{"application/pdf"}); err != nil {
+			return utils.RequestError{
+				Code:    fiber.StatusBadRequest,
+				Message: err.Error(),
+			}
+		}
+	}
+
+	m, err := h.Controller.SPIUpdate(
+		c.Context(),
+		c.Locals("jwt").(*jwt.Token),
+		payload,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
+}
+
+// NPWP func for get data npwp by id.
+//
+//	@Summary		get data npwp by id
+//	@Description	get data npwp by id.
+//	@ID				npwp-view
+//	@Tags			BUMD
+//	@Produce		json
+//	@Param			id	path		int					true	"Id untuk get data npwp"
+//	@success		200	{object}	bumd.NPWPModel		"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id}/npwp [get]
+func (h *BumdHandler) NPWP(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.NPWP(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
+}
+
+// NPWPUpdate func for update data npwp by id.
+//
+//	@Summary		update data npwp by id
+//	@Description	update data npwp by id.
+//	@ID				npwp-update
+//	@Tags			BUMD
+//	@Accept			json
+//	@Param			id		path	int				true	"Id untuk update data npwp"
+//	@Param			payload	body	bumd.NPWPForm	true	"Update payload"
+//	@Produce		json
+//	@success		200	{object}	boolean				"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		422	{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id}/npwp [put]
+func (h *BumdHandler) NPWPUpdate(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	payload := new(bumd.NPWPForm)
+
+	if err := c.BodyParser(payload); err != nil {
+		return err
+	}
+
+	if err := h.Validate.Struct(payload); err != nil {
+		return err
+	}
+
+	if payload.File != nil {
+		const maxFileSize = 2 * 1024 * 1024 // 2 MB
+		if err := utils.ValidateFile(payload.File, maxFileSize, []string{"application/pdf"}); err != nil {
+			return utils.RequestError{
+				Code:    fiber.StatusBadRequest,
+				Message: err.Error(),
+			}
+		}
+	}
+
+	m, err := h.Controller.NPWPUpdate(
+		c.Context(),
+		c.Locals("jwt").(*jwt.Token),
+		payload,
+		id,
+	)
+	if err != nil {
+		return err
+	}
 	return c.JSON(m)
 }
