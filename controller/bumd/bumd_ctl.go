@@ -68,7 +68,7 @@ func (c *BumdController) Index(
 		b.npwp,
 		b.npwp_pemberi,
 		b.npwp_file,
-		b.spi_file,
+		b.file_spi,
 		b.logo
 	FROM bumd b
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
@@ -135,9 +135,9 @@ func (c *BumdController) Index(
 			&m.Website,
 			&m.Narahubung,
 			&m.NPWP,
-			&m.NPWP_Pemberi,
-			&m.NPWP_File,
-			&m.SPI_File,
+			&m.NPWPPemberi,
+			&m.NPWPFile,
+			&m.SPIFile,
 			&m.Logo,
 		)
 
@@ -206,7 +206,7 @@ func (c *BumdController) View(
 		b.npwp,
 		b.npwp_pemberi,
 		b.npwp_file,
-		b.spi_file,
+		b.file_spi,
 		b.logo
 	FROM bumd b
 		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
@@ -239,9 +239,9 @@ func (c *BumdController) View(
 		&r.Website,
 		&r.Narahubung,
 		&r.NPWP,
-		&r.NPWP_Pemberi,
-		&r.NPWP_File,
-		&r.SPI_File,
+		&r.NPWPPemberi,
+		&r.NPWPFile,
+		&r.SPIFile,
 		&r.Logo,
 	)
 	if err != nil {
@@ -508,7 +508,7 @@ func (c *BumdController) SPI(
 	id int,
 ) (r bumd.SPIModel, err error) {
 	q := `
-		SELECT is_penerapan_spi, file_spi FROM bumd WHERE id = $1 AND deleted_by = 0
+		SELECT penerapan_spi, file_spi FROM bumd WHERE id = $1 AND deleted_by = 0
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.PenerapanSPI, &r.FileSPI)
 	if err != nil {
@@ -544,7 +544,7 @@ func (c *BumdController) SPIUpdate(
 	q := `
 	UPDATE bumd
 	SET
-		is_penerapan_spi = $1
+		penerapan_spi = $1
 	WHERE id = $2 AND deleted_by = 0
 	`
 	_, err = tx.Exec(context.Background(), q, payload.PenerapanSPI, id)
