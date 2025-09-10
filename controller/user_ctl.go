@@ -6,6 +6,7 @@ import (
 	"math"
 	"microdata/kemendagri/bumd/models"
 	"microdata/kemendagri/bumd/utils"
+	"os"
 	"time"
 
 	"github.com/gofiber/storage/redis/v3"
@@ -182,7 +183,11 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 	userId := uint64(claims["id_user"].(float64))
 
 	qStr := `WITH t_daerah AS (
-		SELECT id_daerah, nama, kode_ddn, kode_provinsi, sub_domain_daerah FROM data.m_daerah WHERE id_daerah = $2
+		SELECT * FROM dblink ($4,
+		'
+			SELECT id_daerah, nama, kode_ddn, kode_provinsi, sub_domain_daerah FROM data.m_daerah WHERE id_daerah = $2
+		')
+		AS t_daerah (id_daerah INT4, nama VARCHAR, kode_ddn VARCHAR, kode_provinsi VARCHAR, sub_domain_daerah VARCHAR)
 	)
 	SELECT
 		users.id,
@@ -202,7 +207,7 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 	LEFT JOIN bumd ON bumd.id = users.id_bumd
 	LEFT JOIN t_daerah ON t_daerah.id_daerah = users.id_daerah
 		WHERE users.id=$1 AND users.id_daerah=$2 AND users.id_role=$3`
-	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole).Scan(
+	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole, os.Getenv("DB_URL_MST_DATA")).Scan(
 		&r.IdUser,
 		&r.IdDaerah,
 		&r.IdRole,

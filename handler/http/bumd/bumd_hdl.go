@@ -4,8 +4,10 @@ import (
 	ctl "microdata/kemendagri/bumd/controller/bumd"
 	ctl_dkmn "microdata/kemendagri/bumd/controller/bumd/dokumen"
 	ctl_keu "microdata/kemendagri/bumd/controller/bumd/keuangan"
+	ctl_others "microdata/kemendagri/bumd/controller/bumd/others"
 	"microdata/kemendagri/bumd/handler/http/bumd/dokumen"
 	"microdata/kemendagri/bumd/handler/http/bumd/keuangan"
+	"microdata/kemendagri/bumd/handler/http/bumd/others"
 	"microdata/kemendagri/bumd/models/bumd"
 	"microdata/kemendagri/bumd/utils"
 	"strconv"
@@ -81,6 +83,28 @@ func NewBumdHandler(
 		rData,
 		validator,
 		ctl_keu.NewModalController(pgxConn),
+	)
+
+	// others
+	others.NewDomisiliHandler(
+		rData,
+		validator,
+		ctl_others.NewDomisiliController(pgxConn),
+	)
+	others.NewRKAHandler(
+		rData,
+		validator,
+		ctl_others.NewRKAController(pgxConn),
+	)
+	others.NewRencanaBisnisHandler(
+		rData,
+		validator,
+		ctl_others.NewRencanaBisnisController(pgxConn),
+	)
+	others.NewPeraturanHandler(
+		rData,
+		validator,
+		ctl_others.NewPeraturanController(pgxConn),
 	)
 }
 
@@ -318,9 +342,10 @@ func (h *BumdHandler) SPI(c *fiber.Ctx) error {
 //	@Description	update data spi by id.
 //	@ID				spi-update
 //	@Tags			BUMD
-//	@Accept			json
-//	@Param			id		path	int				true	"Id untuk update data spi"
-//	@Param			payload	body	bumd.SPIForm	true	"Update payload"
+//	@Accept			multipart/form-data
+//	@Param			id				path		int		true	"Id untuk update data spi"
+//	@Param			penerapan_spi	formData	bool	false	"Penerapan SPI"
+//	@Param			file_spi		formData	file	false	"File SPI"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -400,8 +425,10 @@ func (h *BumdHandler) NPWP(c *fiber.Ctx) error {
 //	@ID				npwp-update
 //	@Tags			BUMD
 //	@Accept			json
-//	@Param			id		path	int				true	"Id untuk update data npwp"
-//	@Param			payload	body	bumd.NPWPForm	true	"Update payload"
+//	@Param			id		path		int		true	"Id untuk update data npwp"
+//	@Param			npwp	formData	string	false	"NPWP"
+//	@Param			pemberi	formData	string	false	"Pemberi"
+//	@Param			file	formData	file	false	"File"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"

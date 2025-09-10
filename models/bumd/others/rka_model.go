@@ -1,0 +1,27 @@
+package others
+
+import "mime/multipart"
+
+type RKAModel struct {
+	ID              int64  `json:"id" xml:"id"`
+	Nomor           string `json:"nomor" xml:"nomor"`
+	InstansiPemberi string `json:"instansi_pemberi" xml:"instansi_pemberi"`
+	Tanggal         string `json:"tanggal" xml:"tanggal"`
+	Klasifikasi     string `json:"klasifikasi" xml:"klasifikasi"`
+	MasaBerlaku     string `json:"masa_berlaku" xml:"masa_berlaku"`
+	File            string `json:"file" xml:"file"`
+	Kualifikasi     int32  `json:"kualifikasi" xml:"kualifikasi"`
+	IDBumd          int32  `json:"id_bumd" xml:"id_bumd"`
+	IsSeumurHidup   int32  `json:"is_seumur_hidup" xml:"is_seumur_hidup"`
+}
+
+type RKAForm struct {
+	Nomor           string                `json:"nomor" xml:"nomor"`
+	InstansiPemberi string                `json:"instansi_pemberi" xml:"instansi_pemberi"`
+	Tanggal         string                `json:"tanggal" xml:"tanggal"`
+	Klasifikasi     string                `json:"klasifikasi" xml:"klasifikasi"`
+	MasaBerlaku     string                `json:"masa_berlaku" xml:"masa_berlaku"`
+	File            *multipart.FileHeader `json:"file" xml:"file"`
+	Kualifikasi     int32                 `json:"kualifikasi" xml:"kualifikasi"`
+	IDBumd          int32                 `json:"id_bumd" xml:"id_bumd"`
+}
