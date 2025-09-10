@@ -3608,6 +3608,256 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/bumd/{id}/npwp": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data npwp by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "get data npwp by id",
+                "operationId": "npwp-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id untuk get data npwp",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/bumd.NPWPModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data npwp by id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "update data npwp by id",
+                "operationId": "npwp-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id untuk update data npwp",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bumd.NPWPForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id}/spi": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data spi by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "get data spi by id",
+                "operationId": "spi-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id untuk get data spi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/bumd.SPIModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data spi by id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "update data spi by id",
+                "operationId": "spi-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id untuk update data spi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/bumd.SPIForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/jenis_dokumen": {
             "get": {
                 "security": [
@@ -4745,10 +4995,19 @@ const docTemplate = `{
                 "id_induk_perusahaan": {
                     "type": "integer"
                 },
+                "id_provinsi": {
+                    "type": "integer"
+                },
                 "nama": {
                     "type": "string"
                 },
+                "nama_daerah": {
+                    "type": "string"
+                },
                 "nama_induk_perusahaan": {
+                    "type": "string"
+                },
+                "nama_provinsi": {
                     "type": "string"
                 },
                 "narahubung": {
@@ -4765,6 +5024,37 @@ const docTemplate = `{
                 },
                 "website": {
                     "type": "string"
+                }
+            }
+        },
+        "bumd.NPWPForm": {
+            "type": "object"
+        },
+        "bumd.NPWPModel": {
+            "type": "object",
+            "properties": {
+                "file": {
+                    "type": "string"
+                },
+                "npwp": {
+                    "type": "string"
+                },
+                "pemberi": {
+                    "type": "string"
+                }
+            }
+        },
+        "bumd.SPIForm": {
+            "type": "object"
+        },
+        "bumd.SPIModel": {
+            "type": "object",
+            "properties": {
+                "file_spi": {
+                    "type": "string"
+                },
+                "penerapan_spi": {
+                    "type": "boolean"
                 }
             }
         },
@@ -5164,13 +5454,37 @@ const docTemplate = `{
         "models.UserDetail": {
             "type": "object",
             "properties": {
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "id_daerah": {
+                    "type": "integer"
+                },
+                "id_role": {
+                    "type": "integer"
+                },
+                "id_user": {
+                    "type": "integer"
+                },
+                "kode_ddn": {
+                    "type": "string"
+                },
+                "kode_provinsi": {
+                    "type": "string"
+                },
                 "nama_bumd": {
+                    "type": "string"
+                },
+                "nama_daerah": {
                     "type": "string"
                 },
                 "nama_role": {
                     "type": "string"
                 },
                 "nama_user": {
+                    "type": "string"
+                },
+                "sub_domain_daerah": {
                     "type": "string"
                 },
                 "username": {

@@ -1,6 +1,7 @@
 package bumd
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd"
@@ -8,16 +9,18 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
 
 type BumdController struct {
-	pgxConn *pgxpool.Pool
+	pgxConn        *pgxpool.Pool
+	pgxConnMstData *pgxpool.Pool
 }
 
-func NewBumdController(pgxConn *pgxpool.Pool) *BumdController {
-	return &BumdController{pgxConn: pgxConn}
+func NewBumdController(pgxConn *pgxpool.Pool, pgxConnMstData *pgxpool.Pool) *BumdController {
+	return &BumdController{pgxConn: pgxConn, pgxConnMstData: pgxConnMstData}
 }
 
 func (c *BumdController) Index(
@@ -128,15 +131,15 @@ func (c *BumdController) Index(
 			&m.Narahubung,
 		)
 
-		q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id = $1`
-		err = c.pgxConn.QueryRow(fCtx, q, m.IDDaerah).Scan(&m.NamaDaerah, &m.IDProvinsi)
+		q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
+		err = c.pgxConnMstData.QueryRow(fCtx, q, m.IDDaerah).Scan(&m.NamaDaerah, &m.IDProvinsi)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
 		}
 
 		if m.IDDaerah != m.IDProvinsi {
-			q = `SELECT nama_daerah FROM data.m_daerah WHERE id = $1`
-			err = c.pgxConn.QueryRow(fCtx, q, m.IDProvinsi).Scan(&m.NamaProvinsi)
+			q = `SELECT nama_daerah FROM data.m_daerah WHERE id_daerah = $1`
+			err = c.pgxConnMstData.QueryRow(fCtx, q, m.IDProvinsi).Scan(&m.NamaProvinsi)
 			if err != nil {
 				return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
 			}
@@ -223,6 +226,20 @@ func (c *BumdController) View(
 	)
 	if err != nil {
 		return r, fmt.Errorf("gagal mengambil data BUMD: %w", err)
+	}
+
+	q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
+	err = c.pgxConnMstData.QueryRow(fCtx, q, r.IDDaerah).Scan(&r.NamaDaerah, &r.IDProvinsi)
+	if err != nil {
+		return r, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+	}
+
+	if r.IDDaerah != r.IDProvinsi {
+		q = `SELECT nama_daerah FROM data.m_daerah WHERE id_daerah = $1`
+		err = c.pgxConnMstData.QueryRow(fCtx, q, r.IDProvinsi).Scan(&r.NamaProvinsi)
+		if err != nil {
+			return r, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+		}
 	}
 
 	return r, err
@@ -458,6 +475,174 @@ func (c *BumdController) Delete(
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "Gagal menghapus BUMD - " + err.Error(),
+		}
+	}
+
+	return true, err
+}
+
+func (c *BumdController) SPI(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	id int,
+) (r bumd.SPIModel, err error) {
+	q := `
+		SELECT is_penerapan_spi, file_spi FROM bumd WHERE id = $1 AND deleted_by = 0
+	`
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.PenerapanSPI, &r.FileSPI)
+	if err != nil {
+		return bumd.SPIModel{}, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengambil data SPI - " + err.Error(),
+		}
+	}
+	return r, nil
+}
+
+func (c *BumdController) SPIUpdate(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	payload *bumd.SPIForm,
+	id int,
+) (r bool, err error) {
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal memulai transaksi - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
+	q := `
+	UPDATE bumd
+	SET
+		is_penerapan_spi = $1
+	WHERE id = $2 AND deleted_by = 0
+	`
+	_, err = tx.Exec(context.Background(), q, payload.PenerapanSPI, id)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengupdate SPI - " + err.Error(),
+		}
+	}
+
+	if payload.PenerapanSPI && payload.FileSPI != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.FileSPI.Filename)
+
+		src, err := payload.FileSPI.Open()
+		if err != nil {
+			err = utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+			return false, err
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "bumd_spi/" + fileName
+
+		// update file
+		q = `UPDATE bumd SET file_spi=$1 WHERE id=$2`
+		_, err = tx.Exec(context.Background(), q, objectName, id)
+		if err != nil {
+			err = utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+			return false, err
+		}
+	}
+	return true, err
+}
+
+func (c *BumdController) NPWP(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	id int,
+) (r bumd.NPWPModel, err error) {
+	q := `
+	SELECT npwp, pemberi, file FROM bumd WHERE id = $1 AND deleted_by = 0
+	`
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.NPWP, &r.Pemberi, &r.File)
+	if err != nil {
+		return bumd.NPWPModel{}, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengambil data NPWP - " + err.Error(),
+		}
+	}
+	return r, nil
+}
+
+func (c *BumdController) NPWPUpdate(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	payload *bumd.NPWPForm,
+	id int,
+) (r bool, err error) {
+	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal memulai transaksi - " + err.Error(),
+		}
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(context.Background())
+		} else {
+			tx.Commit(context.Background())
+		}
+	}()
+
+	q := `
+	UPDATE bumd
+	SET
+		npwp = $1,
+		pemberi = $2
+	WHERE id = $3 AND deleted_by = 0
+	`
+	_, err = tx.Exec(context.Background(), q, payload.NPWP, payload.Pemberi, id)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengupdate NPWP - " + err.Error(),
+		}
+	}
+
+	if payload.File != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.File.Filename)
+
+		src, err := payload.File.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "bumd_npwp/" + fileName
+
+		// update file
+		q = `UPDATE bumd SET file=$1 WHERE id=$2`
+		_, err = tx.Exec(context.Background(), q, objectName, id)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
 		}
 	}
 
