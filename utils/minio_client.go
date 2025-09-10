@@ -1,34 +1,37 @@
 package utils
 
 import (
-	"os"
-
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-func NewMinIOClient() (*minio.Client, error) {
+type MinioConn struct {
+	MinioClient *minio.Client
+	BucketName  string
+}
+
+func NewMinIOConn(endpoint, accessKey, secretKey, bucketName string) (*MinioConn, error) {
+	var err error
+	conn := new(MinioConn)
+	conn.BucketName = bucketName
+
 	// Initialize minio client object.
-	minioClient, err := MinioConnection()
+	conn.MinioClient, err = minioConnection(endpoint, accessKey, secretKey)
 	if err != nil {
-		return minioClient, err
+		return conn, err
 	}
 
-	return minioClient, err
+	return conn, err
 }
 
 // MinioConnection func for opening minio connection.
-func MinioConnection() (*minio.Client, error) {
+func minioConnection(endpoint, accessKey, secretKey string) (*minio.Client, error) {
 	var err error
 	var minioClient *minio.Client
 
-	endpoint := os.Getenv("MINIO_ENDPOINT")
-	accessKeyID := os.Getenv("MINIO_ACCESS_KEY")
-	secretAccessKey := os.Getenv("MINIO_SECRET_KEY")
-
 	// Initialize minio client object.
 	minioClient, err = minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure: true,
 	})
 	if err != nil {
