@@ -200,7 +200,7 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@Failure		422	{array}		utils.RequestError	"Data validation failed"
 //	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/akta_notaris [put]
+//	@Router			/strict/bumd/{id_bumd}/akta_notaris/{id} [put]
 func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 	idBumd, err := c.ParamsInt("id_bumd")
 	if err != nil {

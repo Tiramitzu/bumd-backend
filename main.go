@@ -431,6 +431,12 @@ func main() {
 		controller_mst.NewJenisDokumenController(pgxConn),
 	)
 
+	http_master.NewPendidikanHandler(
+		rStrict,
+		vld,
+		controller_mst.NewPendidikanController(pgxConn),
+	)
+
 	http_util.StartServer(app)
 }
 

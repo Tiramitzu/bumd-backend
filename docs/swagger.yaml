@@ -1299,71 +1299,6 @@ paths:
       summary: create data akta notaris
       tags:
       - Akta Notaris
-    put:
-      consumes:
-      - multipart/form-data
-      description: update data akta notaris.
-      operationId: akta_notaris-update
-      parameters:
-      - description: Id BUMD
-        in: path
-        name: id_bumd
-        required: true
-        type: integer
-      - description: Id untuk update data akta notaris
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Nomor Akta notaris
-        in: formData
-        name: nomor
-        required: true
-        type: string
-      - description: Tanggal Akta notaris
-        in: formData
-        name: tanggal
-        required: true
-        type: string
-      - description: Keterangan
-        in: formData
-        name: keterangan
-        required: true
-        type: string
-      - description: File
-        in: formData
-        name: file
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: boolean
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "422":
-          description: Data validation failed
-          schema:
-            items:
-              $ref: '#/definitions/utils.RequestError'
-            type: array
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: update data akta notaris
-      tags:
-      - Akta Notaris
   /strict/bumd/{id_bumd}/akta_notaris/{id}:
     delete:
       consumes:
@@ -1447,6 +1382,71 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: get data akta notaris by id
+      tags:
+      - Akta Notaris
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data akta notaris.
+      operationId: akta_notaris-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk update data akta notaris
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Nomor Akta notaris
+        in: formData
+        name: nomor
+        required: true
+        type: string
+      - description: Tanggal Akta notaris
+        in: formData
+        name: tanggal
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data akta notaris
       tags:
       - Akta Notaris
   /strict/bumd/{id_bumd}/domisili:
@@ -3161,76 +3161,6 @@ paths:
       summary: create data perda pendirian
       tags:
       - Perda Pendirian
-    put:
-      consumes:
-      - multipart/form-data
-      description: update data perda pendirian.
-      operationId: perda_pendirian-update
-      parameters:
-      - description: Id BUMD
-        in: path
-        name: id_bumd
-        required: true
-        type: integer
-      - description: Id untuk update data perda pendirian
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Nomor Perda
-        in: formData
-        name: nomor_perda
-        required: true
-        type: string
-      - description: Tanggal Perda
-        in: formData
-        name: tanggal_perda
-        required: true
-        type: string
-      - description: Keterangan
-        in: formData
-        name: keterangan
-        required: true
-        type: string
-      - description: File
-        in: formData
-        name: file
-        type: file
-      - description: Modal Dasar
-        in: formData
-        name: modal_dasar
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            type: boolean
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "422":
-          description: Data validation failed
-          schema:
-            items:
-              $ref: '#/definitions/utils.RequestError'
-            type: array
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: update data perda pendirian
-      tags:
-      - Perda Pendirian
   /strict/bumd/{id_bumd}/perda_pendirian/{id}:
     delete:
       consumes:
@@ -3314,6 +3244,76 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: get data perda pendirian by id
+      tags:
+      - Perda Pendirian
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data perda pendirian.
+      operationId: perda_pendirian-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id untuk update data perda pendirian
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Nomor Perda
+        in: formData
+        name: nomor_perda
+        required: true
+        type: string
+      - description: Tanggal Perda
+        in: formData
+        name: tanggal_perda
+        required: true
+        type: string
+      - description: Keterangan
+        in: formData
+        name: keterangan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      - description: Modal Dasar
+        in: formData
+        name: modal_dasar
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data perda pendirian
       tags:
       - Perda Pendirian
   /strict/bumd/{id_bumd}/rencana_bisnis:

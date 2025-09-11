@@ -4,7 +4,6 @@ import (
 	"context"
 	models "microdata/kemendagri/bumd/models/master"
 	"microdata/kemendagri/bumd/utils"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,14 +11,12 @@ import (
 )
 
 type PendidikanController struct {
-	contextTimeout time.Duration
-	pgxConn        *pgxpool.Pool
+	pgxConn *pgxpool.Pool
 }
 
-func NewPendidikanController(conn *pgxpool.Pool, tot time.Duration) *PendidikanController {
+func NewPendidikanController(conn *pgxpool.Pool) *PendidikanController {
 	return &PendidikanController{
-		pgxConn:        conn,
-		contextTimeout: tot,
+		pgxConn: conn,
 	}
 }
 
