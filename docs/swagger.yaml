@@ -365,7 +365,7 @@ definitions:
         type: integer
       kode_ddn:
         type: string
-      kode_provinsi:
+      kode_prop:
         type: string
       nama_bumd:
         type: string
@@ -375,7 +375,7 @@ definitions:
         type: string
       nama_user:
         type: string
-      sub_domain_daerah:
+      sub_domain:
         type: string
       username:
         type: string
@@ -420,6 +420,31 @@ definitions:
       nomor:
         type: string
       tanggal:
+        type: string
+    type: object
+  others.PengurusModel:
+    properties:
+      alamat:
+        type: string
+      deskripsi_jabatan:
+        type: string
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      jabatan_struktur:
+        type: integer
+      nama_pengurus:
+        type: string
+      nik:
+        type: string
+      pendidikan_akhir:
+        type: integer
+      tanggal_akhir_jabatan:
+        type: string
+      tanggal_mulai_jabatan:
         type: string
     type: object
   others.PeraturanModel:
@@ -2191,6 +2216,315 @@ paths:
       summary: update data nib
       tags:
       - Nib
+  /strict/bumd/{id_bumd}/pengurus:
+    get:
+      description: get all pengurus.
+      operationId: pengurus-index
+      parameters:
+      - description: Id Bumd
+        in: query
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/others.PengurusModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get all pengurus
+      tags:
+      - Pengurus
+    post:
+      consumes:
+      - multipart/form-data
+      description: create pengurus.
+      operationId: pengurus-create
+      parameters:
+      - description: Id Bumd
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Jabatan Struktur
+        in: formData
+        name: jabatan_struktur
+        required: true
+        type: integer
+      - description: Nama Pengurus
+        in: formData
+        name: nama_pengurus
+        required: true
+        type: string
+      - description: NIK
+        in: formData
+        name: nik
+        required: true
+        type: string
+      - description: Alamat
+        in: formData
+        name: alamat
+        required: true
+        type: string
+      - description: Deskripsi Jabatan
+        in: formData
+        name: deskripsi_jabatan
+        required: true
+        type: string
+      - description: Pendidikan Akhir
+        in: formData
+        name: pendidikan_akhir
+        required: true
+        type: integer
+      - description: Tanggal Mulai Jabatan
+        in: formData
+        name: tanggal_mulai_jabatan
+        required: true
+        type: string
+      - description: Tanggal Akhir Jabatan
+        in: formData
+        name: tanggal_akhir_jabatan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PengurusModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create pengurus
+      tags:
+      - Pengurus
+  /strict/bumd/{id_bumd}/pengurus/:id:
+    delete:
+      description: delete pengurus.
+      operationId: pengurus-delete
+      parameters:
+      - description: Id Bumd
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id Pengurus
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PengurusModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete pengurus
+      tags:
+      - Pengurus
+    get:
+      description: get pengurus by id.
+      operationId: pengurus-view
+      parameters:
+      - description: Id Pengurus
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PengurusModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get pengurus by id
+      tags:
+      - Pengurus
+    put:
+      consumes:
+      - multipart/form-data
+      description: update pengurus.
+      operationId: pengurus-update
+      parameters:
+      - description: Id Bumd
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id Pengurus
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Jabatan Struktur
+        in: formData
+        name: jabatan_struktur
+        required: true
+        type: integer
+      - description: Nama Pengurus
+        in: formData
+        name: nama_pengurus
+        required: true
+        type: string
+      - description: NIK
+        in: formData
+        name: nik
+        required: true
+        type: string
+      - description: Alamat
+        in: formData
+        name: alamat
+        required: true
+        type: string
+      - description: Deskripsi Jabatan
+        in: formData
+        name: deskripsi_jabatan
+        required: true
+        type: string
+      - description: Pendidikan Akhir
+        in: formData
+        name: pendidikan_akhir
+        required: true
+        type: integer
+      - description: Tanggal Mulai Jabatan
+        in: formData
+        name: tanggal_mulai_jabatan
+        required: true
+        type: string
+      - description: Tanggal Akhir Jabatan
+        in: formData
+        name: tanggal_akhir_jabatan
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PengurusModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update pengurus
+      tags:
+      - Pengurus
   /strict/bumd/{id_bumd}/peraturan:
     get:
       description: get data peraturan.
@@ -2546,11 +2880,10 @@ paths:
         name: file
         type: file
       - description: Modal Dasar
-        format: float64
         in: formData
         name: modal_dasar
         required: true
-        type: number
+        type: string
       produces:
       - application/json
       responses:
@@ -2617,11 +2950,10 @@ paths:
         name: file
         type: file
       - description: Modal Dasar
-        format: float64
         in: formData
         name: modal_dasar
         required: true
-        type: number
+        type: string
       produces:
       - application/json
       responses:

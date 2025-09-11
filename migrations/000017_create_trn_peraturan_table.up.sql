@@ -25,10 +25,10 @@ CREATE INDEX idx_trn_peraturan_id_bumd
     ON trn_peraturan(id_bumd);
 
 CREATE INDEX idx_trn_peraturan_nomor 
-    ON trn_peraturan(nomor);
+    ON trn_peraturan(nomor_peraturan);
 
 CREATE INDEX idx_trn_peraturan_tanggal 
-    ON trn_peraturan(tanggal);
+    ON trn_peraturan(tanggal_berlaku);
 
 CREATE INDEX idx_trn_peraturan_masa_berlaku 
-    ON trn_peraturan(id_bumd);
+    ON trn_peraturan(tanggal_berlaku);

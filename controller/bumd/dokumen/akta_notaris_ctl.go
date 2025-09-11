@@ -218,7 +218,7 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	var args []interface{}
 	q := `
 	UPDATE dkmn_akta_notaris
-	SET nomor = $1, notaris = $2, tanggal = $3, keterangan = $4, updated_by = $5
+	SET nomor = $1, notaris = $2, tanggal = $3, keterangan = $4, updated_by = $5, updated_at = NOW()
 	WHERE id = $6 AND id_bumd = $7
 	`
 	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idUser, id, idBumd)
@@ -245,8 +245,8 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		objectName := "dkmn_akta_notaris/" + fileName
 
 		// update file
-		q = `UPDATE dkmn_akta_notaris SET file=$1 WHERE id=$2`
-		_, err = tx.Exec(context.Background(), q, objectName, id)
+		q = `UPDATE dkmn_akta_notaris SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -269,11 +269,11 @@ func (c *AktaNotarisController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 
 	q := `
 	UPDATE dkmn_akta_notaris
-	SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3 AND id_bumd = $4
+	SET deleted_by = $1, deleted_at = NOW()
+	WHERE id = $2 AND id_bumd = $3
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idBumd)
+	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {
 		return false, err
 	}

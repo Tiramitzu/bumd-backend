@@ -5,7 +5,6 @@ import (
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/keuangan"
 	"os"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -204,6 +203,7 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *keuangan.KeuModalForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
+	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
 	if idBumdClaims > 0 {
@@ -211,11 +211,11 @@ func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	}
 
 	q := `
-	INSERT INTO keu_modal (id_bumd, id_prov, id_kab, pemegang, no_ba, tanggal, jumlah, keterangan)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	INSERT INTO keu_modal (id_bumd, id_prov, id_kab, pemegang, no_ba, tanggal, jumlah, keterangan, created_by)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan)
+	_, err = c.pgxConn.Exec(fCtx, q, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan, idUser)
 	if err != nil {
 		return r, fmt.Errorf("gagal membuat data Modal: %w", err)
 	}
@@ -224,6 +224,7 @@ func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 
 func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id int, payload *keuangan.KeuModalForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
+	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
 	if idBumdClaims > 0 {
@@ -239,13 +240,15 @@ func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 		no_ba = $6,
 		tanggal = $7,
 		jumlah = $8,
-		keterangan = $9
+		keterangan = $9,
+		updated_by = $10,
+		updated_at = NOW()
 	WHERE id = $1 
 		AND id_bumd = $2
 		AND deleted_by = 0
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, id, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan)
+	_, err = c.pgxConn.Exec(fCtx, q, id, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan, idUser)
 	if err != nil {
 		return r, fmt.Errorf("gagal mengubah data Modal: %w", err)
 	}
@@ -264,14 +267,13 @@ func (c *ModalController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	q := `
 	UPDATE keu_modal
 	SET
-		deleted_by = $3
-		deleted_at = $4
-	WHERE id = $1
-		AND id_bumd = $2
-		AND deleted_by = 0
+		deleted_by = $1,
+		deleted_at = NOW()
+	WHERE id = $2
+		AND id_bumd = $3
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, id, idBumd, idUser, time.Now())
+	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {
 		return r, fmt.Errorf("gagal menghapus data Modal: %w", err)
 	}

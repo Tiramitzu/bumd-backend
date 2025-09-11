@@ -212,7 +212,7 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	var args []interface{}
 	q := `
 	UPDATE trn_peraturan
-	SET nomor = $1, tanggal_berlaku = $2, keterangan_peraturan = $3, file_peraturan = $4, jenis_peraturan = $5, updated_by = $6
+	SET nomor = $1, tanggal_berlaku = $2, keterangan_peraturan = $3, file_peraturan = $4, jenis_peraturan = $5, updated_by = $6, updated_at = NOW()
 	WHERE id = $8 AND id_bumd = $9
 	`
 	args = append(args, payload.Nomor, payload.TanggalBerlaku, payload.KeteranganPeraturan, payload.FilePeraturan, payload.JenisPeraturan, idUser, id, idBumd)
@@ -263,10 +263,10 @@ func (c *PeraturanController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	}
 	q := `
 	UPDATE trn_peraturan
-	SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3 AND id_bumd = $4 AND deleted_by = 0
+	SET deleted_by = $1, deleted_at = NOW()
+	WHERE id = $2 AND id_bumd = $3
 	`
-	_, err = c.pgxConn.Exec(context.Background(), q, idUser, time.Now(), id, idBumd)
+	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
 		return false, err
 	}
