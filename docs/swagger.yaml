@@ -207,6 +207,57 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MzYwODU0MjksImlkIjoyLCJwaG9uZSI6Iis2MjgxMjM0NTYyIiwidXNlcm5hbWUiOi.dl_ojy9ojLnWqpW589YltLPV61TCsON-3yQ2
         type: string
     type: object
+  kepengurusan_sdm.PegawaiForm:
+    properties:
+      jumlah_pegawai:
+        type: integer
+      pendidikan:
+        type: integer
+      status_pegawai:
+        type: integer
+      tahun:
+        type: integer
+    type: object
+  kepengurusan_sdm.PegawaiModel:
+    properties:
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      jumlah_pegawai:
+        type: integer
+      pendidikan:
+        type: integer
+      status_pegawai:
+        type: integer
+      tahun:
+        type: integer
+    type: object
+  kepengurusan_sdm.PengurusModel:
+    properties:
+      alamat:
+        type: string
+      deskripsi_jabatan:
+        type: string
+      file:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      jabatan_struktur:
+        type: integer
+      nama_pengurus:
+        type: string
+      nik:
+        type: string
+      pendidikan_akhir:
+        type: integer
+      tanggal_akhir_jabatan:
+        type: string
+      tanggal_mulai_jabatan:
+        type: string
+    type: object
   keuangan.KeuModalForm:
     properties:
       id_kab:
@@ -310,25 +361,6 @@ definitions:
     - password
     - username
     type: object
-  models.ProdukModel:
-    properties:
-      deskripsi:
-        type: string
-      gambar:
-        type: string
-      id:
-        type: integer
-      id_bumd:
-        type: integer
-      id_daerah:
-        type: integer
-      nama:
-        type: string
-      nilai:
-        type: number
-      tampilkan:
-        type: boolean
-    type: object
   models.RolesModel:
     properties:
       id:
@@ -422,57 +454,6 @@ definitions:
       tanggal:
         type: string
     type: object
-  others.PegawaiForm:
-    properties:
-      jumlah_pegawai:
-        type: integer
-      pendidikan:
-        type: integer
-      status_pegawai:
-        type: integer
-      tahun:
-        type: integer
-    type: object
-  others.PegawaiModel:
-    properties:
-      id:
-        type: integer
-      id_bumd:
-        type: integer
-      jumlah_pegawai:
-        type: integer
-      pendidikan:
-        type: integer
-      status_pegawai:
-        type: integer
-      tahun:
-        type: integer
-    type: object
-  others.PengurusModel:
-    properties:
-      alamat:
-        type: string
-      deskripsi_jabatan:
-        type: string
-      file:
-        type: string
-      id:
-        type: integer
-      id_bumd:
-        type: integer
-      jabatan_struktur:
-        type: integer
-      nama_pengurus:
-        type: string
-      nik:
-        type: string
-      pendidikan_akhir:
-        type: integer
-      tanggal_akhir_jabatan:
-        type: string
-      tanggal_mulai_jabatan:
-        type: string
-    type: object
   others.PeraturanModel:
     properties:
       file_peraturan:
@@ -490,6 +471,19 @@ definitions:
       nomor:
         type: string
       tanggal_berlaku:
+        type: string
+    type: object
+  others.ProdukModel:
+    properties:
+      deskripsi:
+        type: string
+      foto_produk:
+        type: string
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      nama_produk:
         type: string
     type: object
   others.RKAModel:
@@ -2271,7 +2265,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/others.PegawaiModel'
+              $ref: '#/definitions/kepengurusan_sdm.PegawaiModel'
             type: array
         "400":
           description: Bad request
@@ -2307,12 +2301,12 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/others.PegawaiForm'
+          $ref: '#/definitions/kepengurusan_sdm.PegawaiForm'
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PegawaiModel'
+            $ref: '#/definitions/kepengurusan_sdm.PegawaiModel'
         "400":
           description: Bad request
           schema:
@@ -2355,7 +2349,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PegawaiModel'
+            $ref: '#/definitions/kepengurusan_sdm.PegawaiModel'
         "400":
           description: Bad request
           schema:
@@ -2394,7 +2388,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PegawaiModel'
+            $ref: '#/definitions/kepengurusan_sdm.PegawaiModel'
         "400":
           description: Bad request
           schema:
@@ -2434,12 +2428,12 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/others.PegawaiForm'
+          $ref: '#/definitions/kepengurusan_sdm.PegawaiForm'
       responses:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PegawaiModel'
+            $ref: '#/definitions/kepengurusan_sdm.PegawaiModel'
         "400":
           description: Bad request
           schema:
@@ -2492,7 +2486,7 @@ paths:
           description: Success
           schema:
             items:
-              $ref: '#/definitions/others.PengurusModel'
+              $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
             type: array
         "400":
           description: Bad request
@@ -2577,7 +2571,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PengurusModel'
+            $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
         "400":
           description: Bad request
           schema:
@@ -2620,7 +2614,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PengurusModel'
+            $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
         "400":
           description: Bad request
           schema:
@@ -2659,7 +2653,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PengurusModel'
+            $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
         "400":
           description: Bad request
           schema:
@@ -2748,7 +2742,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/others.PengurusModel'
+            $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
         "400":
           description: Bad request
           schema:
@@ -3316,6 +3310,243 @@ paths:
       summary: update data perda pendirian
       tags:
       - Perda Pendirian
+  /strict/bumd/{id_bumd}/produk:
+    get:
+      description: get data produk.
+      operationId: produk-index
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/others.ProdukModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data produk
+      tags:
+      - Produk
+    post:
+      consumes:
+      - multipart/form-data
+      description: create data produk.
+      operationId: produk-create
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nama Produk
+        in: formData
+        name: nama_produk
+        type: string
+      - description: Deskripsi Produk
+        in: formData
+        name: deskripsi
+        type: integer
+      - description: Foto Produk
+        in: formData
+        name: foto_produk
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data produk
+      tags:
+      - Produk
+  /strict/bumd/{id_bumd}/produk/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete data produk.
+      operationId: produk-delete
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id PRODUK
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data produk
+      tags:
+      - Produk
+    get:
+      description: get data produk.
+      operationId: produk-view
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id PRODUK
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.ProdukModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data produk
+      tags:
+      - Produk
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data produk.
+      operationId: produk-update
+      parameters:
+      - description: Id BUMD
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Nama Produk
+        in: formData
+        name: nama_produk
+        type: string
+      - description: Deskripsi Produk
+        in: formData
+        name: deskripsi
+        type: integer
+      - description: Foto Produk
+        in: formData
+        name: foto_produk
+        type: file
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data produk
+      tags:
+      - Produk
   /strict/bumd/{id_bumd}/rencana_bisnis:
     get:
       description: get data rencana bisnis.
@@ -4971,51 +5202,6 @@ paths:
       summary: update data jenis dokumen
       tags:
       - Jenis dokumen
-  /strict/produk:
-    get:
-      description: get data produk.
-      operationId: produk-index
-      parameters:
-      - description: Id BUMD
-        in: query
-        name: id_bumd
-        type: integer
-      - description: Nama Produk
-        in: query
-        name: nama
-        type: string
-      - description: Halaman yang ditampilkan
-        in: query
-        name: page
-        type: integer
-      - description: Jumlah data per halaman, maksimal 5 data per halaman
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: '#/definitions/models.ProdukModel'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "404":
-          description: Data not found
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-        "500":
-          description: Server error
-          schema:
-            $ref: '#/definitions/utils.RequestError'
-      security:
-      - ApiKeyAuth: []
-      summary: get data produk
-      tags:
-      - Produk
   /strict/roles:
     get:
       description: get data roles.

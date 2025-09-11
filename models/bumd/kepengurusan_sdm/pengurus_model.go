@@ -1,4 +1,4 @@
-package others
+package kepengurusan_sdm
 
 import "mime/multipart"
 

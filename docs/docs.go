@@ -2606,7 +2606,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/others.PegawaiModel"
+                                "$ref": "#/definitions/kepengurusan_sdm.PegawaiModel"
                             }
                         }
                     },
@@ -2661,7 +2661,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/others.PegawaiForm"
+                            "$ref": "#/definitions/kepengurusan_sdm.PegawaiForm"
                         }
                     }
                 ],
@@ -2669,7 +2669,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PegawaiModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PegawaiModel"
                         }
                     },
                     "400": {
@@ -2731,7 +2731,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PegawaiModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PegawaiModel"
                         }
                     },
                     "400": {
@@ -2792,7 +2792,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/others.PegawaiForm"
+                            "$ref": "#/definitions/kepengurusan_sdm.PegawaiForm"
                         }
                     }
                 ],
@@ -2800,7 +2800,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PegawaiModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PegawaiModel"
                         }
                     },
                     "400": {
@@ -2864,7 +2864,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PegawaiModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PegawaiModel"
                         }
                     },
                     "400": {
@@ -2946,7 +2946,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/others.PengurusModel"
+                                "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
                             }
                         }
                     },
@@ -3070,7 +3070,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PengurusModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
                         }
                     },
                     "400": {
@@ -3132,7 +3132,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PengurusModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
                         }
                     },
                     "400": {
@@ -3262,7 +3262,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PengurusModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
                         }
                     },
                     "400": {
@@ -3326,7 +3326,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/others.PengurusModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
                         }
                     },
                     "400": {
@@ -4140,6 +4140,369 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Id untuk delete data perda pendirian",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/produk": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data produk.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "get data produk",
+                "operationId": "produk-index",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/others.ProdukModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create data produk.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "create data produk",
+                "operationId": "produk-create",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama Produk",
+                        "name": "nama_produk",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Deskripsi Produk",
+                        "name": "deskripsi",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Foto Produk",
+                        "name": "foto_produk",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/produk/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data produk.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "get data produk",
+                "operationId": "produk-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Id PRODUK",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.ProdukModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data produk.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "update data produk",
+                "operationId": "produk-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama Produk",
+                        "name": "nama_produk",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Deskripsi Produk",
+                        "name": "deskripsi",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Foto Produk",
+                        "name": "foto_produk",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete data produk.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "delete data produk",
+                "operationId": "produk-delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Id PRODUK",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -6702,76 +7065,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/strict/produk": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get data produk.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Produk"
-                ],
-                "summary": "get data produk",
-                "operationId": "produk-index",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Id BUMD",
-                        "name": "id_bumd",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Nama Produk",
-                        "name": "nama",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Halaman yang ditampilkan",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/models.ProdukModel"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "404": {
-                        "description": "Data not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "500": {
-                        "description": "Server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    }
-                }
-            }
-        },
         "/strict/roles": {
             "get": {
                 "security": [
@@ -7755,6 +8048,84 @@ const docTemplate = `{
                 }
             }
         },
+        "kepengurusan_sdm.PegawaiForm": {
+            "type": "object",
+            "properties": {
+                "jumlah_pegawai": {
+                    "type": "integer"
+                },
+                "pendidikan": {
+                    "type": "integer"
+                },
+                "status_pegawai": {
+                    "type": "integer"
+                },
+                "tahun": {
+                    "type": "integer"
+                }
+            }
+        },
+        "kepengurusan_sdm.PegawaiModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "jumlah_pegawai": {
+                    "type": "integer"
+                },
+                "pendidikan": {
+                    "type": "integer"
+                },
+                "status_pegawai": {
+                    "type": "integer"
+                },
+                "tahun": {
+                    "type": "integer"
+                }
+            }
+        },
+        "kepengurusan_sdm.PengurusModel": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "deskripsi_jabatan": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "jabatan_struktur": {
+                    "type": "integer"
+                },
+                "nama_pengurus": {
+                    "type": "string"
+                },
+                "nik": {
+                    "type": "string"
+                },
+                "pendidikan_akhir": {
+                    "type": "integer"
+                },
+                "tanggal_akhir_jabatan": {
+                    "type": "string"
+                },
+                "tanggal_mulai_jabatan": {
+                    "type": "string"
+                }
+            }
+        },
         "keuangan.KeuModalForm": {
             "type": "object",
             "properties": {
@@ -7912,35 +8283,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ProdukModel": {
-            "type": "object",
-            "properties": {
-                "deskripsi": {
-                    "type": "string"
-                },
-                "gambar": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "id_bumd": {
-                    "type": "integer"
-                },
-                "id_daerah": {
-                    "type": "integer"
-                },
-                "nama": {
-                    "type": "string"
-                },
-                "nilai": {
-                    "type": "number"
-                },
-                "tampilkan": {
-                    "type": "boolean"
-                }
-            }
-        },
         "models.RolesModel": {
             "type": "object",
             "properties": {
@@ -8083,84 +8425,6 @@ const docTemplate = `{
                 }
             }
         },
-        "others.PegawaiForm": {
-            "type": "object",
-            "properties": {
-                "jumlah_pegawai": {
-                    "type": "integer"
-                },
-                "pendidikan": {
-                    "type": "integer"
-                },
-                "status_pegawai": {
-                    "type": "integer"
-                },
-                "tahun": {
-                    "type": "integer"
-                }
-            }
-        },
-        "others.PegawaiModel": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "id_bumd": {
-                    "type": "integer"
-                },
-                "jumlah_pegawai": {
-                    "type": "integer"
-                },
-                "pendidikan": {
-                    "type": "integer"
-                },
-                "status_pegawai": {
-                    "type": "integer"
-                },
-                "tahun": {
-                    "type": "integer"
-                }
-            }
-        },
-        "others.PengurusModel": {
-            "type": "object",
-            "properties": {
-                "alamat": {
-                    "type": "string"
-                },
-                "deskripsi_jabatan": {
-                    "type": "string"
-                },
-                "file": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "id_bumd": {
-                    "type": "integer"
-                },
-                "jabatan_struktur": {
-                    "type": "integer"
-                },
-                "nama_pengurus": {
-                    "type": "string"
-                },
-                "nik": {
-                    "type": "string"
-                },
-                "pendidikan_akhir": {
-                    "type": "integer"
-                },
-                "tanggal_akhir_jabatan": {
-                    "type": "string"
-                },
-                "tanggal_mulai_jabatan": {
-                    "type": "string"
-                }
-            }
-        },
         "others.PeraturanModel": {
             "type": "object",
             "properties": {
@@ -8186,6 +8450,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tanggal_berlaku": {
+                    "type": "string"
+                }
+            }
+        },
+        "others.ProdukModel": {
+            "type": "object",
+            "properties": {
+                "deskripsi": {
+                    "type": "string"
+                },
+                "foto_produk": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "nama_produk": {
                     "type": "string"
                 }
             }

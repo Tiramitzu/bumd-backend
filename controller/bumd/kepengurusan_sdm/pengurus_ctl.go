@@ -1,10 +1,10 @@
-package others
+package kepengurusan_sdm
 
 import (
 	"context"
 	"fmt"
 	"math"
-	"microdata/kemendagri/bumd/models/bumd/others"
+	"microdata/kemendagri/bumd/models/bumd/kepengurusan_sdm"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
@@ -22,8 +22,8 @@ func NewPengurusController(pgxConn *pgxpool.Pool) *PengurusController {
 	return &PengurusController{pgxConn: pgxConn}
 }
 
-func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd int, search string) (r []others.PengurusModel, totalCount, pageCount int, err error) {
-	r = make([]others.PengurusModel, 0)
+func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd int, search string) (r []kepengurusan_sdm.PengurusModel, totalCount, pageCount int, err error) {
+	r = make([]kepengurusan_sdm.PengurusModel, 0)
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
@@ -62,7 +62,7 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 
 	defer rows.Close()
 	for rows.Next() {
-		var m others.PengurusModel
+		var m kepengurusan_sdm.PengurusModel
 		err = rows.Scan(&m.ID, &m.IDBumd, &m.JabatanStruktur, &m.NamaPengurus, &m.NIK, &m.Alamat, &m.DeskripsiJabatan, &m.PendidikanAkhir, &m.TanggalMulaiJabatan, &m.TanggalAkhirJabatan, &m.File)
 		if err != nil {
 			return
@@ -78,7 +78,7 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 	return r, totalCount, pageCount, err
 }
 
-func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r others.PengurusModel, err error) {
+func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r kepengurusan_sdm.PengurusModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
@@ -100,7 +100,7 @@ func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	return r, err
 }
 
-func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *others.PengurusForm) (r bool, err error) {
+func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *kepengurusan_sdm.PengurusForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
@@ -167,7 +167,7 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	return true, err
 }
 
-func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *others.PengurusForm) (r bool, err error) {
+func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *kepengurusan_sdm.PengurusForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))

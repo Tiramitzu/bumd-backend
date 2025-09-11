@@ -1,8 +1,8 @@
-package others
+package kepengurusan_sdm
 
 import (
 	"math"
-	"microdata/kemendagri/bumd/models/bumd/others"
+	"microdata/kemendagri/bumd/models/bumd/kepengurusan_sdm"
 	"microdata/kemendagri/bumd/utils"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -18,8 +18,8 @@ func NewPegawaiController(pgxConn *pgxpool.Pool) *PegawaiController {
 	return &PegawaiController{pgxConn: pgxConn}
 }
 
-func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd int, search string) (r []others.PegawaiModel, totalCount, pageCount int, err error) {
-	r = make([]others.PegawaiModel, 0)
+func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd int, search string) (r []kepengurusan_sdm.PegawaiModel, totalCount, pageCount int, err error) {
+	r = make([]kepengurusan_sdm.PegawaiModel, 0)
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
@@ -58,7 +58,7 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 
 	defer rows.Close()
 	for rows.Next() {
-		var m others.PegawaiModel
+		var m kepengurusan_sdm.PegawaiModel
 		err = rows.Scan(&m.ID, &m.IDBumd, &m.Tahun, &m.StatusPegawai, &m.Pendidikan, &m.JumlahPegawai)
 		if err != nil {
 			return
@@ -74,7 +74,7 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 	return r, totalCount, pageCount, err
 }
 
-func (c *PegawaiController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r others.PegawaiModel, err error) {
+func (c *PegawaiController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r kepengurusan_sdm.PegawaiModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims := int(claims["id_bumd"].(float64))
 
@@ -96,7 +96,7 @@ func (c *PegawaiController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	return r, err
 }
 
-func (c *PegawaiController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *others.PegawaiForm) (r bool, err error) {
+func (c *PegawaiController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *kepengurusan_sdm.PegawaiForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
@@ -121,7 +121,7 @@ func (c *PegawaiController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	return true, err
 }
 
-func (c *PegawaiController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *others.PegawaiForm) (r bool, err error) {
+func (c *PegawaiController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *kepengurusan_sdm.PegawaiForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims := int(claims["id_bumd"].(float64))
