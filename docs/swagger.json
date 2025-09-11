@@ -2549,6 +2549,468 @@
                 }
             }
         },
+        "/strict/bumd/{id_bumd}/pengurus": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all pengurus.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pengurus"
+                ],
+                "summary": "get all pengurus",
+                "operationId": "pengurus-index",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/others.PengurusModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create pengurus.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "Pengurus"
+                ],
+                "summary": "create pengurus",
+                "operationId": "pengurus-create",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jabatan Struktur",
+                        "name": "jabatan_struktur",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama Pengurus",
+                        "name": "nama_pengurus",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "NIK",
+                        "name": "nik",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Alamat",
+                        "name": "alamat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Deskripsi Jabatan",
+                        "name": "deskripsi_jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Pendidikan Akhir",
+                        "name": "pendidikan_akhir",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Mulai Jabatan",
+                        "name": "tanggal_mulai_jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Akhir Jabatan",
+                        "name": "tanggal_akhir_jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PengurusModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/pengurus/:id": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get pengurus by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pengurus"
+                ],
+                "summary": "get pengurus by id",
+                "operationId": "pengurus-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Pengurus",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PengurusModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update pengurus.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "Pengurus"
+                ],
+                "summary": "update pengurus",
+                "operationId": "pengurus-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id Pengurus",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jabatan Struktur",
+                        "name": "jabatan_struktur",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nama Pengurus",
+                        "name": "nama_pengurus",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "NIK",
+                        "name": "nik",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Alamat",
+                        "name": "alamat",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Deskripsi Jabatan",
+                        "name": "deskripsi_jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Pendidikan Akhir",
+                        "name": "pendidikan_akhir",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Mulai Jabatan",
+                        "name": "tanggal_mulai_jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Akhir Jabatan",
+                        "name": "tanggal_akhir_jabatan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PengurusModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete pengurus.",
+                "tags": [
+                    "Pengurus"
+                ],
+                "summary": "delete pengurus",
+                "operationId": "pengurus-delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id Pengurus",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PengurusModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd/{id_bumd}/peraturan": {
             "get": {
                 "security": [
@@ -3101,8 +3563,7 @@
                         "in": "formData"
                     },
                     {
-                        "type": "number",
-                        "format": "float64",
+                        "type": "string",
                         "description": "Modal Dasar",
                         "name": "modal_dasar",
                         "in": "formData",
@@ -3199,8 +3660,7 @@
                         "in": "formData"
                     },
                     {
-                        "type": "number",
-                        "format": "float64",
+                        "type": "string",
                         "description": "Modal Dasar",
                         "name": "modal_dasar",
                         "in": "formData",
@@ -7188,7 +7648,7 @@
                 "kode_ddn": {
                     "type": "string"
                 },
-                "kode_provinsi": {
+                "kode_prop": {
                     "type": "string"
                 },
                 "nama_bumd": {
@@ -7203,7 +7663,7 @@
                 "nama_user": {
                     "type": "string"
                 },
-                "sub_domain_daerah": {
+                "sub_domain": {
                     "type": "string"
                 },
                 "username": {
@@ -7271,6 +7731,44 @@
                     "type": "string"
                 },
                 "tanggal": {
+                    "type": "string"
+                }
+            }
+        },
+        "others.PengurusModel": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "deskripsi_jabatan": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "jabatan_struktur": {
+                    "type": "integer"
+                },
+                "nama_pengurus": {
+                    "type": "string"
+                },
+                "nik": {
+                    "type": "string"
+                },
+                "pendidikan_akhir": {
+                    "type": "integer"
+                },
+                "tanggal_akhir_jabatan": {
+                    "type": "string"
+                },
+                "tanggal_mulai_jabatan": {
                     "type": "string"
                 }
             }

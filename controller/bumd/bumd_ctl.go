@@ -388,7 +388,8 @@ func (c *BumdController) Update(
 		email = $10,
 		website = $11,
 		narahubung = $12,
-		updated_by = $13
+		updated_by = $13,
+		updated_at = NOW()
 	WHERE id = $14 AND deleted_by = 0
 	`
 	args = append(args,
@@ -482,10 +483,10 @@ func (c *BumdController) Delete(
 
 	q = `
 	UPDATE bumd
-		SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3 AND deleted_by = 0
+		SET deleted_by = $1, deleted_at = NOW()
+	WHERE id = $2
 	`
-	args = append(args, idUser, time.Now(), id)
+	args = append(args, idUser, id)
 	if idDaerah > 0 {
 		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
 		args = append(args, idDaerah)
@@ -545,7 +546,7 @@ func (c *BumdController) SPIUpdate(
 	UPDATE bumd
 	SET
 		penerapan_spi = $1
-	WHERE id = $2 AND deleted_by = 0
+	WHERE id = $2
 	`
 	_, err = tx.Exec(context.Background(), q, payload.PenerapanSPI, id)
 	if err != nil {
@@ -592,7 +593,7 @@ func (c *BumdController) NPWP(
 	id int,
 ) (r bumd.NPWPModel, err error) {
 	q := `
-	SELECT npwp, pemberi, file FROM bumd WHERE id = $1 AND deleted_by = 0
+	SELECT npwp, npwp_pemberi, npwp_file FROM bumd WHERE id = $1 AND deleted_by = 0
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.NPWP, &r.Pemberi, &r.File)
 	if err != nil {
@@ -629,8 +630,8 @@ func (c *BumdController) NPWPUpdate(
 	UPDATE bumd
 	SET
 		npwp = $1,
-		pemberi = $2
-	WHERE id = $3 AND deleted_by = 0
+		npwp_pemberi = $2
+	WHERE id = $3
 	`
 	_, err = tx.Exec(context.Background(), q, payload.NPWP, payload.Pemberi, id)
 	if err != nil {
@@ -657,7 +658,7 @@ func (c *BumdController) NPWPUpdate(
 		objectName := "bumd_npwp/" + fileName
 
 		// update file
-		q = `UPDATE bumd SET file=$1 WHERE id=$2`
+		q = `UPDATE bumd SET npwp_file=$1 WHERE id=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
 			return false, utils.RequestError{

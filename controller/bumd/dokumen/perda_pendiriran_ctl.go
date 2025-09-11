@@ -6,6 +6,7 @@ import (
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/dokumen"
 	"microdata/kemendagri/bumd/utils"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -158,12 +159,21 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 		}
 	}()
 
+	// Parse modal_dasar from string to float64
+	modalDasar, err := strconv.ParseFloat(payload.ModalDasar, 64)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusBadRequest,
+			Message: "Modal dasar harus berupa angka yang valid",
+		}
+	}
+
 	q := `
 	INSERT INTO dkmn_perda_pendirian (nomor, tanggal, keterangan, modal_dasar, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 	`
 
 	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.ModalDasar, idBumd, idUser).Scan(&id)
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.Tanggal, payload.Keterangan, modalDasar, idBumd, idUser).Scan(&id)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -225,13 +235,22 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 		idBumd = idBumdClaims
 	}
 
+	// Parse modal_dasar from string to float64
+	modalDasar, err := strconv.ParseFloat(payload.ModalDasar, 64)
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusBadRequest,
+			Message: "Modal dasar harus berupa angka yang valid",
+		}
+	}
+
 	var args []interface{}
 	q := `
 	UPDATE dkmn_perda_pendirian
-	SET nomor = $1, tanggal = $2, keterangan = $3, modal_dasar = $4, updated_by = $5
+	SET nomor = $1, tanggal = $2, keterangan = $3, modal_dasar = $4, updated_by = $5, updated_at = NOW()
 	WHERE id = $6 AND id_bumd = $7
 	`
-	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, payload.ModalDasar, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, modalDasar, idUser, id, idBumd)
 
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
@@ -279,11 +298,11 @@ func (c *PerdaPendirianController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.T
 
 	q := `
 	UPDATE dkmn_perda_pendirian
-	SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3 AND id_bumd = $4
+	SET deleted_by = $1, deleted_at = NOW()
+	WHERE id = $2 AND id_bumd = $3
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id, idBumd)
+	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {
 		return false, err
 	}

@@ -225,7 +225,7 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	var args []interface{}
 	q := `
 	UPDATE trn_domisili
-	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7
+	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7, updated_at = NOW()
 	WHERE id = $8 AND id_bumd = $9
 	`
 	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idUser, id, idBumd)
@@ -276,10 +276,10 @@ func (c *DomisiliController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	}
 	q := `
 	UPDATE trn_domisili
-	SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3 AND id_bumd = $4
+	SET deleted_by = $1, deleted_at = NOW()
+	WHERE id = $2 AND id_bumd = $3
 	`
-	_, err = c.pgxConn.Exec(context.Background(), q, idUser, time.Now(), id, idBumd)
+	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
 		return false, err
 	}

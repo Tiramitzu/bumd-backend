@@ -140,7 +140,7 @@ func (h *PerdaPendirianHandler) View(c *fiber.Ctx) error {
 //	@Param			tanggal_perda	formData	string	true	"Tanggal Perda"
 //	@Param			keterangan		formData	string	true	"Keterangan"
 //	@Param			file			formData	file	false	"File"
-//	@Param			modal_dasar		formData	float64	true	"Modal Dasar"
+//	@Param			modal_dasar		formData	string	true	"Modal Dasar"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -199,7 +199,7 @@ func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
 //	@Param			tanggal_perda	formData	string	true	"Tanggal Perda"
 //	@Param			keterangan		formData	string	true	"Keterangan"
 //	@Param			file			formData	file	false	"File"
-//	@Param			modal_dasar		formData	float64	true	"Modal Dasar"
+//	@Param			modal_dasar		formData	string	true	"Modal Dasar"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
