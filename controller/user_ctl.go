@@ -185,9 +185,9 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 	qStr := `WITH t_daerah AS (
 		SELECT * FROM dblink ($4,
 		'
-			SELECT id_daerah, nama, kode_ddn, kode_provinsi, sub_domain_daerah FROM data.m_daerah WHERE id_daerah = $2
+			SELECT id_daerah, nama_daerah, kode_ddn, kode_prop, sub_domain FROM data.m_daerah
 		')
-		AS t_daerah (id_daerah INT4, nama VARCHAR, kode_ddn VARCHAR, kode_provinsi VARCHAR, sub_domain_daerah VARCHAR)
+		AS t_daerah (id_daerah INT4, nama_daerah VARCHAR, kode_ddn VARCHAR, kode_prop VARCHAR, sub_domain VARCHAR)
 	)
 	SELECT
 		users.id,
@@ -196,18 +196,18 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 		users.id_bumd,
 		users.username,
 		users.nama,
-		roles.nama as role,
+		roles.nama as nama_role,
 		COALESCE(bumd.nama, '-') as nama_bumd,
-		t_daerah.nama as nama_daerah,
-		t_daerah.kode_ddn as kode_ddn,
-		t_daerah.kode_provinsi as kode_provinsi,
-		t_daerah.sub_domain_daerah as sub_domain_daerah
+		t_daerah.nama_daerah,
+		t_daerah.kode_ddn,
+		t_daerah.kode_prop,
+		t_daerah.sub_domain
 	FROM users
 	LEFT JOIN roles ON roles.id = users.id_role
 	LEFT JOIN bumd ON bumd.id = users.id_bumd
 	LEFT JOIN t_daerah ON t_daerah.id_daerah = users.id_daerah
 		WHERE users.id=$1 AND users.id_daerah=$2 AND users.id_role=$3`
-	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole, os.Getenv("DB_URL_MST_DATA")).Scan(
+	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole, os.Getenv("DB_SERVER_URL_MST_DATA")).Scan(
 		&r.IdUser,
 		&r.IdDaerah,
 		&r.IdRole,
@@ -218,8 +218,8 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 		&r.NamaBumd,
 		&r.NamaDaerah,
 		&r.KodeDDN,
-		&r.KodeProvinsi,
-		&r.SubDomainDaerah,
+		&r.KodeProp,
+		&r.SubDomain,
 	)
 	if err != nil {
 		err = utils.RequestError{
