@@ -90,12 +90,12 @@ func (h *PegawaiHandler) Index(c *fiber.Ctx) error {
 //	@ID				pegawai-view
 //	@Tags			Pegawai
 //	@Produce		json
-//	@Param			id	path		int						true	"Id Pegawai"
+//	@Param			id	path		int					true	"Id Pegawai"
 //	@success		200	{object}	others.PegawaiModel	"Success"
-//	@Failure		400	{object}	utils.RequestError		"Bad request"
-//	@Failure		404	{object}	utils.RequestError		"Data not found"
-//	@Failure		422	{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500	{object}	utils.RequestError		"Server error"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		422	{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai/:id [get]
 func (h *PegawaiHandler) View(c *fiber.Ctx) error {
@@ -122,12 +122,12 @@ func (h *PegawaiHandler) View(c *fiber.Ctx) error {
 //	@ID				pegawai-create
 //	@Tags			Pegawai
 //	@Accept			json
-//	@Param			payload	body	others.PegawaiForm	true	"Pegawai payload"
-//	@success		200						{object}	others.PegawaiModel	"Success"
-//	@Failure		400						{object}	utils.RequestError		"Bad request"
-//	@Failure		404						{object}	utils.RequestError		"Data not found"
-//	@Failure		422						{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500						{object}	utils.RequestError		"Server error"
+//	@Param			payload	body		others.PegawaiForm	true	"Pegawai payload"
+//	@success		200		{object}	others.PegawaiModel	"Success"
+//	@Failure		400		{object}	utils.RequestError	"Bad request"
+//	@Failure		404		{object}	utils.RequestError	"Data not found"
+//	@Failure		422		{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai [post]
 func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
@@ -155,13 +155,13 @@ func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
 //	@ID				pegawai-update
 //	@Tags			Pegawai
 //	@Accept			json
-//	@Param			id_bumd					path		int						true	"Id Bumd"
-//	@Param			payload	body	others.PegawaiForm	true	"Pegawai payload"
-//	@success		200						{object}	others.PegawaiModel	"Success"
-//	@Failure		400						{object}	utils.RequestError		"Bad request"
-//	@Failure		404						{object}	utils.RequestError		"Data not found"
-//	@Failure		422						{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500						{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd	path		int					true	"Id Bumd"
+//	@Param			payload	body		others.PegawaiForm	true	"Pegawai payload"
+//	@success		200		{object}	others.PegawaiModel	"Success"
+//	@Failure		400		{object}	utils.RequestError	"Bad request"
+//	@Failure		404		{object}	utils.RequestError	"Data not found"
+//	@Failure		422		{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai/:id [put]
 func (h *PegawaiHandler) Update(c *fiber.Ctx) error {
@@ -193,13 +193,13 @@ func (h *PegawaiHandler) Update(c *fiber.Ctx) error {
 //	@Description	delete pegawai.
 //	@ID				pegawai-delete
 //	@Tags			Pegawai
-//	@Param			id_bumd	path		int						true	"Id Bumd"
-//	@Param			id		path		int						true	"Id Pegawai"
+//	@Param			id_bumd	path		int					true	"Id Bumd"
+//	@Param			id		path		int					true	"Id Pegawai"
 //	@success		200		{object}	others.PegawaiModel	"Success"
-//	@Failure		400		{object}	utils.RequestError		"Bad request"
-//	@Failure		404		{object}	utils.RequestError		"Data not found"
-//	@Failure		422		{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError		"Server error"
+//	@Failure		400		{object}	utils.RequestError	"Bad request"
+//	@Failure		404		{object}	utils.RequestError	"Data not found"
+//	@Failure		422		{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError	"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai/:id [delete]
 func (h *PegawaiHandler) Delete(c *fiber.Ctx) error {
