@@ -1,4 +1,4 @@
-package others
+package kepengurusan_sdm
 
 type PegawaiModel struct {
 	ID            int `json:"id"`

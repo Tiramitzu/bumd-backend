@@ -1,8 +1,8 @@
-package others
+package kepengurusan_sdm
 
 import (
-	ctl "microdata/kemendagri/bumd/controller/bumd/others"
-	"microdata/kemendagri/bumd/models/bumd/others"
+	ctl "microdata/kemendagri/bumd/controller/bumd/kepengurusan_sdm"
+	"microdata/kemendagri/bumd/models/bumd/kepengurusan_sdm"
 	"microdata/kemendagri/bumd/utils"
 	"strconv"
 
@@ -37,15 +37,15 @@ func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl
 //	@ID				pengurus-index
 //	@Tags			Pengurus
 //	@Produce		json
-//	@Param			id_bumd	query		int						true	"Id Bumd"
-//	@Param			page	query		int						false	"Halaman yang ditampilkan"
-//	@Param			limit	query		int						false	"Jumlah data per halaman, maksimal 5 data per halaman"
-//	@Param			search	query		string					false	"Search"
-//	@success		200		{object}	[]others.PengurusModel	"Success"
-//	@Failure		400		{object}	utils.RequestError		"Bad request"
-//	@Failure		404		{object}	utils.RequestError		"Data not found"
-//	@Failure		422		{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd	query		int									true	"Id Bumd"
+//	@Param			page	query		int									false	"Halaman yang ditampilkan"
+//	@Param			limit	query		int									false	"Jumlah data per halaman, maksimal 5 data per halaman"
+//	@Param			search	query		string								false	"Search"
+//	@success		200		{object}	[]kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400		{object}	utils.RequestError					"Bad request"
+//	@Failure		404		{object}	utils.RequestError					"Data not found"
+//	@Failure		422		{array}		utils.RequestError					"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError					"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus [get]
 func (h *PengurusHandler) Index(c *fiber.Ctx) error {
@@ -91,12 +91,12 @@ func (h *PengurusHandler) Index(c *fiber.Ctx) error {
 //	@ID				pengurus-view
 //	@Tags			Pengurus
 //	@Produce		json
-//	@Param			id	path		int						true	"Id Pengurus"
-//	@success		200	{object}	others.PengurusModel	"Success"
-//	@Failure		400	{object}	utils.RequestError		"Bad request"
-//	@Failure		404	{object}	utils.RequestError		"Data not found"
-//	@Failure		422	{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500	{object}	utils.RequestError		"Server error"
+//	@Param			id	path		int								true	"Id Pengurus"
+//	@success		200	{object}	kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400	{object}	utils.RequestError				"Bad request"
+//	@Failure		404	{object}	utils.RequestError				"Data not found"
+//	@Failure		422	{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500	{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus/:id [get]
 func (h *PengurusHandler) View(c *fiber.Ctx) error {
@@ -123,21 +123,21 @@ func (h *PengurusHandler) View(c *fiber.Ctx) error {
 //	@ID				pengurus-create
 //	@Tags			Pengurus
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		int						true	"Id Bumd"
-//	@Param			jabatan_struktur		formData	int						true	"Jabatan Struktur"
-//	@Param			nama_pengurus			formData	string					true	"Nama Pengurus"
-//	@Param			nik						formData	string					true	"NIK"
-//	@Param			alamat					formData	string					true	"Alamat"
-//	@Param			deskripsi_jabatan		formData	string					true	"Deskripsi Jabatan"
-//	@Param			pendidikan_akhir		formData	int						true	"Pendidikan Akhir"
-//	@Param			tanggal_mulai_jabatan	formData	string					true	"Tanggal Mulai Jabatan"
-//	@Param			tanggal_akhir_jabatan	formData	string					true	"Tanggal Akhir Jabatan"
-//	@Param			file					formData	file					true	"File"
-//	@success		200						{object}	others.PengurusModel	"Success"
-//	@Failure		400						{object}	utils.RequestError		"Bad request"
-//	@Failure		404						{object}	utils.RequestError		"Data not found"
-//	@Failure		422						{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500						{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd					path		int								true	"Id Bumd"
+//	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"
+//	@Param			nama_pengurus			formData	string							true	"Nama Pengurus"
+//	@Param			nik						formData	string							true	"NIK"
+//	@Param			alamat					formData	string							true	"Alamat"
+//	@Param			deskripsi_jabatan		formData	string							true	"Deskripsi Jabatan"
+//	@Param			pendidikan_akhir		formData	int								true	"Pendidikan Akhir"
+//	@Param			tanggal_mulai_jabatan	formData	string							true	"Tanggal Mulai Jabatan"
+//	@Param			tanggal_akhir_jabatan	formData	string							true	"Tanggal Akhir Jabatan"
+//	@Param			file					formData	file							true	"File"
+//	@success		200						{object}	kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400						{object}	utils.RequestError				"Bad request"
+//	@Failure		404						{object}	utils.RequestError				"Data not found"
+//	@Failure		422						{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500						{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus [post]
 func (h *PengurusHandler) Create(c *fiber.Ctx) error {
@@ -146,7 +146,7 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	formModel := new(others.PengurusForm)
+	formModel := new(kepengurusan_sdm.PengurusForm)
 	if err := c.BodyParser(formModel); err != nil {
 		return err
 	}
@@ -179,22 +179,22 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 //	@ID				pengurus-update
 //	@Tags			Pengurus
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		int						true	"Id Bumd"
-//	@Param			id						path		int						true	"Id Pengurus"
-//	@Param			jabatan_struktur		formData	int						true	"Jabatan Struktur"
-//	@Param			nama_pengurus			formData	string					true	"Nama Pengurus"
-//	@Param			nik						formData	string					true	"NIK"
-//	@Param			alamat					formData	string					true	"Alamat"
-//	@Param			deskripsi_jabatan		formData	string					true	"Deskripsi Jabatan"
-//	@Param			pendidikan_akhir		formData	int						true	"Pendidikan Akhir"
-//	@Param			tanggal_mulai_jabatan	formData	string					true	"Tanggal Mulai Jabatan"
-//	@Param			tanggal_akhir_jabatan	formData	string					true	"Tanggal Akhir Jabatan"
-//	@Param			file					formData	file					true	"File"
-//	@success		200						{object}	others.PengurusModel	"Success"
-//	@Failure		400						{object}	utils.RequestError		"Bad request"
-//	@Failure		404						{object}	utils.RequestError		"Data not found"
-//	@Failure		422						{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500						{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd					path		int								true	"Id Bumd"
+//	@Param			id						path		int								true	"Id Pengurus"
+//	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"
+//	@Param			nama_pengurus			formData	string							true	"Nama Pengurus"
+//	@Param			nik						formData	string							true	"NIK"
+//	@Param			alamat					formData	string							true	"Alamat"
+//	@Param			deskripsi_jabatan		formData	string							true	"Deskripsi Jabatan"
+//	@Param			pendidikan_akhir		formData	int								true	"Pendidikan Akhir"
+//	@Param			tanggal_mulai_jabatan	formData	string							true	"Tanggal Mulai Jabatan"
+//	@Param			tanggal_akhir_jabatan	formData	string							true	"Tanggal Akhir Jabatan"
+//	@Param			file					formData	file							true	"File"
+//	@success		200						{object}	kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400						{object}	utils.RequestError				"Bad request"
+//	@Failure		404						{object}	utils.RequestError				"Data not found"
+//	@Failure		422						{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500						{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus/:id [put]
 func (h *PengurusHandler) Update(c *fiber.Ctx) error {
@@ -208,7 +208,7 @@ func (h *PengurusHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	formModel := new(others.PengurusForm)
+	formModel := new(kepengurusan_sdm.PengurusForm)
 
 	if err := c.BodyParser(formModel); err != nil {
 		return err
@@ -241,13 +241,13 @@ func (h *PengurusHandler) Update(c *fiber.Ctx) error {
 //	@Description	delete pengurus.
 //	@ID				pengurus-delete
 //	@Tags			Pengurus
-//	@Param			id_bumd	path		int						true	"Id Bumd"
-//	@Param			id		path		int						true	"Id Pengurus"
-//	@success		200		{object}	others.PengurusModel	"Success"
-//	@Failure		400		{object}	utils.RequestError		"Bad request"
-//	@Failure		404		{object}	utils.RequestError		"Data not found"
-//	@Failure		422		{array}		utils.RequestError		"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError		"Server error"
+//	@Param			id_bumd	path		int								true	"Id Bumd"
+//	@Param			id		path		int								true	"Id Pengurus"
+//	@success		200		{object}	kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400		{object}	utils.RequestError				"Bad request"
+//	@Failure		404		{object}	utils.RequestError				"Data not found"
+//	@Failure		422		{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus/:id [delete]
 func (h *PengurusHandler) Delete(c *fiber.Ctx) error {

@@ -3,9 +3,11 @@ package bumd
 import (
 	ctl "microdata/kemendagri/bumd/controller/bumd"
 	ctl_dkmn "microdata/kemendagri/bumd/controller/bumd/dokumen"
+	ctl_kepengurusan_sdm "microdata/kemendagri/bumd/controller/bumd/kepengurusan_sdm"
 	ctl_keu "microdata/kemendagri/bumd/controller/bumd/keuangan"
 	ctl_others "microdata/kemendagri/bumd/controller/bumd/others"
 	"microdata/kemendagri/bumd/handler/http/bumd/dokumen"
+	"microdata/kemendagri/bumd/handler/http/bumd/kepengurusan_sdm"
 	"microdata/kemendagri/bumd/handler/http/bumd/keuangan"
 	"microdata/kemendagri/bumd/handler/http/bumd/others"
 	"microdata/kemendagri/bumd/models/bumd"
@@ -106,15 +108,22 @@ func NewBumdHandler(
 		validator,
 		ctl_others.NewPeraturanController(pgxConn),
 	)
-	others.NewPengurusHandler(
+	others.NewProdukHandler(
 		rData,
 		validator,
-		ctl_others.NewPengurusController(pgxConn),
+		ctl_others.NewProdukController(pgxConn),
 	)
-	others.NewPegawaiHandler(
+
+	// kepengurusan sdm
+	kepengurusan_sdm.NewPengurusHandler(
 		rData,
 		validator,
-		ctl_others.NewPegawaiController(pgxConn),
+		ctl_kepengurusan_sdm.NewPengurusController(pgxConn),
+	)
+	kepengurusan_sdm.NewPegawaiHandler(
+		rData,
+		validator,
+		ctl_kepengurusan_sdm.NewPegawaiController(pgxConn),
 	)
 }
 
