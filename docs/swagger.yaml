@@ -422,6 +422,32 @@ definitions:
       tanggal:
         type: string
     type: object
+  others.PegawaiForm:
+    properties:
+      jumlah_pegawai:
+        type: integer
+      pendidikan:
+        type: integer
+      status_pegawai:
+        type: integer
+      tahun:
+        type: integer
+    type: object
+  others.PegawaiModel:
+    properties:
+      id:
+        type: integer
+      id_bumd:
+        type: integer
+      jumlah_pegawai:
+        type: integer
+      pendidikan:
+        type: integer
+      status_pegawai:
+        type: integer
+      tahun:
+        type: integer
+    type: object
   others.PengurusModel:
     properties:
       alamat:
@@ -2216,6 +2242,227 @@ paths:
       summary: update data nib
       tags:
       - Nib
+  /strict/bumd/{id_bumd}/pegawai:
+    get:
+      description: get all pegawai.
+      operationId: pegawai-index
+      parameters:
+      - description: Id Bumd
+        in: query
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/others.PegawaiModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get all pegawai
+      tags:
+      - Pegawai
+    post:
+      consumes:
+      - application/json
+      description: create pegawai.
+      operationId: pegawai-create
+      parameters:
+      - description: Pegawai payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/others.PegawaiForm'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PegawaiModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create pegawai
+      tags:
+      - Pegawai
+  /strict/bumd/{id_bumd}/pegawai/:id:
+    delete:
+      description: delete pegawai.
+      operationId: pegawai-delete
+      parameters:
+      - description: Id Bumd
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Id Pegawai
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PegawaiModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete pegawai
+      tags:
+      - Pegawai
+    get:
+      description: get pegawai by id.
+      operationId: pegawai-view
+      parameters:
+      - description: Id Pegawai
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PegawaiModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get pegawai by id
+      tags:
+      - Pegawai
+    put:
+      consumes:
+      - application/json
+      description: update pegawai.
+      operationId: pegawai-update
+      parameters:
+      - description: Id Bumd
+        in: path
+        name: id_bumd
+        required: true
+        type: integer
+      - description: Pegawai payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/others.PegawaiForm'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.PegawaiModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update pegawai
+      tags:
+      - Pegawai
   /strict/bumd/{id_bumd}/pengurus:
     get:
       description: get all pengurus.

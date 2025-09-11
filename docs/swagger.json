@@ -2549,6 +2549,346 @@
                 }
             }
         },
+        "/strict/bumd/{id_bumd}/pegawai": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all pegawai.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pegawai"
+                ],
+                "summary": "get all pegawai",
+                "operationId": "pegawai-index",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/others.PegawaiModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create pegawai.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pegawai"
+                ],
+                "summary": "create pegawai",
+                "operationId": "pegawai-create",
+                "parameters": [
+                    {
+                        "description": "Pegawai payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/others.PegawaiForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PegawaiModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/pegawai/:id": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get pegawai by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pegawai"
+                ],
+                "summary": "get pegawai by id",
+                "operationId": "pegawai-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Pegawai",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PegawaiModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update pegawai.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pegawai"
+                ],
+                "summary": "update pegawai",
+                "operationId": "pegawai-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Pegawai payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/others.PegawaiForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PegawaiModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete pegawai.",
+                "tags": [
+                    "Pegawai"
+                ],
+                "summary": "delete pegawai",
+                "operationId": "pegawai-delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id Pegawai",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.PegawaiModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd/{id_bumd}/pengurus": {
             "get": {
                 "security": [
@@ -7732,6 +8072,46 @@
                 },
                 "tanggal": {
                     "type": "string"
+                }
+            }
+        },
+        "others.PegawaiForm": {
+            "type": "object",
+            "properties": {
+                "jumlah_pegawai": {
+                    "type": "integer"
+                },
+                "pendidikan": {
+                    "type": "integer"
+                },
+                "status_pegawai": {
+                    "type": "integer"
+                },
+                "tahun": {
+                    "type": "integer"
+                }
+            }
+        },
+        "others.PegawaiModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "jumlah_pegawai": {
+                    "type": "integer"
+                },
+                "pendidikan": {
+                    "type": "integer"
+                },
+                "status_pegawai": {
+                    "type": "integer"
+                },
+                "tahun": {
+                    "type": "integer"
                 }
             }
         },
