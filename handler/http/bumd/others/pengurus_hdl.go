@@ -16,13 +16,13 @@ type PengurusHandler struct {
 	Validate   *validator.Validate
 }
 
-func NewPengurusHandler(app *fiber.App, controller *ctl.PengurusController, vld *validator.Validate) {
+func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl.PengurusController) {
 	handler := &PengurusHandler{
 		Controller: controller,
 		Validate:   vld,
 	}
 
-	rPub := app.Group("/pengurus")
+	rPub := r.Group("/pengurus")
 	rPub.Get("/", handler.Index)
 	rPub.Get("/:id", handler.View)
 	rPub.Post("/", handler.Create)

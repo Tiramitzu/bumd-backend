@@ -106,6 +106,16 @@ func NewBumdHandler(
 		validator,
 		ctl_others.NewPeraturanController(pgxConn),
 	)
+	others.NewPengurusHandler(
+		rData,
+		validator,
+		ctl_others.NewPengurusController(pgxConn),
+	)
+	others.NewPegawaiHandler(
+		rData,
+		validator,
+		ctl_others.NewPegawaiController(pgxConn),
+	)
 }
 
 // Index func for get data bumd.

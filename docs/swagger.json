@@ -1019,103 +1019,6 @@
                     }
                 }
             },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "update data akta notaris.",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Akta Notaris"
-                ],
-                "summary": "update data akta notaris",
-                "operationId": "akta_notaris-update",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Id BUMD",
-                        "name": "id_bumd",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Id untuk update data akta notaris",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Nomor Akta notaris",
-                        "name": "nomor",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Tanggal Akta notaris",
-                        "name": "tanggal",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Keterangan",
-                        "name": "keterangan",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "File",
-                        "name": "file",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "404": {
-                        "description": "Data not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "422": {
-                        "description": "Data validation failed",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/utils.RequestError"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -1263,6 +1166,103 @@
                         "description": "Data not found",
                         "schema": {
                             "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data akta notaris.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Akta Notaris"
+                ],
+                "summary": "update data akta notaris",
+                "operationId": "akta_notaris-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id untuk update data akta notaris",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nomor Akta notaris",
+                        "name": "nomor",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Akta notaris",
+                        "name": "tanggal",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Keterangan",
+                        "name": "keterangan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
                         }
                     },
                     "500": {
@@ -3842,110 +3842,6 @@
                     }
                 }
             },
-            "put": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "update data perda pendirian.",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Perda Pendirian"
-                ],
-                "summary": "update data perda pendirian",
-                "operationId": "perda_pendirian-update",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Id BUMD",
-                        "name": "id_bumd",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Id untuk update data perda pendirian",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Nomor Perda",
-                        "name": "nomor_perda",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Tanggal Perda",
-                        "name": "tanggal_perda",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Keterangan",
-                        "name": "keterangan",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "File",
-                        "name": "file",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Modal Dasar",
-                        "name": "modal_dasar",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "404": {
-                        "description": "Data not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "422": {
-                        "description": "Data validation failed",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/utils.RequestError"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -4093,6 +3989,110 @@
                         "description": "Data not found",
                         "schema": {
                             "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data perda pendirian.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Perda Pendirian"
+                ],
+                "summary": "update data perda pendirian",
+                "operationId": "perda_pendirian-update",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Id untuk update data perda pendirian",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nomor Perda",
+                        "name": "nomor_perda",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tanggal Perda",
+                        "name": "tanggal_perda",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Keterangan",
+                        "name": "keterangan",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Modal Dasar",
+                        "name": "modal_dasar",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
                         }
                     },
                     "500": {

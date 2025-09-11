@@ -15,13 +15,13 @@ type PegawaiHandler struct {
 	Validate   *validator.Validate
 }
 
-func NewPegawaiHandler(app *fiber.App, controller *ctl.PegawaiController, vld *validator.Validate) {
+func NewPegawaiHandler(r fiber.Router, vld *validator.Validate, controller *ctl.PegawaiController) {
 	handler := &PegawaiHandler{
 		Controller: controller,
 		Validate:   vld,
 	}
 
-	rPub := app.Group("/pegawai")
+	rPub := r.Group("/pegawai")
 	rPub.Get("/", handler.Index)
 	rPub.Get("/:id", handler.View)
 	rPub.Post("/", handler.Create)
