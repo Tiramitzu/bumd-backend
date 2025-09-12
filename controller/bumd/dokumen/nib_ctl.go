@@ -152,17 +152,25 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	}
 
 	q := `
-	INSERT INTO dkmn_nib (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
+	INSERT INTO dkmn_nib (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
 	`
 
 	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idBumd, idUser).Scan(&id)
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idBumd, idUser).Scan(&id)
 	if err != nil {
 		err = utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data NIB. - " + err.Error(),
 		}
 		return false, err
+	}
+
+	if payload.MasaBerlaku != nil {
+		q = `UPDATE dkmn_nib SET masa_berlaku=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.File != nil {
@@ -225,13 +233,21 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	var args []interface{}
 	q := `
 	UPDATE dkmn_nib
-	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7, updated_at = NOW()
-	WHERE id = $8 AND id_bumd = $9
+	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, updated_by = $6, updated_at = NOW()
+	WHERE id = $7 AND id_bumd = $8
 	`
-	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, err
+	}
+
+	if payload.MasaBerlaku != nil {
+		q = `UPDATE dkmn_nib SET masa_berlaku=$1 WHERE id=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.File != nil {

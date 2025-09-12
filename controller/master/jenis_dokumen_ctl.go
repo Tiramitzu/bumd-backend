@@ -2,7 +2,6 @@ package controller_mst
 
 import (
 	"fmt"
-	"math"
 	models "microdata/kemendagri/bumd/models/master"
 	"microdata/kemendagri/bumd/utils"
 	"time"
@@ -20,9 +19,19 @@ func NewJenisDokumenController(pgxConn *pgxpool.Pool) *JenisDokumenController {
 	return &JenisDokumenController{pgxConn: pgxConn}
 }
 
-func (c *JenisDokumenController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, nama string) (r []models.JenisDokumenModel, totalCount, pageCount int, err error) {
+func (c *JenisDokumenController) Index(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	// page, limit int,
+	nama string,
+) (
+	r []models.JenisDokumenModel,
+	totalCount,
+	pageCount int,
+	err error,
+) {
 	r = make([]models.JenisDokumenModel, 0)
-	offset := limit * (page - 1)
+	// offset := limit * (page - 1)
 
 	var args []interface{}
 	qCount := `
@@ -30,7 +39,7 @@ func (c *JenisDokumenController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	`
 
 	q := `
-	SELECT id, nama, deskripsi FROM mst_jenis_dokumen WHERE deleted_by = 0
+	SELECT id, nama, deskripsi FROM mst_jenis_dokumen WHERE deleted_by = 0 ORDER BY id ASC
 	`
 	if nama != "" {
 		qCount += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
@@ -43,11 +52,11 @@ func (c *JenisDokumenController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Jenis Dokumen: %w", err)
 	}
 
-	q += fmt.Sprintf(`
-	ORDER BY id DESC
-	LIMIT $%d OFFSET $%d
-	`, len(args)+1, len(args)+2)
-	args = append(args, limit, offset)
+	// q += fmt.Sprintf(`
+	// ORDER BY id DESC
+	// LIMIT $%d OFFSET $%d
+	// `, len(args)+1, len(args)+2)
+	// args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
@@ -67,10 +76,10 @@ func (c *JenisDokumenController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		r = append(r, m)
 	}
 
-	pageCount = 1
-	if totalCount > 0 && totalCount > limit {
-		pageCount = int(math.Ceil(float64(totalCount) / float64(limit)))
-	}
+	// pageCount = 1
+	// if totalCount > 0 && totalCount > limit {
+	// 	pageCount = int(math.Ceil(float64(totalCount) / float64(limit)))
+	// }
 
 	return r, totalCount, pageCount, err
 }

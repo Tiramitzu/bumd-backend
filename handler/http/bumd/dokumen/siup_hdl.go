@@ -189,7 +189,7 @@ func (h *SiupHandler) Create(c *fiber.Ctx) error {
 //	@Param			tanggal				formData	string				true	"Tanggal"
 //	@Param			klasifikasi			formData	string				true	"Klasifikasi"
 //	@Param			kualifikasi			formData	int					true	"Kualifikasi"
-//	@Param			masa_berlaku		formData	string				true	"Masa Berlaku"
+//	@Param			masa_berlaku		formData	string				false	"Masa Berlaku"
 //	@Param			file				formData	file				false	"File"
 //	@Success		200					{object}	bool				"Success"
 //	@Failure		400					{object}	utils.RequestError	"Bad request"

@@ -1701,7 +1701,6 @@ paths:
       - description: Masa Berlaku
         in: formData
         name: masa_berlaku
-        required: true
         type: string
       - description: File
         in: formData
@@ -2206,7 +2205,6 @@ paths:
       - description: Masa Berlaku
         in: formData
         name: masa_berlaku
-        required: true
         type: string
       - description: File
         in: formData
@@ -2993,7 +2991,6 @@ paths:
       - description: Tanggal Berlaku
         in: formData
         name: tanggal_berlaku
-        required: true
         type: string
       - description: Keterangan Peraturan
         in: formData
@@ -3805,7 +3802,6 @@ paths:
       - description: Masa Berlaku
         in: formData
         name: masa_berlaku
-        required: true
         type: string
       - description: File
         in: formData
@@ -4093,7 +4089,6 @@ paths:
       - description: Masa Berlaku
         in: formData
         name: masa_berlaku
-        required: true
         type: string
       - description: File
         in: formData
@@ -4381,7 +4376,6 @@ paths:
       - description: Masa Berlaku
         in: formData
         name: masa_berlaku
-        required: true
         type: string
       - description: File
         in: formData
@@ -4669,7 +4663,6 @@ paths:
       - description: Masa Berlaku
         in: formData
         name: masa_berlaku
-        required: true
         type: string
       - description: File
         in: formData
@@ -4996,14 +4989,6 @@ paths:
       description: get data jenis dokumen.
       operationId: jenis_dokumen-index
       parameters:
-      - description: Halaman yang ditampilkan
-        in: query
-        name: page
-        type: integer
-      - description: Jumlah data per halaman, maksimal 5 data per halaman
-        in: query
-        name: limit
-        type: integer
       - description: Nama Jenis dokumen
         in: query
         name: nama

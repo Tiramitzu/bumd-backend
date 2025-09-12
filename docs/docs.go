@@ -1680,8 +1680,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Masa Berlaku",
                         "name": "masa_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
@@ -2449,8 +2448,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Masa Berlaku",
                         "name": "masa_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
@@ -3642,8 +3640,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Tanggal Berlaku",
                         "name": "tanggal_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -4873,8 +4870,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Masa Berlaku",
                         "name": "masa_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
@@ -5309,8 +5305,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Masa Berlaku",
                         "name": "masa_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
@@ -5745,8 +5740,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Masa Berlaku",
                         "name": "masa_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
@@ -6181,8 +6175,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Masa Berlaku",
                         "name": "masa_berlaku",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
@@ -6756,18 +6749,6 @@ const docTemplate = `{
                 "summary": "get data jenis dokumen",
                 "operationId": "jenis_dokumen-index",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Halaman yang ditampilkan",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
-                        "name": "limit",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "description": "Nama Jenis dokumen",

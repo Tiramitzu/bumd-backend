@@ -40,18 +40,19 @@ func (c *PeraturanController) Index(
 	r = make([]others.PeraturanModel, 0)
 	offset := limit * (page - 1)
 
-	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_peraturan WHERE deleted_by = 0 AND id_bumd = $1`
+	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_peraturan WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1`
 	q := `
-	SELECT id, nomor, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, nama_jenis_peraturan
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, mst_jenis_dokumen.nama as nama_jenis_peraturan
 	FROM trn_peraturan
-	WHERE deleted_by = 0 AND id_bumd = $1
+	LEFT JOIN mst_jenis_dokumen ON trn_peraturan.jenis_peraturan = mst_jenis_dokumen.id
+	WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
 	args = append(args, idBumd)
 	if search != "" {
-		qCount += fmt.Sprintf(` AND nomor ILIKE $%d OR tanggal_berlaku ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
-		q += fmt.Sprintf(` AND nomor ILIKE $%d OR tanggal_berlaku ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
+		qCount += fmt.Sprintf(` AND nomor_peraturan ILIKE $%d OR tanggal_berlaku ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
+		q += fmt.Sprintf(` AND nomor_peraturan ILIKE $%d OR tanggal_berlaku ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
 		args = append(args, "%"+search+"%")
 	}
 
@@ -60,7 +61,7 @@ func (c *PeraturanController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PERATURAN: %w", err)
 	}
 
-	q += fmt.Sprintf(` ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY id_peraturan DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -94,9 +95,10 @@ func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	}
 
 	q := `
-	SELECT id, nomor, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, nama_jenis_peraturan
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, mst_jenis_dokumen.nama as nama_jenis_peraturan
 	FROM trn_peraturan
-	WHERE id = $1 AND id_bumd = $2 AND deleted_by = 0
+	LEFT JOIN mst_jenis_dokumen ON trn_peraturan.jenis_peraturan = mst_jenis_dokumen.id
+	WHERE trn_peraturan.id_peraturan = $1 AND trn_peraturan.id_bumd = $2 AND trn_peraturan.deleted_by = 0
 	`
 
 	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.ID, &r.Nomor, &r.TanggalBerlaku, &r.KeteranganPeraturan, &r.FilePeraturan, &r.IDBumd, &r.JenisPeraturan, &r.NamaJenisPeraturan)
@@ -139,17 +141,29 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	}
 
 	q := `
-	INSERT INTO trn_peraturan (nomor, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
+	INSERT INTO trn_peraturan (nomor_peraturan, keterangan_peraturan, id_bumd, jenis_peraturan, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING id_peraturan
 	`
 
 	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.TanggalBerlaku, payload.KeteranganPeraturan, payload.FilePeraturan, idBumd, payload.JenisPeraturan, idUser).Scan(&id)
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.KeteranganPeraturan, idBumd, payload.JenisPeraturan, idUser).Scan(&id)
 	if err != nil {
 		err = utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data PERATURAN. - " + err.Error(),
 		}
 		return false, err
+	}
+
+	if payload.TanggalBerlaku != nil {
+		q = `
+		UPDATE trn_peraturan
+		SET tanggal_berlaku = $1
+		WHERE id_peraturan = $2 AND id_bumd = $3
+		`
+		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.FilePeraturan != nil {
@@ -170,7 +184,7 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		objectName := "trn_peraturan/" + fileName
 
 		// update file
-		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id=$2 AND id_bumd=$3`
+		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id_peraturan=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			err = utils.RequestError{
@@ -212,13 +226,25 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	var args []interface{}
 	q := `
 	UPDATE trn_peraturan
-	SET nomor = $1, tanggal_berlaku = $2, keterangan_peraturan = $3, file_peraturan = $4, jenis_peraturan = $5, updated_by = $6, updated_at = NOW()
-	WHERE id = $8 AND id_bumd = $9
+	SET nomor_peraturan = $1, keterangan_peraturan = $2, jenis_peraturan = $3, updated_by = $4, updated_at = NOW()
+	WHERE id_peraturan = $5 AND id_bumd = $6
 	`
-	args = append(args, payload.Nomor, payload.TanggalBerlaku, payload.KeteranganPeraturan, payload.FilePeraturan, payload.JenisPeraturan, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.KeteranganPeraturan, payload.JenisPeraturan, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, err
+	}
+
+	if payload.TanggalBerlaku != nil {
+		q = `
+		UPDATE trn_peraturan
+		SET tanggal_berlaku = $1
+		WHERE id_peraturan = $2 AND id_bumd = $3
+		`
+		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.FilePeraturan != nil {
@@ -239,7 +265,7 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		objectName := "trn_peraturan/" + fileName
 
 		// update file
-		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id=$2`
+		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id_peraturan=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
 			err = utils.RequestError{
@@ -264,7 +290,7 @@ func (c *PeraturanController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	q := `
 	UPDATE trn_peraturan
 	SET deleted_by = $1, deleted_at = NOW()
-	WHERE id = $2 AND id_bumd = $3
+	WHERE id_peraturan = $2 AND id_bumd = $3
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {

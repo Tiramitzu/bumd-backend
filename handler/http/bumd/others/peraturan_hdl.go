@@ -177,7 +177,7 @@ func (h *PeraturanHandler) Create(c *fiber.Ctx) error {
 //	@Param			id						path		string				true	"Id PERATURAN"
 //	@Param			nomor					formData	string				true	"Nomor"
 //	@Param			jenis_peraturan			formData	int					true	"Jenis Peraturan"
-//	@Param			tanggal_berlaku			formData	string				true	"Tanggal Berlaku"
+//	@Param			tanggal_berlaku			formData	string				false	"Tanggal Berlaku"
 //	@Param			keterangan_peraturan	formData	string				true	"Keterangan Peraturan"
 //	@Param			file_peraturan			formData	file				false	"File Peraturan"
 //	@Success		200						{object}	bool				"Success"

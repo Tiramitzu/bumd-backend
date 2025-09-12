@@ -151,15 +151,28 @@ func (c *SiupController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	}
 
 	q := `
-	INSERT INTO dkmn_siup (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	INSERT INTO dkmn_siup (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 
 	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idBumd, idUser).Scan(&id)
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idBumd, idUser).Scan(&id)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data SIUP. - " + err.Error(),
+		}
+	}
+
+	if payload.MasaBerlaku != nil {
+		q = `
+		UPDATE dkmn_siup
+		SET masa_berlaku = $1
+		WHERE id = $2 AND id_bumd = $3
+		`
+
+		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
 		}
 	}
 
@@ -220,15 +233,28 @@ func (c *SiupController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	var args []interface{}
 	q := `
 	UPDATE dkmn_siup
-	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7, updated_at = NOW()
-	WHERE id = $8 AND id_bumd = $9
+	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, updated_by = $6, updated_at = NOW()
+	WHERE id = $7 AND id_bumd = $8
 	`
-	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal mengupdate data SIUP. - " + err.Error(),
+		}
+	}
+
+	if payload.MasaBerlaku != nil {
+		q = `
+		UPDATE dkmn_siup
+		SET masa_berlaku = $1
+		WHERE id = $2 AND id_bumd = $3
+		`
+
+		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
 		}
 	}
 
