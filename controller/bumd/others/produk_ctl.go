@@ -60,7 +60,7 @@ func (c *ProdukController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PRODUK: %w", err)
 	}
 
-	q += fmt.Sprintf(` ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY id_produk DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -96,7 +96,7 @@ func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	q := `
 	SELECT id_produk, id_bumd, nama_produk, deskripsi, foto_produk
 	FROM trn_produk
-	WHERE id = $1 AND id_bumd = $2 AND deleted_by = 0
+	WHERE id_produk = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
 	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.ID, &r.IDBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk)
@@ -139,7 +139,7 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	}
 
 	q := `
-	INSERT INTO trn_produk (nama_produk, deskripsi, id_bumd, created_by) VALUES ($1, $2, $3, $4) RETURNING id
+	INSERT INTO trn_produk (nama_produk, deskripsi, id_bumd, created_by) VALUES ($1, $2, $3, $4) RETURNING id_produk
 	`
 
 	var id int
