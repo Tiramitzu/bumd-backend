@@ -2461,7 +2461,7 @@ paths:
       operationId: pengurus-index
       parameters:
       - description: Id Bumd
-        in: query
+        in: path
         name: id_bumd
         required: true
         type: integer

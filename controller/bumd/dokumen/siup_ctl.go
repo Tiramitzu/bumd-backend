@@ -152,6 +152,7 @@ func (c *SiupController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 
 	q := `
 	INSERT INTO dkmn_siup (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id
 	`
 
 	var id int

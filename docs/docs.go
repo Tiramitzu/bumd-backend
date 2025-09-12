@@ -2916,7 +2916,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id Bumd",
                         "name": "id_bumd",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {

@@ -1,6 +1,7 @@
 package kepengurusan_sdm
 
 import (
+	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/kepengurusan_sdm"
 	"microdata/kemendagri/bumd/utils"
@@ -32,28 +33,34 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_pegawai WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id, id_bumd, tahun, status_pegawai, pendidikan, jumlah_pegawai
+	SELECT id_pegawai, id_bumd, tahun, status_pegawai, pendidikan, jumlah_pegawai
 	FROM trn_pegawai
-	WHERE deleted_by = 0 AND id_bumd = $1
-	ORDER BY id DESC
-	LIMIT $2 OFFSET $3
 	`
-	args = append(args, idBumd, limit, offset)
+	args = append(args, idBumd)
 
 	if search != "" {
-		qCount += ` AND (tahun ILIKE '%' || $2 || '%' OR status_pegawai ILIKE '%' || $2 || '%' OR pendidikan ILIKE '%' || $2 || '%' OR jumlah_pegawai ILIKE '%' || $2 || '%')`
-		q += ` AND (tahun ILIKE '%' || $2 || '%' OR status_pegawai ILIKE '%' || $2 || '%' OR pendidikan ILIKE '%' || $2 || '%' OR jumlah_pegawai ILIKE '%' || $2 || '%')`
+		qCount += fmt.Sprintf(` AND (tahun ILIKE $%d OR status_pegawai ILIKE $%d OR pendidikan ILIKE $%d OR jumlah_pegawai ILIKE $%d)`, len(args)+1, len(args)+2, len(args)+3, len(args)+4)
+		q += fmt.Sprintf(` AND (tahun ILIKE $%d OR status_pegawai ILIKE $%d OR pendidikan ILIKE $%d OR jumlah_pegawai ILIKE $%d)`, len(args)+1, len(args)+2, len(args)+3, len(args)+4)
 		args = append(args, search)
 	}
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data pegawai. - " + err.Error(),
+		}
 	}
+
+	q += fmt.Sprintf(` ORDER BY id_pegawai DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data pegawai. - " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -61,7 +68,10 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 		var m kepengurusan_sdm.PegawaiModel
 		err = rows.Scan(&m.ID, &m.IDBumd, &m.Tahun, &m.StatusPegawai, &m.Pendidikan, &m.JumlahPegawai)
 		if err != nil {
-			return
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengambil data pegawai. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -83,9 +93,9 @@ func (c *PegawaiController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	}
 
 	q := `
-	SELECT id, id_bumd, tahun, status_pegawai, pendidikan, jumlah_pegawai
+	SELECT id_pegawai, id_bumd, tahun, status_pegawai, pendidikan, jumlah_pegawai
 	FROM trn_pegawai
-	WHERE deleted_by = 0 AND id_bumd = $1 AND id = $2
+	WHERE deleted_by = 0 AND id_bumd = $1 AND id_pegawai = $2
 	`
 
 	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.ID, &r.IDBumd, &r.Tahun, &r.StatusPegawai, &r.Pendidikan, &r.JumlahPegawai)
@@ -108,7 +118,7 @@ func (c *PegawaiController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	q := `
 	INSERT INTO trn_pegawai (id_bumd, tahun, status_pegawai, pendidikan, jumlah_pegawai, created_by)
 	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING id
+	RETURNING id_pegawai
 	`
 	_, err = c.pgxConn.Exec(fCtx, q, idBumd, payload.Tahun, payload.StatusPegawai, payload.Pendidikan, payload.JumlahPegawai, idUser)
 	if err != nil {
@@ -131,7 +141,7 @@ func (c *PegawaiController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	}
 
 	q := `
-	UPDATE trn_pegawai SET tahun = $1, status_pegawai = $2, pendidikan = $3, jumlah_pegawai = $4, updated_at = NOW(), updated_by = $5 WHERE id = $6 AND id_bumd = $7
+	UPDATE trn_pegawai SET tahun = $1, status_pegawai = $2, pendidikan = $3, jumlah_pegawai = $4, updated_at = NOW(), updated_by = $5 WHERE id_pegawai = $6 AND id_bumd = $7
 	`
 	_, err = c.pgxConn.Exec(fCtx, q, payload.Tahun, payload.StatusPegawai, payload.Pendidikan, payload.JumlahPegawai, idUser, id, idBumd)
 	if err != nil {
@@ -154,7 +164,7 @@ func (c *PegawaiController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	}
 
 	q := `
-	UPDATE trn_pegawai SET deleted_at = NOW(), deleted_by = $1 WHERE id = $2 AND id_bumd = $3
+	UPDATE trn_pegawai SET deleted_at = NOW(), deleted_by = $1 WHERE id_pegawai = $2 AND id_bumd = $3
 	`
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {
