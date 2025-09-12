@@ -3,7 +3,6 @@ package http_mst
 import (
 	controller "microdata/kemendagri/bumd/controller/master"
 	models "microdata/kemendagri/bumd/models/master"
-	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -36,8 +35,6 @@ func NewJenisDokumenHandler(r fiber.Router, validator *validator.Validate, contr
 //	@ID				jenis_dokumen-index
 //	@Tags			Jenis dokumen
 //	@Produce		json
-//	@Param			page	query		int							false	"Halaman yang ditampilkan"
-//	@Param			limit	query		int							false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			nama	query		string						false	"Nama Jenis dokumen"
 //	@success		200		{object}	models.JenisDokumenModel	"Success"
 //	@Failure		400		{object}	utils.RequestError			"Bad request"
@@ -47,36 +44,36 @@ func NewJenisDokumenHandler(r fiber.Router, validator *validator.Validate, contr
 //	@Security		ApiKeyAuth
 //	@Router			/strict/jenis_dokumen [get]
 func (h *JenisDokumenHandler) Index(c *fiber.Ctx) error {
-	page := c.QueryInt("page", 1)
+	// page := c.QueryInt("page", 1)
 	nama := c.Query("nama")
-	var limit int
-	limit = c.QueryInt("limit", 5)
+	// var limit int
+	// limit = c.QueryInt("limit", 5)
 
-	if limit > 5 {
-		limit = 5
-	}
+	// if limit > 5 {
+	// 	limit = 5
+	// }
 
-	m, totalCount, pageCount, err := h.Controller.Index(
+	m, _, _, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		page,
-		limit,
+		// page,
+		// limit,
 		nama,
 	)
 	if err != nil {
 		return err
 	}
 
-	c.Append("x-pagination-total-count", strconv.Itoa(totalCount))
-	c.Append("x-pagination-page-count", strconv.Itoa(pageCount))
-	c.Append("x-pagination-page-size", strconv.Itoa(limit))
-	if page > 1 {
-		c.Append("x-pagination-previous-page", strconv.Itoa(page-1))
-	}
-	c.Append("x-pagination-current-page", strconv.Itoa(page))
-	if page < pageCount {
-		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
-	}
+	// c.Append("x-pagination-total-count", strconv.Itoa(totalCount))
+	// c.Append("x-pagination-page-count", strconv.Itoa(pageCount))
+	// c.Append("x-pagination-page-size", strconv.Itoa(limit))
+	// if page > 1 {
+	// 	c.Append("x-pagination-previous-page", strconv.Itoa(page-1))
+	// }
+	// c.Append("x-pagination-current-page", strconv.Itoa(page))
+	// if page < pageCount {
+	// 	c.Append("x-pagination-next-page", strconv.Itoa(page+1))
+	// }
 	return c.JSON(m)
 }
 

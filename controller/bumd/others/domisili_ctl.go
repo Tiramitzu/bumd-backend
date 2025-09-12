@@ -152,17 +152,29 @@ func (c *DomisiliController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	}
 
 	q := `
-	INSERT INTO trn_domisili (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, masa_berlaku, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id
+	INSERT INTO trn_domisili (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
 	`
 
 	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idBumd, idUser).Scan(&id)
+	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idBumd, idUser).Scan(&id)
 	if err != nil {
 		err = utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data DOMISILI. - " + err.Error(),
 		}
 		return false, err
+	}
+
+	if payload.MasaBerlaku != nil {
+		q = `
+		UPDATE trn_domisili
+		SET masa_berlaku = $1
+		WHERE id = $2 AND id_bumd = $3
+		`
+		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.File != nil {
@@ -225,13 +237,25 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	var args []interface{}
 	q := `
 	UPDATE trn_domisili
-	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, masa_berlaku = $6, updated_by = $7, updated_at = NOW()
-	WHERE id = $8 AND id_bumd = $9
+	SET nomor = $1, instansi_pemberi = $2, tanggal = $3, kualifikasi = $4, klasifikasi = $5, updated_by = $6, updated_at = NOW()
+	WHERE id = $7 AND id_bumd = $8
 	`
-	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, payload.MasaBerlaku, idUser, id, idBumd)
+	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, err
+	}
+
+	if payload.MasaBerlaku != nil {
+		q = `
+		UPDATE trn_domisili
+		SET masa_berlaku = $1
+		WHERE id = $2 AND id_bumd = $3
+		`
+		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.File != nil {

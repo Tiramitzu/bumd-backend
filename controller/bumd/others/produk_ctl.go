@@ -42,7 +42,7 @@ func (c *ProdukController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_produk WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id, id_bumd, nama_produk, deskripsi, foto_produk
+	SELECT id_produk, id_bumd, nama_produk, deskripsi, foto_produk
 	FROM trn_produk
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
@@ -94,7 +94,7 @@ func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	}
 
 	q := `
-	SELECT id, id_bumd, nama_produk, deskripsi, foto_produk
+	SELECT id_produk, id_bumd, nama_produk, deskripsi, foto_produk
 	FROM trn_produk
 	WHERE id = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
@@ -170,7 +170,7 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 		objectName := "trn_produk/" + fileName
 
 		// update file
-		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id=$2 AND id_bumd=$3`
+		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id_produk=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			err = utils.RequestError{
@@ -213,7 +213,7 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	q := `
 	UPDATE trn_produk
 	SET nama_produk = $1, deskripsi = $2, updated_by = $3, updated_at = NOW()
-	WHERE id = $4 AND id_bumd = $5
+	WHERE id_produk = $4 AND id_bumd = $5
 	`
 	args = append(args, payload.NamaProduk, payload.Deskripsi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
@@ -239,7 +239,7 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 		objectName := "trn_produk/" + fileName
 
 		// update file
-		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id=$2`
+		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id_produk=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
 			err = utils.RequestError{
@@ -264,7 +264,7 @@ func (c *ProdukController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	q := `
 	UPDATE trn_produk
 	SET deleted_by = $1, deleted_at = NOW()
-	WHERE id = $2 AND id_bumd = $3
+	WHERE id_produk = $2 AND id_bumd = $3
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
