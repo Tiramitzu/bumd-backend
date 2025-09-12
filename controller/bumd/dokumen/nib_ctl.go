@@ -152,7 +152,8 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	}
 
 	q := `
-	INSERT INTO dkmn_nib (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
+	INSERT INTO dkmn_nib (nomor, instansi_pemberi, tanggal, kualifikasi, klasifikasi, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7)
+	RETURNING id
 	`
 
 	var id int

@@ -37,7 +37,7 @@ func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl
 //	@ID				pengurus-index
 //	@Tags			Pengurus
 //	@Produce		json
-//	@Param			id_bumd	query		int									true	"Id Bumd"
+//	@Param			id_bumd	path		int									true	"Id Bumd"
 //	@Param			page	query		int									false	"Halaman yang ditampilkan"
 //	@Param			limit	query		int									false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search	query		string								false	"Search"
