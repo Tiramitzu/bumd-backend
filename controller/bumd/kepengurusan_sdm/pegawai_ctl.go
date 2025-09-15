@@ -34,7 +34,7 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_pegawai WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
 	SELECT id_pegawai, id_bumd, tahun, status_pegawai, pendidikan, jumlah_pegawai
-	FROM trn_pegawai
+	FROM trn_pegawai WHERE deleted_by = 0 AND id_bumd = $1
 	`
 	args = append(args, idBumd)
 
