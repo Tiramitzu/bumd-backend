@@ -9,54 +9,60 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/minio/minio-go/v7"
 	"github.com/valyala/fasthttp"
 )
 
 type AktaNotarisController struct {
-	pgxConn *pgxpool.Pool
+	pgxConn   *pgxpool.Pool
+	minioConn *utils.MinioConn
 }
 
-func NewAktaNotarisController(pgxConn *pgxpool.Pool) *AktaNotarisController {
-	return &AktaNotarisController{pgxConn: pgxConn}
+func NewAktaNotarisController(pgxConn *pgxpool.Pool, minioConn *utils.MinioConn) *AktaNotarisController {
+	return &AktaNotarisController{pgxConn: pgxConn, minioConn: minioConn}
 }
 
 func (c *AktaNotarisController) Index(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	idBumd,
+	idBumd uuid.UUID,
 	page,
 	limit int,
 	search string,
 ) (r []dokumen.AktaNotarisModel, totalCount, pageCount int, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Akta Notaris: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	r = make([]dokumen.AktaNotarisModel, 0)
 	offset := limit * (page - 1)
 
-	qCount := `SELECT COALESCE(COUNT(*), 0) FROM dkmn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1`
+	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id, nomor, notaris, tanggal, keterangan, file FROM dkmn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1
+	SELECT id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, file_akta_notaris FROM trn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
 	args = append(args, idBumd)
 	if search != "" {
 		qCount += fmt.Sprintf(
-			` AND (nomor ILIKE $%d OR tanggal ILIKE $%d OR tanggal ILIKE $%d OR keterangan ILIKE $%d)`,
+			` AND (nomor_akta_notaris ILIKE $%d OR tanggal_akta_notaris ILIKE $%d OR tanggal_akta_notaris ILIKE $%d OR keterangan_akta_notaris ILIKE $%d)`,
 			len(args)+1,
 			len(args)+1,
 			len(args)+1,
 			len(args)+1,
 		)
 		q += fmt.Sprintf(
-			` AND (nomor ILIKE $%d OR tanggal ILIKE $%d OR tanggal ILIKE $%d OR keterangan ILIKE $%d)`,
+			` AND (nomor_akta_notaris ILIKE $%d OR tanggal_akta_notaris ILIKE $%d OR tanggal_akta_notaris ILIKE $%d OR keterangan_akta_notaris ILIKE $%d)`,
 			len(args)+1,
 			len(args)+1,
 			len(args)+1,
@@ -70,21 +76,21 @@ func (c *AktaNotarisController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Akta Notaris: %w", err)
 	}
 
-	q += fmt.Sprintf(`ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(`ORDER BY id_akta_notaris DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
+		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Akta Notaris: %w", err)
 	}
 
 	defer rows.Close()
 	for rows.Next() {
 		var m dokumen.AktaNotarisModel
-		err = rows.Scan(&m.ID, &m.Nomor, &m.Notaris, &m.Tanggal, &m.Keterangan, &m.File)
-		m.IDBumd = int32(idBumd)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.Notaris, &m.Tanggal, &m.Keterangan, &m.File)
+		m.IdBumd = idBumd
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
+			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Akta Notaris: %w", err)
 		}
 		r = append(r, m)
 	}
@@ -97,20 +103,23 @@ func (c *AktaNotarisController) Index(
 	return r, totalCount, pageCount, err
 }
 
-func (c *AktaNotarisController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r dokumen.AktaNotarisModel, err error) {
+func (c *AktaNotarisController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r dokumen.AktaNotarisModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, fmt.Errorf("gagal mengambil data Akta Notaris: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	SELECT id, nomor, notaris, tanggal, keterangan, file FROM dkmn_akta_notaris WHERE id = $1 AND id_bumd = $2 AND deleted_by = 0
+	SELECT id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, file_akta_notaris FROM trn_akta_notaris WHERE id_akta_notaris = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.ID, &r.Nomor, &r.Notaris, &r.Tanggal, &r.Keterangan, &r.File)
-	r.IDBumd = int32(idBumd)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.Notaris, &r.Tanggal, &r.Keterangan, &r.File)
+	r.IdBumd = idBumd
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{
@@ -124,10 +133,13 @@ func (c *AktaNotarisController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	return r, err
 }
 
-func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *dokumen.AktaNotarisForm) (r bool, err error) {
+func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, payload *dokumen.AktaNotarisForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Akta Notaris: %w", err)
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -144,16 +156,23 @@ func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO dkmn_akta_notaris (nomor, notaris, tanggal, keterangan, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+	INSERT INTO trn_akta_notaris (id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_akta_notaris
 	`
 
-	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idBumd, idUser).Scan(&id)
+	var id uuid.UUID
+	id, err = uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id Akta Notaris. - " + err.Error(),
+		}
+	}
+	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idBumd, idUser)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -175,10 +194,24 @@ func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		defer src.Close()
 
 		// upload file
-		objectName := "dkmn_akta_notaris/" + fileName
+		objectName := "trn_akta_notaris/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
-		q = `UPDATE dkmn_akta_notaris SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		q = `UPDATE trn_akta_notaris SET file_akta_notaris=$1 WHERE id_akta_notaris=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{
@@ -191,10 +224,13 @@ func (c *AktaNotarisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	return true, err
 }
 
-func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *dokumen.AktaNotarisForm) (r bool, err error) {
+func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID, payload *dokumen.AktaNotarisForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Akta Notaris: %w", err)
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -211,14 +247,14 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	var args []interface{}
 	q := `
-	UPDATE dkmn_akta_notaris
-	SET nomor = $1, notaris = $2, tanggal = $3, keterangan = $4, updated_by = $5, updated_at = NOW()
+	UPDATE trn_akta_notaris
+	SET nomor_akta_notaris = $1, notaris_akta_notaris = $2, tanggal_akta_notaris = $3, keterangan_akta_notaris = $4, updated_by = $5, updated_at = NOW()
 	WHERE id = $6 AND id_bumd = $7
 	`
 	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idUser, id, idBumd)
@@ -242,10 +278,25 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		defer src.Close()
 
 		// upload file
-		objectName := "dkmn_akta_notaris/" + fileName
+		objectName := "trn_akta_notaris/" + fileName
+
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
-		q = `UPDATE dkmn_akta_notaris SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		q = `UPDATE trn_akta_notaris SET file_akta_notaris=$1 WHERE id_akta_notaris=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{
@@ -258,19 +309,22 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	return true, err
 }
 
-func (c *AktaNotarisController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r bool, err error) {
+func (c *AktaNotarisController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Akta Notaris: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	UPDATE dkmn_akta_notaris
+	UPDATE trn_akta_notaris
 	SET deleted_by = $1, deleted_at = NOW()
-	WHERE id = $2 AND id_bumd = $3
+	WHERE id_akta_notaris = $2 AND id_bumd = $3
 	`
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)

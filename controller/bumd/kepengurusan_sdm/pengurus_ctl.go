@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
@@ -22,12 +23,15 @@ func NewPengurusController(pgxConn *pgxpool.Pool) *PengurusController {
 	return &PengurusController{pgxConn: pgxConn}
 }
 
-func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd int, search string) (r []kepengurusan_sdm.PengurusModel, totalCount, pageCount int, err error) {
+func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd uuid.UUID, search string) (r []kepengurusan_sdm.PengurusModel, totalCount, pageCount int, err error) {
 	r = make([]kepengurusan_sdm.PengurusModel, 0)
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -36,15 +40,15 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_pengurus WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_pengurus, id_bumd, jabatan_struktur, nama_pengurus, nik, alamat, deskripsi_jabatan, pendidikan_akhir, tanggal_mulai_jabatan, tanggal_akhir_jabatan, file
+	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus
 	FROM trn_pengurus
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
 	args = append(args, idBumd)
 
 	if search != "" {
-		qCount += fmt.Sprintf(` AND (nama_pengurus ILIKE $%d OR nik ILIKE $%d)`, len(args)+1, len(args)+2)
-		q += fmt.Sprintf(` AND (nama_pengurus ILIKE $%d OR nik ILIKE $%d)`, len(args)+1, len(args)+2)
+		qCount += fmt.Sprintf(` AND (nama_pengurus_pengurus ILIKE $%d OR nik_pengurus ILIKE $%d)`, len(args)+1, len(args)+2)
+		q += fmt.Sprintf(` AND (nama_pengurus_pengurus ILIKE $%d OR nik_pengurus ILIKE $%d)`, len(args)+1, len(args)+2)
 		args = append(args, search)
 	}
 
@@ -56,7 +60,7 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 		}
 	}
 
-	q += fmt.Sprintf(` ORDER BY id_pengurus DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -70,7 +74,7 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 	defer rows.Close()
 	for rows.Next() {
 		var m kepengurusan_sdm.PengurusModel
-		err = rows.Scan(&m.ID, &m.IDBumd, &m.JabatanStruktur, &m.NamaPengurus, &m.NIK, &m.Alamat, &m.DeskripsiJabatan, &m.PendidikanAkhir, &m.TanggalMulaiJabatan, &m.TanggalAkhirJabatan, &m.File)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.JabatanStruktur, &m.NamaPengurus, &m.NIK, &m.Alamat, &m.DeskripsiJabatan, &m.PendidikanAkhir, &m.TanggalMulaiJabatan, &m.TanggalAkhirJabatan, &m.File)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -88,21 +92,24 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 	return r, totalCount, pageCount, err
 }
 
-func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r kepengurusan_sdm.PengurusModel, err error) {
+func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r kepengurusan_sdm.PengurusModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	SELECT id_pengurus, id_bumd, jabatan_struktur, nama_pengurus, nik, alamat, deskripsi_jabatan, pendidikan_akhir, tanggal_mulai_jabatan, tanggal_akhir_jabatan, file
+	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus
 	FROM trn_pengurus
 	WHERE deleted_by = 0 AND id_bumd = $1 AND id_pengurus = $2
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.ID, &r.IDBumd, &r.JabatanStruktur, &r.NamaPengurus, &r.NIK, &r.Alamat, &r.DeskripsiJabatan, &r.PendidikanAkhir, &r.TanggalMulaiJabatan, &r.TanggalAkhirJabatan, &r.File)
+	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.JabatanStruktur, &r.NamaPengurus, &r.NIK, &r.Alamat, &r.DeskripsiJabatan, &r.PendidikanAkhir, &r.TanggalMulaiJabatan, &r.TanggalAkhirJabatan, &r.File)
 	if err != nil {
 		return r, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -113,12 +120,18 @@ func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	return r, err
 }
 
-func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *kepengurusan_sdm.PengurusForm) (r bool, err error) {
+func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, payload *kepengurusan_sdm.PengurusForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -137,13 +150,19 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		}
 	}()
 
-	var id int
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id pengurus. - " + err.Error(),
+		}
+	}
+
 	q := `
-	INSERT INTO trn_pengurus (id_bumd, jabatan_struktur, nama_pengurus, nik, alamat, deskripsi_jabatan, pendidikan_akhir, tanggal_mulai_jabatan, tanggal_akhir_jabatan, file, created_by)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-	RETURNING id_pengurus
+	INSERT INTO trn_pengurus (id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus, created_by)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`
-	err = tx.QueryRow(fCtx, q, idBumd, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, payload.File, idUser).Scan(&id)
+	err = tx.QueryRow(fCtx, q, id, idBumd, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, payload.File, idUser).Scan(&id)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -166,7 +185,7 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		objectName := "pengurus/" + fileName
 
 		q = `
-		UPDATE trn_pengurus SET file = $1 WHERE id_pengurus = $2 AND id_bumd = $3
+		UPDATE trn_pengurus SET file_pengurus = $1 WHERE id_pengurus = $2 AND id_bumd = $3
 		`
 		_, err = tx.Exec(fCtx, q, objectName, id, idBumd)
 		if err != nil {
@@ -180,12 +199,18 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	return true, err
 }
 
-func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *kepengurusan_sdm.PengurusForm) (r bool, err error) {
+func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID, payload *kepengurusan_sdm.PengurusForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -205,7 +230,7 @@ func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	}()
 
 	q := `
-	UPDATE trn_pengurus SET jabatan_struktur = $1, nama_pengurus = $2, nik = $3, alamat = $4, deskripsi_jabatan = $5, pendidikan_akhir = $6, tanggal_mulai_jabatan = $7, tanggal_akhir_jabatan = $8, file = $9, updated_at = NOW(), updated_by = $10 WHERE id_pengurus = $11 AND id_bumd = $12
+	UPDATE trn_pengurus SET jabatan_struktur_pengurus = $1, nama_pengurus = $2, nik_pengurus = $3, alamat_pengurus = $4, deskripsi_jabatan_pengurus = $5, pendidikan_akhir_pengurus = $6, tanggal_mulai_jabatan_pengurus = $7, tanggal_akhir_jabatan_pengurus = $8, file_pengurus = $9, updated_at = NOW(), updated_by = $10 WHERE id_pengurus = $11 AND id_bumd = $12
 	`
 	_, err = tx.Exec(fCtx, q, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, payload.File, idUser, id, idBumd)
 	if err != nil {
@@ -230,7 +255,7 @@ func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		objectName := "pengurus/" + fileName
 
 		q = `
-		UPDATE trn_pengurus SET file = $1 WHERE id_pengurus = $2 AND id_bumd = $3
+		UPDATE trn_pengurus SET file_pengurus = $1 WHERE id_pengurus = $2 AND id_bumd = $3
 		`
 		_, err = tx.Exec(fCtx, q, objectName, id, idBumd)
 		if err != nil {
@@ -244,17 +269,23 @@ func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	return true, err
 }
 
-func (c *PengurusController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r bool, err error) {
+func (c *PengurusController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	UPDATE trn_pengurus SET deleted_at = NOW(), deleted_by = $1 WHERE id_pengurus = $2 AND id_bumd = $3
+	UPDATE trn_pengurus SET deleted_by = $1, deleted_at = NOW() WHERE id_pengurus = $2 AND id_bumd = $3
 	`
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {

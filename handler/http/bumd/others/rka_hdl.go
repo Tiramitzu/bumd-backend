@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type RKAHandler struct {
@@ -37,7 +38,7 @@ func NewRKAHandler(r fiber.Router, validator *validator.Validate, controller *ct
 //	@ID				rka-index
 //	@Tags			RKA
 //	@Produce		json
-//	@Param			id_bumd			path		int					true	"Id BUMD"
+//	@Param			id_bumd			path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			page			query		int					false	"Page"
 //	@Param			limit			query		int					false	"Limit"
 //	@Param			search			query		string				false	"Search"
@@ -51,7 +52,8 @@ func NewRKAHandler(r fiber.Router, validator *validator.Validate, controller *ct
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/rka [get]
 func (h *RKAHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -97,8 +99,8 @@ func (h *RKAHandler) Index(c *fiber.Ctx) error {
 //	@ID				rka-view
 //	@Tags			RKA
 //	@Produce		json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id RKA"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id RKA"	Format(uuid)
 //	@Success		200		{object}	others.RKAModel		"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -107,11 +109,13 @@ func (h *RKAHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/rka/{id} [get]
 func (h *RKAHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idStr := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return err
 	}
@@ -130,7 +134,7 @@ func (h *RKAHandler) View(c *fiber.Ctx) error {
 //	@ID				rka-create
 //	@Tags			RKA
 //	@Accept			multipart/form-data
-//	@Param			id_bumd				path		int					true	"Id BUMD"
+//	@Param			id_bumd				path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nomor				formData	string				false	"Nomor"
 //	@Param			instansi_pemberi	formData	string				false	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				false	"Tanggal"
@@ -145,7 +149,8 @@ func (h *RKAHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/rka [post]
 func (h *RKAHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -182,8 +187,8 @@ func (h *RKAHandler) Create(c *fiber.Ctx) error {
 //	@ID				rka-update
 //	@Tags			RKA
 //	@Accept			multipart/form-data
-//	@Param			id_bumd				path		int					true	"Id BUMD"
-//	@Param			id					path		int					true	"Id RKA"
+//	@Param			id_bumd				path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id					path		string				true	"Id RKA"	Format(uuid)
 //	@Param			nomor				formData	string				true	"Nomor"
 //	@Param			instansi_pemberi	formData	string				true	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				true	"Tanggal"
@@ -198,11 +203,13 @@ func (h *RKAHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/rka/{id} [put]
 func (h *RKAHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idStr := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return err
 	}
@@ -239,8 +246,8 @@ func (h *RKAHandler) Update(c *fiber.Ctx) error {
 //	@ID				rka-delete
 //	@Tags			RKA
 //	@Accept			json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id RKA"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id RKA"	Format(uuid)
 //	@Success		200		{object}	bool				"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -249,11 +256,13 @@ func (h *RKAHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/rka/{id} [delete]
 func (h *RKAHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idStr := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return err
 	}

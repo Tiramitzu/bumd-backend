@@ -8,18 +8,19 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type MyCustomClaim struct {
 	jwt.RegisteredClaims
-	KodeDDN         string `json:"kode_ddn"`
-	KodeProvinsi    string `json:"kode_provinsi"`
-	SubDomainDaerah string `json:"sub_domain_daerah"`
-	IdUser          int64  `json:"id_user"`
-	IdDaerah        int32  `json:"id_daerah"`
-	IdRole          int32  `json:"id_role"`
-	IdBumd          int32  `json:"id_bumd"`
+	KodeDDN         string    `json:"kode_ddn"`
+	KodeProvinsi    string    `json:"kode_provinsi"`
+	SubDomainDaerah string    `json:"sub_domain_daerah"`
+	IdUser          int64     `json:"id_user"`
+	IdDaerah        int32     `json:"id_daerah"`
+	IdRole          int32     `json:"id_role"`
+	IdBumd          uuid.UUID `json:"id_bumd"`
 }
 
 type JWTManager struct {

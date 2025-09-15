@@ -10,23 +10,26 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/minio/minio-go/v7"
 	"github.com/valyala/fasthttp"
 )
 
 type PerdaPendirianController struct {
-	pgxConn *pgxpool.Pool
+	pgxConn   *pgxpool.Pool
+	minioConn *utils.MinioConn
 }
 
-func NewPerdaPendirianController(pgxConn *pgxpool.Pool) *PerdaPendirianController {
-	return &PerdaPendirianController{pgxConn: pgxConn}
+func NewPerdaPendirianController(pgxConn *pgxpool.Pool, minioConn *utils.MinioConn) *PerdaPendirianController {
+	return &PerdaPendirianController{pgxConn: pgxConn, minioConn: minioConn}
 }
 
 func (c *PerdaPendirianController) Index(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	idBumd,
+	idBumd uuid.UUID,
 	page,
 	limit int,
 	search string,
@@ -34,31 +37,33 @@ func (c *PerdaPendirianController) Index(
 	modalDasarMax float64,
 ) (r []dokumen.PerdaPendirianModel, totalCount, pageCount int, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
-
-	if idBumdClaims > 0 {
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+	}
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	r = make([]dokumen.PerdaPendirianModel, 0)
 	offset := limit * (page - 1)
 
-	qCount := `SELECT COALESCE(COUNT(*), 0) FROM dkmn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1`
+	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id, nomor, tanggal, keterangan, file, modal_dasar FROM dkmn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1
+	SELECT id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, file_perda_pendirian, modal_dasar_perda_pendirian FROM trn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
 	args = append(args, idBumd)
 	if search != "" {
 		qCount += fmt.Sprintf(
-			` AND (nomor ILIKE $%d OR tanggal ILIKE $%d OR keterangan ILIKE $%d)`,
+			` AND (nomor_perda_pendirian ILIKE $%d OR tanggal_perda_pendirian ILIKE $%d OR keterangan_perda_pendirian ILIKE $%d)`,
 			len(args)+1,
 			len(args)+1,
 			len(args)+1,
 		)
 		q += fmt.Sprintf(
-			` AND (nomor ILIKE $%d OR tanggal ILIKE $%d OR keterangan ILIKE $%d)`,
+			` AND (nomor_perda_pendirian ILIKE $%d OR tanggal_perda_pendirian ILIKE $%d OR keterangan_perda_pendirian ILIKE $%d)`,
 			len(args)+1,
 			len(args)+1,
 			len(args)+1,
@@ -66,8 +71,8 @@ func (c *PerdaPendirianController) Index(
 		args = append(args, "%"+search+"%")
 	}
 	if modalDasarMin > 0 {
-		qCount += fmt.Sprintf(` AND modal_dasar >= $%d`, len(args)+1)
-		q += fmt.Sprintf(` AND modal_dasar >= $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND modal_dasar_perda_pendirian >= $%d`, len(args)+1)
+		q += fmt.Sprintf(` AND modal_dasar_perda_pendirian >= $%d`, len(args)+1)
 		args = append(args, modalDasarMin)
 	}
 	if modalDasarMax > 0 {
@@ -92,8 +97,8 @@ func (c *PerdaPendirianController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m dokumen.PerdaPendirianModel
-		err = rows.Scan(&m.ID, &m.Nomor, &m.Tanggal, &m.Keterangan, &m.File, &m.ModalDasar)
-		m.IDBumd = int32(idBumd)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.Tanggal, &m.Keterangan, &m.File, &m.ModalDasar)
+		m.IdBumd = idBumd
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
 		}
@@ -108,20 +113,23 @@ func (c *PerdaPendirianController) Index(
 	return r, totalCount, pageCount, err
 }
 
-func (c *PerdaPendirianController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r dokumen.PerdaPendirianModel, err error) {
+func (c *PerdaPendirianController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r dokumen.PerdaPendirianModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	SELECT id, nomor, tanggal, keterangan, file, modal_dasar FROM dkmn_perda_pendirian WHERE id = $1 AND id_bumd = $2 AND deleted_by = 0
+	SELECT id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, file_perda_pendirian, modal_dasar_perda_pendirian FROM trn_perda_pendirian WHERE id_perda_pendirian = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.ID, &r.Nomor, &r.Tanggal, &r.Keterangan, &r.File, &r.ModalDasar)
-	r.IDBumd = int32(idBumd)
+	r.IdBumd = idBumd
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.Tanggal, &r.Keterangan, &r.File, &r.ModalDasar)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{
@@ -135,12 +143,15 @@ func (c *PerdaPendirianController) View(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	return r, err
 }
 
-func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *dokumen.PerdaPendirianForm) (r bool, err error) {
+func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, payload *dokumen.PerdaPendirianForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -169,11 +180,18 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 	}
 
 	q := `
-	INSERT INTO dkmn_perda_pendirian (nomor, tanggal, keterangan, modal_dasar, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+	INSERT INTO trn_perda_pendirian (id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, modal_dasar_perda_pendirian, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_perda_pendirian
 	`
 
-	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.Tanggal, payload.Keterangan, modalDasar, idBumd, idUser).Scan(&id)
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id Perda Pendirian. - " + err.Error(),
+		}
+	}
+
+	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.Tanggal, payload.Keterangan, modalDasar, idBumd, idUser)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -195,10 +213,24 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 		defer src.Close()
 
 		// upload file
-		objectName := "dkmn_perda_pendirian/" + fileName
+		objectName := "trn_perda_pendirian/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
-		q = `UPDATE dkmn_perda_pendirian SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		q = `UPDATE trn_perda_pendirian SET file_perda_pendirian=$1 WHERE id_perda_pendirian=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{
@@ -211,10 +243,13 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 	return true, err
 }
 
-func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int, payload *dokumen.PerdaPendirianForm) (r bool, err error) {
+func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID, payload *dokumen.PerdaPendirianForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -231,7 +266,7 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -246,8 +281,8 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 
 	var args []interface{}
 	q := `
-	UPDATE dkmn_perda_pendirian
-	SET nomor = $1, tanggal = $2, keterangan = $3, modal_dasar = $4, updated_by = $5, updated_at = NOW()
+	UPDATE trn_perda_pendirian
+	SET nomor_perda_pendirian = $1, tanggal_perda_pendirian = $2, keterangan_perda_pendirian = $3, modal_dasar_perda_pendirian = $4, updated_by = $5, updated_at = NOW()
 	WHERE id = $6 AND id_bumd = $7
 	`
 	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, modalDasar, idUser, id, idBumd)
@@ -271,10 +306,24 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 		defer src.Close()
 
 		// upload file
-		objectName := "dkmn_perda_pendirian/" + fileName
+		objectName := "trn_perda_pendirian/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
-		q = `UPDATE dkmn_perda_pendirian SET file=$1 WHERE id=$2 AND id_bumd=$3`
+		q = `UPDATE trn_perda_pendirian SET file_perda_pendirian=$1 WHERE id_perda_pendirian=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{
@@ -287,19 +336,22 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 	return true, err
 }
 
-func (c *PerdaPendirianController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r bool, err error) {
+func (c *PerdaPendirianController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	UPDATE dkmn_perda_pendirian
+	UPDATE trn_perda_pendirian
 	SET deleted_by = $1, deleted_at = NOW()
-	WHERE id = $2 AND id_bumd = $3
+	WHERE id_perda_pendirian = $2 AND id_bumd = $3
 	`
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)

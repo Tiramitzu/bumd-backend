@@ -9,31 +9,37 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/minio/minio-go/v7"
 	"github.com/valyala/fasthttp"
 )
 
 type ProdukController struct {
-	pgxConn *pgxpool.Pool
+	pgxConn   *pgxpool.Pool
+	minioConn *utils.MinioConn
 }
 
-func NewProdukController(pgxConn *pgxpool.Pool) *ProdukController {
-	return &ProdukController{pgxConn: pgxConn}
+func NewProdukController(pgxConn *pgxpool.Pool, minioConn *utils.MinioConn) *ProdukController {
+	return &ProdukController{pgxConn: pgxConn, minioConn: minioConn}
 }
 
 func (c *ProdukController) Index(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	idBumd,
+	idBumd uuid.UUID,
 	page,
 	limit int,
 	search string,
 ) (r []others.ProdukModel, totalCount, pageCount int, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -42,7 +48,7 @@ func (c *ProdukController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_produk WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_produk, id_bumd, nama_produk, deskripsi, foto_produk
+	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk
 	FROM trn_produk
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
@@ -50,8 +56,8 @@ func (c *ProdukController) Index(
 	args := make([]interface{}, 0)
 	args = append(args, idBumd)
 	if search != "" {
-		qCount += fmt.Sprintf(` AND nama_produk ILIKE $%d OR deskripsi ILIKE $%d`, len(args)+1, len(args)+1)
-		q += fmt.Sprintf(` AND nama_produk ILIKE $%d OR deskripsi ILIKE $%d`, len(args)+1, len(args)+1)
+		qCount += fmt.Sprintf(` AND nama_produk ILIKE $%d OR deskripsi_produk ILIKE $%d`, len(args)+1, len(args)+1)
+		q += fmt.Sprintf(` AND nama_produk ILIKE $%d OR deskripsi_produk ILIKE $%d`, len(args)+1, len(args)+1)
 		args = append(args, "%"+search+"%")
 	}
 
@@ -60,7 +66,7 @@ func (c *ProdukController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PRODUK: %w", err)
 	}
 
-	q += fmt.Sprintf(` ORDER BY id_produk DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -70,7 +76,7 @@ func (c *ProdukController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m others.ProdukModel
-		err = rows.Scan(&m.ID, &m.IDBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data PRODUK: %w", err)
 		}
@@ -85,21 +91,24 @@ func (c *ProdukController) Index(
 	return r, totalCount, pageCount, err
 }
 
-func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id string) (r others.ProdukModel, err error) {
+func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r others.ProdukModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	SELECT id_produk, id_bumd, nama_produk, deskripsi, foto_produk
+	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk
 	FROM trn_produk
 	WHERE id_produk = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.ID, &r.IDBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.IdBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{
@@ -113,10 +122,16 @@ func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	return r, err
 }
 
-func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *others.ProdukForm) (r bool, err error) {
+func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, payload *others.ProdukForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -134,16 +149,22 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO trn_produk (nama_produk, deskripsi, id_bumd, created_by) VALUES ($1, $2, $3, $4) RETURNING id_produk
+	INSERT INTO trn_produk (id_produk, nama_produk, deskripsi_produk, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5)
 	`
 
-	var id int
-	err = tx.QueryRow(context.Background(), q, payload.NamaProduk, payload.Deskripsi, idBumd, idUser).Scan(&id)
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id PRODUK. - " + err.Error(),
+		}
+	}
+	_, err = tx.Exec(context.Background(), q, id, payload.NamaProduk, payload.Deskripsi, idBumd, idUser)
 	if err != nil {
 		err = utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -168,6 +189,20 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 
 		// upload file
 		objectName := "trn_produk/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.FotoProduk.Size,
+			minio.PutObjectOptions{ContentType: payload.FotoProduk.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
 		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id_produk=$2 AND id_bumd=$3`
@@ -184,10 +219,16 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	return true, err
 }
 
-func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id string, payload *others.ProdukForm) (r bool, err error) {
+func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID, payload *others.ProdukForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -205,14 +246,14 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	var args []interface{}
 	q := `
 	UPDATE trn_produk
-	SET nama_produk = $1, deskripsi = $2, updated_by = $3, updated_at = NOW()
+	SET nama_produk = $1, deskripsi_produk = $2, updated_by = $3, updated_at = NOW()
 	WHERE id_produk = $4 AND id_bumd = $5
 	`
 	args = append(args, payload.NamaProduk, payload.Deskripsi, idUser, id, idBumd)
@@ -237,6 +278,20 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 
 		// upload file
 		objectName := "trn_produk/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.FotoProduk.Size,
+			minio.PutObjectOptions{ContentType: payload.FotoProduk.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
 		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id_produk=$2`
@@ -253,12 +308,18 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	return true, err
 }
 
-func (c *ProdukController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id string) (r bool, err error) {
+func (c *ProdukController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 	q := `

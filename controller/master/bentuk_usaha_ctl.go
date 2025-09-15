@@ -2,12 +2,12 @@ package controller_mst
 
 import (
 	"fmt"
-	"math"
 	models "microdata/kemendagri/bumd/models/master"
 	"microdata/kemendagri/bumd/utils"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -20,69 +20,49 @@ func NewBentukUsahaController(pgxConn *pgxpool.Pool) *BentukUsahaController {
 	return &BentukUsahaController{pgxConn: pgxConn}
 }
 
-func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, nama string) (r []models.BentukUsahaModel, totalCount, pageCount int, err error) {
+func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, nama string) (r []models.BentukUsahaModel, err error) {
 	r = make([]models.BentukUsahaModel, 0)
-	offset := limit * (page - 1)
 
 	var args []interface{}
-	qCount := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE deleted_by = 0
-	`
-
 	q := `
-	SELECT id, nama, deskripsi FROM mst_bentuk_usaha WHERE deleted_by = 0
+	SELECT id_bu, nama_bu, deskripsi_bu FROM m_bentuk_usaha WHERE deleted_by = 0
 	`
 	if nama != "" {
-		qCount += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
-		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
+		q += fmt.Sprintf(` AND nama_bu ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
 
-	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
-	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Bentuk Usaha: %w", err)
-	}
-
-	q += fmt.Sprintf(`
-	ORDER BY id DESC
-	LIMIT $%d OFFSET $%d
-	`, len(args)+1, len(args)+2)
-	args = append(args, limit, offset)
+	q += ` ORDER BY created_at DESC`
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, totalCount, pageCount, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
+			return r, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
 		}
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
+		return r, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
 	}
 
 	defer rows.Close()
 	for rows.Next() {
 		var m models.BentukUsahaModel
-		err = rows.Scan(&m.ID, &m.Nama, &m.Deskripsi)
+		err = rows.Scan(&m.Id, &m.Nama, &m.Deskripsi)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
+			return r, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
 		}
 		r = append(r, m)
 	}
 
-	pageCount = 1
-	if totalCount > 0 && totalCount > limit {
-		pageCount = int(math.Ceil(float64(totalCount) / float64(limit)))
-	}
-
-	return r, totalCount, pageCount, err
+	return r, err
 }
 
-func (c *BentukUsahaController) View(fCtx *fasthttp.RequestCtx, id int) (r models.BentukUsahaModel, err error) {
+func (c *BentukUsahaController) View(fCtx *fasthttp.RequestCtx, id uuid.UUID) (r models.BentukUsahaModel, err error) {
 	q := `
-	SELECT id, nama, deskripsi
-	FROM mst_bentuk_usaha
-	WHERE id = $1
+	SELECT id_bu, nama_bu, deskripsi_bu
+	FROM m_bentuk_usaha
+	WHERE id_bu = $1
 	AND deleted_by = 0
 	`
-	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama, &r.Deskripsi)
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.Id, &r.Nama, &r.Deskripsi)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
@@ -106,7 +86,7 @@ func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE nama = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM m_bentuk_usaha WHERE nama_bu = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -124,11 +104,19 @@ func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 		}
 	}
 
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal membuat data Bentuk Usaha - " + err.Error(),
+		}
+	}
+
 	q = `
-	INSERT INTO mst_bentuk_usaha (nama, deskripsi, created_by) VALUES ($1, $2, $3)
+	INSERT INTO m_bentuk_usaha (id_bu, nama_bu, deskripsi_bu, created_by) VALUES ($1, $2, $3, $4)
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Nama, payload.Deskripsi, idUser)
+	_, err = c.pgxConn.Exec(fCtx, q, id, payload.Nama, payload.Deskripsi, idUser)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -139,7 +127,7 @@ func (c *BentukUsahaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	return true, err
 }
 
-func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.BentukUsahaForm, id int) (r bool, err error) {
+func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.BentukUsahaForm, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -152,7 +140,7 @@ func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE nama = $1
+	SELECT COALESCE(COUNT(*), 0) FROM m_bentuk_usaha WHERE nama_bu = $1
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -171,9 +159,9 @@ func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q = `
-	UPDATE mst_bentuk_usaha
-	SET nama = $1, deskripsi = $2, updated_by = $3
-	WHERE id = $4
+	UPDATE m_bentuk_usaha
+	SET nama_bu = $1, deskripsi_bu = $2, updated_by = $3
+	WHERE id_bu = $4 AND deleted_by = 0
 	`
 
 	_, err = c.pgxConn.Exec(fCtx, q, payload.Nama, payload.Deskripsi, idUser, id)
@@ -187,7 +175,7 @@ func (c *BentukUsahaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	return true, err
 }
 
-func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int) (r bool, err error) {
+func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -200,7 +188,7 @@ func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_bentuk_usaha WHERE id = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM m_bentuk_usaha WHERE id_bu = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
@@ -219,9 +207,9 @@ func (c *BentukUsahaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	}
 
 	q = `
-	UPDATE mst_bentuk_usaha
+	UPDATE m_bentuk_usaha
 	SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3
+	WHERE id_bu = $3 AND deleted_by = 0
 	`
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id)

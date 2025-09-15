@@ -4,7 +4,7 @@ CREATE TABLE users (
     password    varchar(150) NOT NULL DEFAULT ''::character varying,
     id_daerah   int4 NOT NULL DEFAULT 0,
     id_role     int4 NOT NULL DEFAULT 0,
-    id_bumd     int4 NOT NULL DEFAULT 0,
+    id_bumd     uuid,
     nama        varchar(250) NOT NULL DEFAULT ''::character varying,
     logo        text NOT NULL DEFAULT '',
     created_at  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

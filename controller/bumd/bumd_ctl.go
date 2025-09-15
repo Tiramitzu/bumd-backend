@@ -9,18 +9,21 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/minio/minio-go/v7"
 	"github.com/valyala/fasthttp"
 )
 
 type BumdController struct {
 	pgxConn        *pgxpool.Pool
 	pgxConnMstData *pgxpool.Pool
+	minioConn      *utils.MinioConn
 }
 
-func NewBumdController(pgxConn *pgxpool.Pool, pgxConnMstData *pgxpool.Pool) *BumdController {
-	return &BumdController{pgxConn: pgxConn, pgxConnMstData: pgxConnMstData}
+func NewBumdController(pgxConn *pgxpool.Pool, pgxConnMstData *pgxpool.Pool, minioConn *utils.MinioConn) *BumdController {
+	return &BumdController{pgxConn: pgxConn, pgxConnMstData: pgxConnMstData, minioConn: minioConn}
 }
 
 func (c *BumdController) Index(
@@ -29,7 +32,7 @@ func (c *BumdController) Index(
 	page, limit int,
 	nama string,
 	penerapanSPI bool,
-	indukPerusahaan int,
+	indukPerusahaan uuid.UUID,
 ) (r []bumd.BumdModel, totalCount, pageCount int, err error) {
 	r = make([]bumd.BumdModel, 0)
 	claims := user.Claims.(jwt.MapClaims)
@@ -38,42 +41,46 @@ func (c *BumdController) Index(
 
 	var args []interface{}
 	qCount := `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM trn_bumd WHERE deleted_by = 0
 	`
 
 	q := `
 	WITH t_induk_perusahaan AS (
-		SELECT id, nama as nama_induk_perusahaan
-		FROM bumd
+		SELECT id_bumd, nama_bumd as nama_induk_perusahaan
+		FROM trn_bumd
 		WHERE deleted_by = 0
 	)
 	SELECT
-		b.id,
+		b.id_bumd,
 		b.id_daerah,
 		b.id_bentuk_hukum,
 		b.id_bentuk_usaha,
 		b.id_induk_perusahaan,
 		COALESCE(t_induk_perusahaan.nama_induk_perusahaan, '-') as nama_induk_perusahaan,
-		b.penerapan_spi,
-		mbbh.nama as bentuk_badan_hukum,
-		mbbu.nama as bentuk_usaha,
-		b.nama,
-		b.deskripsi,
-		b.alamat,
-		b.no_telp,
-		b.no_fax,
-		b.email,
-		b.website,
-		b.narahubung,
-		b.npwp,
-		b.npwp_pemberi,
-		b.npwp_file,
-		b.file_spi,
-		b.logo
-	FROM bumd b
-		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
-		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
-		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id = b.id_induk_perusahaan
+		b.penerapan_spi_bumd,
+		mbbh.nama_bbh as bentuk_badan_hukum,
+		mbbu.nama_bu as bentuk_usaha,
+		b.nama_bumd,
+		b.deskripsi_bumd,
+		b.alamat_bumd,
+		b.no_telp_bumd,
+		b.no_fax_bumd,
+		b.email_bumd,
+		b.website_bumd,
+		b.narahubung_bumd,
+		b.npwp_bumd,
+		b.npwp_pemberi_bumd,
+		b.npwp_file_bumd,
+		b.file_spi_bumd,
+		b.logo_bumd,
+		b.created_at,
+		b.created_by,
+		b.updated_at,
+		b.updated_by
+	FROM trn_bumd b
+		LEFT JOIN m_bentuk_badan_hukum mbbh ON mbbh.id_bbh = b.id_bentuk_hukum
+		LEFT JOIN m_bentuk_usaha mbbu ON mbbu.id_bu = b.id_bentuk_usaha
+		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id_bumd = b.id_induk_perusahaan
 	WHERE b.deleted_by = 0
 	`
 	if idDaerah > 0 {
@@ -82,16 +89,16 @@ func (c *BumdController) Index(
 		args = append(args, idDaerah)
 	}
 	if nama != "" {
-		qCount += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
-		q += fmt.Sprintf(` AND b.nama ILIKE $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND nama_bumd ILIKE $%d`, len(args)+1)
+		q += fmt.Sprintf(` AND b.nama_bumd ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
 	if penerapanSPI {
-		qCount += fmt.Sprintf(` AND penerapan_spi = $%d`, len(args)+1)
-		q += fmt.Sprintf(` AND b.penerapan_spi = $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND penerapan_spi_bumd = $%d`, len(args)+1)
+		q += fmt.Sprintf(` AND b.penerapan_spi_bumd = $%d`, len(args)+1)
 		args = append(args, penerapanSPI)
 	}
-	if indukPerusahaan != 0 {
+	if indukPerusahaan != uuid.Nil {
 		qCount += fmt.Sprintf(` AND id_induk_perusahaan = $%d`, len(args)+1)
 		q += fmt.Sprintf(` AND b.id_induk_perusahaan = $%d`, len(args)+1)
 		args = append(args, indukPerusahaan)
@@ -103,7 +110,7 @@ func (c *BumdController) Index(
 	}
 
 	q += fmt.Sprintf(`
-	ORDER BY id DESC
+	ORDER BY created_at DESC
 	LIMIT $%d OFFSET $%d
 	`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
@@ -117,11 +124,11 @@ func (c *BumdController) Index(
 	for rows.Next() {
 		var m bumd.BumdModel
 		err = rows.Scan(
-			&m.ID,
-			&m.IDDaerah,
-			&m.IDBentukHukum,
-			&m.IDBentukUsaha,
-			&m.IDIndukPerusahaan,
+			&m.Id,
+			&m.IdDaerah,
+			&m.IdBentukHukum,
+			&m.IdBentukUsaha,
+			&m.IdIndukPerusahaan,
 			&m.NamaIndukPerusahaan,
 			&m.PenerapanSPI,
 			&m.BentukBadanHukum,
@@ -139,17 +146,21 @@ func (c *BumdController) Index(
 			&m.NPWPFile,
 			&m.SPIFile,
 			&m.Logo,
+			&m.CreatedAt,
+			&m.CreatedBy,
+			&m.UpdatedAt,
+			&m.UpdatedBy,
 		)
 
 		q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
-		err = c.pgxConnMstData.QueryRow(fCtx, q, m.IDDaerah).Scan(&m.NamaDaerah, &m.IDProvinsi)
+		err = c.pgxConnMstData.QueryRow(fCtx, q, m.IdDaerah).Scan(&m.NamaDaerah, &m.IdProvinsi)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
 		}
 
-		if m.IDDaerah != m.IDProvinsi {
+		if m.IdDaerah != m.IdProvinsi {
 			q = `SELECT nama_daerah FROM data.m_daerah WHERE id_daerah = $1`
-			err = c.pgxConnMstData.QueryRow(fCtx, q, m.IDProvinsi).Scan(&m.NamaProvinsi)
+			err = c.pgxConnMstData.QueryRow(fCtx, q, m.IdProvinsi).Scan(&m.NamaProvinsi)
 			if err != nil {
 				return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
 			}
@@ -173,7 +184,7 @@ func (c *BumdController) Index(
 func (c *BumdController) View(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	id int,
+	id uuid.UUID,
 ) (r bumd.BumdModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idDaerah := int(claims["id_daerah"].(float64))
@@ -181,38 +192,42 @@ func (c *BumdController) View(
 	var args []interface{}
 	q := `
 	WITH t_induk_perusahaan AS (
-		SELECT id, nama as nama_induk_perusahaan
-		FROM bumd
+		SELECT id_bumd, nama_bumd as nama_induk_perusahaan
+		FROM trn_bumd
 		WHERE deleted_by = 0
 	)
 	SELECT
-		b.id,
+		b.id_bumd,
 		b.id_daerah,
 		b.id_bentuk_hukum,
 		b.id_bentuk_usaha,
 		b.id_induk_perusahaan,
 		COALESCE(t_induk_perusahaan.nama_induk_perusahaan, '-') as nama_induk_perusahaan,
-		b.penerapan_spi,
-		mbbh.nama as bentuk_badan_hukum,
-		mbbu.nama as bentuk_usaha,
-		b.nama,
-		b.deskripsi,
-		b.alamat,
-		b.no_telp,
-		b.no_fax,
-		b.email,
-		b.website,
-		b.narahubung,
-		b.npwp,
-		b.npwp_pemberi,
-		b.npwp_file,
-		b.file_spi,
-		b.logo
-	FROM bumd b
-		LEFT JOIN mst_bentuk_badan_hukum mbbh ON mbbh.id = b.id_bentuk_hukum
-		LEFT JOIN mst_bentuk_usaha mbbu ON mbbu.id = b.id_bentuk_usaha
-		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id = b.id_induk_perusahaan
-	WHERE b.id = $1 AND b.deleted_by = 0
+		b.penerapan_spi_bumd,
+		mbbh.nama_bbh as bentuk_badan_hukum,
+		mbbu.nama_bu as bentuk_usaha,
+		b.nama_bumd,
+		b.deskripsi_bumd,
+		b.alamat_bumd,
+		b.no_telp_bumd,
+		b.no_fax_bumd,
+		b.email_bumd,
+		b.website_bumd,
+		b.narahubung_bumd,
+		b.npwp_bumd,
+		b.npwp_pemberi_bumd,
+		b.npwp_file_bumd,
+		b.file_spi_bumd,
+		b.logo_bumd,
+		b.created_at,
+		b.created_by,
+		b.updated_at,
+		b.updated_by
+	FROM trn_bumd b
+		LEFT JOIN m_bentuk_badan_hukum mbbh ON mbbh.id_bbh = b.id_bentuk_hukum
+		LEFT JOIN m_bentuk_usaha mbbu ON mbbu.id_bu = b.id_bentuk_usaha
+		LEFT JOIN t_induk_perusahaan ON t_induk_perusahaan.id_bumd = b.id_induk_perusahaan
+	WHERE b.id_bumd = $1 AND b.deleted_by = 0
 	`
 	args = append(args, id)
 	if idDaerah > 0 {
@@ -221,11 +236,11 @@ func (c *BumdController) View(
 	}
 
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(
-		&r.ID,
-		&r.IDDaerah,
-		&r.IDBentukHukum,
-		&r.IDBentukUsaha,
-		&r.IDIndukPerusahaan,
+		&r.Id,
+		&r.IdDaerah,
+		&r.IdBentukHukum,
+		&r.IdBentukUsaha,
+		&r.IdIndukPerusahaan,
 		&r.NamaIndukPerusahaan,
 		&r.PenerapanSPI,
 		&r.BentukBadanHukum,
@@ -243,20 +258,24 @@ func (c *BumdController) View(
 		&r.NPWPFile,
 		&r.SPIFile,
 		&r.Logo,
+		&r.CreatedAt,
+		&r.CreatedBy,
+		&r.UpdatedAt,
+		&r.UpdatedBy,
 	)
 	if err != nil {
 		return r, fmt.Errorf("gagal mengambil data BUMD: %w", err)
 	}
 
 	q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
-	err = c.pgxConnMstData.QueryRow(fCtx, q, r.IDDaerah).Scan(&r.NamaDaerah, &r.IDProvinsi)
+	err = c.pgxConnMstData.QueryRow(fCtx, q, r.IdDaerah).Scan(&r.NamaDaerah, &r.IdProvinsi)
 	if err != nil {
 		return r, fmt.Errorf("gagal mengambil data Daerah: %w", err)
 	}
 
-	if r.IDDaerah != r.IDProvinsi {
+	if r.IdDaerah != r.IdProvinsi {
 		q = `SELECT nama_daerah FROM data.m_daerah WHERE id_daerah = $1`
-		err = c.pgxConnMstData.QueryRow(fCtx, q, r.IDProvinsi).Scan(&r.NamaProvinsi)
+		err = c.pgxConnMstData.QueryRow(fCtx, q, r.IdProvinsi).Scan(&r.NamaProvinsi)
 		if err != nil {
 			return r, fmt.Errorf("gagal mengambil data Daerah: %w", err)
 		}
@@ -274,21 +293,30 @@ func (c *BumdController) Create(
 	idUser := int(claims["id_user"].(float64))
 	idDaerah := int(claims["id_daerah"].(float64))
 
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal membuat BUMD - " + err.Error(),
+		}
+	}
+
 	q := `
-	INSERT INTO bumd (
+	INSERT INTO trn_bumd (
+		id_bumd,
 		id_daerah,
 		id_bentuk_hukum,
 		id_bentuk_usaha,
 		id_induk_perusahaan,
-		penerapan_spi,
-		nama,
-		deskripsi,
-		alamat,
-		no_telp,
-		no_fax,
-		email,
-		website,
-		narahubung,
+		penerapan_spi_bumd,
+		nama_bumd,
+		deskripsi_bumd,
+		alamat_bumd,
+		no_telp_bumd,
+		no_fax_bumd,
+		email_bumd,
+		website_bumd,
+		narahubung_bumd,
 		created_by
 	) VALUES (
 		$1,
@@ -304,27 +332,29 @@ func (c *BumdController) Create(
 		$11,
 		$12,
 		$13,
-		$14
+		$14,
+		$15
 	)
 	`
 
 	_, err = c.pgxConn.Exec(
 		fCtx,
 		q,
-		idDaerah,                  // 1
-		payload.IDBentukHukum,     // 2
-		payload.IDBentukUsaha,     // 3
-		payload.IDIndukPerusahaan, // 4
-		payload.PenerapanSPI,      // 5
-		payload.Nama,              // 6
-		payload.Deskripsi,         // 7
-		payload.Alamat,            // 8
-		payload.NoTelp,            // 9
-		payload.NoFax,             // 10
-		payload.Email,             // 11
-		payload.Website,           // 12
-		payload.Narahubung,        // 13
-		idUser,                    // 14
+		id,                        // 1
+		idDaerah,                  // 2
+		payload.IdBentukHukum,     // 3
+		payload.IdBentukUsaha,     // 4
+		payload.IdIndukPerusahaan, // 5
+		payload.PenerapanSPI,      // 6
+		payload.Nama,              // 7
+		payload.Deskripsi,         // 8
+		payload.Alamat,            // 9
+		payload.NoTelp,            // 10
+		payload.NoFax,             // 11
+		payload.Email,             // 12
+		payload.Website,           // 13
+		payload.Narahubung,        // 14
+		idUser,                    // 15
 	)
 	if err != nil {
 		return false, utils.RequestError{
@@ -340,7 +370,7 @@ func (c *BumdController) Update(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
 	payload *bumd.BumdForm,
-	id int,
+	id uuid.UUID,
 ) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
@@ -348,7 +378,7 @@ func (c *BumdController) Update(
 
 	var args []interface{}
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM trn_bumd WHERE id_bumd = $1 AND deleted_by = 0
 	`
 	args = append(args, id)
 	if idDaerah > 0 {
@@ -374,28 +404,28 @@ func (c *BumdController) Update(
 
 	args = []interface{}{}
 	q = `
-	UPDATE bumd
+	UPDATE trn_bumd
 	SET
 		id_bentuk_hukum = $1,
 		id_bentuk_usaha = $2,
 		id_induk_perusahaan = $3,
-		penerapan_spi = $4,
-		nama = $5,
-		deskripsi = $6,
-		alamat = $7,
-		no_telp = $8,
-		no_fax = $9,
-		email = $10,
-		website = $11,
-		narahubung = $12,
+		penerapan_spi_bumd = $4,
+		nama_bumd = $5,
+		deskripsi_bumd = $6,
+		alamat_bumd = $7,
+		no_telp_bumd = $8,
+		no_fax_bumd = $9,
+		email_bumd = $10,
+		website_bumd = $11,
+		narahubung_bumd = $12,
 		updated_by = $13,
 		updated_at = NOW()
-	WHERE id = $14 AND deleted_by = 0
+	WHERE id_bumd = $14 AND deleted_by = 0
 	`
 	args = append(args,
-		payload.IDBentukHukum,     // 1
-		payload.IDBentukUsaha,     // 2
-		payload.IDIndukPerusahaan, // 3
+		payload.IdBentukHukum,     // 1
+		payload.IdBentukUsaha,     // 2
+		payload.IdIndukPerusahaan, // 3
 		payload.PenerapanSPI,      // 4
 		payload.Nama,              // 5
 		payload.Deskripsi,         // 6
@@ -431,7 +461,7 @@ func (c *BumdController) Update(
 func (c *BumdController) Delete(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	id int,
+	id uuid.UUID,
 ) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
@@ -439,7 +469,7 @@ func (c *BumdController) Delete(
 
 	var args []interface{}
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM trn_bumd WHERE id_bumd = $1 AND deleted_by = 0
 	`
 	args = append(args, id)
 	if idDaerah > 0 {
@@ -464,7 +494,7 @@ func (c *BumdController) Delete(
 	}
 
 	q = `
-	SELECT COALESCE(COUNT(*), 0) FROM bumd WHERE id_induk_perusahaan = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM trn_bumd WHERE id_induk_perusahaan = $1 AND deleted_by = 0
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&count)
 	if err != nil {
@@ -477,14 +507,14 @@ func (c *BumdController) Delete(
 	if count > 0 {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusBadRequest,
-			Message: "Data BUMD induk tidak dapat dihapus, karena masih ada data BUMD anak yang terkait.",
+			Message: "Data BUMD induk tidak dapat dihapus, karena masih ada data anak BUMD yang terkait.",
 		}
 	}
 
 	q = `
-	UPDATE bumd
+	UPDATE trn_bumd
 		SET deleted_by = $1, deleted_at = NOW()
-	WHERE id = $2
+	WHERE id_bumd = $2
 	`
 	args = append(args, idUser, id)
 	if idDaerah > 0 {
@@ -506,10 +536,10 @@ func (c *BumdController) Delete(
 func (c *BumdController) SPI(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	id int,
+	id uuid.UUID,
 ) (r bumd.SPIModel, err error) {
 	q := `
-		SELECT penerapan_spi, file_spi FROM bumd WHERE id = $1 AND deleted_by = 0
+		SELECT penerapan_spi_bumd, file_spi_bumd FROM trn_bumd WHERE id_bumd = $1 AND deleted_by = 0
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.PenerapanSPI, &r.FileSPI)
 	if err != nil {
@@ -525,7 +555,7 @@ func (c *BumdController) SPIUpdate(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
 	payload *bumd.SPIForm,
-	id int,
+	id uuid.UUID,
 ) (r bool, err error) {
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -543,10 +573,10 @@ func (c *BumdController) SPIUpdate(
 	}()
 
 	q := `
-	UPDATE bumd
+	UPDATE trn_bumd
 	SET
-		penerapan_spi = $1
-	WHERE id = $2
+		penerapan_spi_bumd = $1
+	WHERE id_bumd = $2
 	`
 	_, err = tx.Exec(context.Background(), q, payload.PenerapanSPI, id)
 	if err != nil {
@@ -572,9 +602,23 @@ func (c *BumdController) SPIUpdate(
 
 		// upload file
 		objectName := "bumd_spi/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.FileSPI.Size,
+			minio.PutObjectOptions{ContentType: payload.FileSPI.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
-		q = `UPDATE bumd SET file_spi=$1 WHERE id=$2`
+		q = `UPDATE trn_bumd SET file_spi_bumd=$1 WHERE id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
 			err = utils.RequestError{
@@ -590,10 +634,10 @@ func (c *BumdController) SPIUpdate(
 func (c *BumdController) NPWP(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	id int,
+	id uuid.UUID,
 ) (r bumd.NPWPModel, err error) {
 	q := `
-	SELECT npwp, npwp_pemberi, npwp_file FROM bumd WHERE id = $1 AND deleted_by = 0
+	SELECT npwp_bumd, npwp_pemberi_bumd, npwp_file_bumd FROM trn_bumd WHERE id_bumd = $1 AND deleted_by = 0
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.NPWP, &r.Pemberi, &r.File)
 	if err != nil {
@@ -609,7 +653,7 @@ func (c *BumdController) NPWPUpdate(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
 	payload *bumd.NPWPForm,
-	id int,
+	id uuid.UUID,
 ) (r bool, err error) {
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -627,11 +671,11 @@ func (c *BumdController) NPWPUpdate(
 	}()
 
 	q := `
-	UPDATE bumd
+	UPDATE trn_bumd
 	SET
-		npwp = $1,
-		npwp_pemberi = $2
-	WHERE id = $3
+		npwp_bumd = $1,
+		npwp_pemberi_bumd = $2
+	WHERE id_bumd = $3
 	`
 	_, err = tx.Exec(context.Background(), q, payload.NPWP, payload.Pemberi, id)
 	if err != nil {
@@ -656,9 +700,23 @@ func (c *BumdController) NPWPUpdate(
 
 		// upload file
 		objectName := "bumd_npwp/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
-		q = `UPDATE bumd SET npwp_file=$1 WHERE id=$2`
+		q = `UPDATE trn_bumd SET npwp_file_bumd=$1 WHERE id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
 			return false, utils.RequestError{

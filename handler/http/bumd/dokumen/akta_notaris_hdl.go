@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type AktaNotarisHandler struct {
@@ -41,7 +42,7 @@ func NewAktaNotarisHandler(
 //	@ID				akta_notaris-index
 //	@Tags			Akta Notaris
 //	@Produce		json
-//	@Param			id_bumd	path		int							true	"Id BUMD"
+//	@Param			id_bumd	path		string						true	"Id BUMD"	Format(uuid)
 //	@Param			page	query		int							false	"Halaman yang ditampilkan"
 //	@Param			limit	query		int							false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search	query		string						false	"Pencarian"
@@ -53,7 +54,8 @@ func NewAktaNotarisHandler(
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/akta_notaris [get]
 func (h *AktaNotarisHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -68,7 +70,7 @@ func (h *AktaNotarisHandler) Index(c *fiber.Ctx) error {
 	m, totalCount, pageCount, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
+		parsedIdBumd,
 		page,
 		limit,
 		search,
@@ -98,8 +100,8 @@ func (h *AktaNotarisHandler) Index(c *fiber.Ctx) error {
 //	@ID				akta_notaris-view
 //	@Tags			Akta Notaris
 //	@Produce		json
-//	@Param			id_bumd	path		int							true	"Id BUMD"
-//	@Param			id		path		int							true	"Id untuk get data akta notaris"
+//	@Param			id_bumd	path		string						true	"Id BUMD"							Format(uuid)
+//	@Param			id		path		string						true	"Id untuk get data akta notaris"	Format(uuid)
 //	@success		200		{object}	dokumen.AktaNotarisModel	"Success"
 //	@Failure		400		{object}	utils.RequestError			"Bad request"
 //	@Failure		404		{object}	utils.RequestError			"Data not found"
@@ -107,15 +109,17 @@ func (h *AktaNotarisHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/akta_notaris/{id} [get]
 func (h *AktaNotarisHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -129,7 +133,7 @@ func (h *AktaNotarisHandler) View(c *fiber.Ctx) error {
 //	@ID				akta_notaris-create
 //	@Tags			Akta Notaris
 //	@Accept			multipart/form-data
-//	@Param			id_bumd		path		int		true	"Id BUMD"
+//	@Param			id_bumd		path		string	true	"Id BUMD"	Format(uuid)
 //	@Param			nomor		formData	string	true	"Nomor Akta notaris"
 //	@Param			notaris		formData	string	true	"Notaris"
 //	@Param			tanggal		formData	string	true	"Tanggal Akta notaris"
@@ -144,7 +148,8 @@ func (h *AktaNotarisHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/akta_notaris [post]
 func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -170,7 +175,7 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 	m, err := h.Controller.Create(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
+		parsedIdBumd,
 		payload,
 	)
 	if err != nil {
@@ -187,8 +192,8 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@ID				akta_notaris-update
 //	@Tags			Akta Notaris
 //	@Accept			multipart/form-data
-//	@Param			id_bumd		path		int		true	"Id BUMD"
-//	@Param			id			path		int		true	"Id untuk update data akta notaris"
+//	@Param			id_bumd		path		string	true	"Id BUMD"							Format(uuid)
+//	@Param			id			path		string	true	"Id untuk update data akta notaris"	Format(uuid)
 //	@Param			nomor		formData	string	true	"Nomor Akta notaris"
 //	@Param			tanggal		formData	string	true	"Tanggal Akta notaris"
 //	@Param			keterangan	formData	string	true	"Keterangan"
@@ -202,11 +207,13 @@ func (h *AktaNotarisHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/akta_notaris/{id} [put]
 func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -233,8 +240,8 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 	m, err := h.Controller.Update(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
-		id,
+		parsedIdBumd,
+		parsedId,
 		payload,
 	)
 	if err != nil {
@@ -251,8 +258,8 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 //	@ID				akta_notaris-delete
 //	@Tags			Akta Notaris
 //	@Accept			json
-//	@Param			id_bumd	path	int	true	"Id BUMD"
-//	@Param			id		path	int	true	"Id untuk delete data akta notaris"
+//	@Param			id_bumd	path	string	true	"Id BUMD"							Format(uuid)
+//	@Param			id		path	string	true	"Id untuk delete data akta notaris"	Format(uuid)
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -262,11 +269,13 @@ func (h *AktaNotarisHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/akta_notaris/{id} [delete]
 func (h *AktaNotarisHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -274,8 +283,8 @@ func (h *AktaNotarisHandler) Delete(c *fiber.Ctx) error {
 	m, err := h.Controller.Delete(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
-		id,
+		parsedIdBumd,
+		parsedId,
 	)
 	if err != nil {
 		return err

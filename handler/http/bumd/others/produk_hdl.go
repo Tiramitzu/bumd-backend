@@ -3,12 +3,12 @@ package others
 import (
 	ctl "microdata/kemendagri/bumd/controller/bumd/others"
 	"microdata/kemendagri/bumd/models/bumd/others"
-	"microdata/kemendagri/bumd/utils"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type ProdukHandler struct {
@@ -37,7 +37,7 @@ func NewProdukHandler(r fiber.Router, validator *validator.Validate, controller 
 //	@ID				produk-index
 //	@Tags			Produk
 //	@Produce		json
-//	@Param			id_bumd	path		int						true	"Id BUMD"
+//	@Param			id_bumd	path		string					true	"Id BUMD"	Format(uuid)
 //	@Param			page	query		int						false	"Page"
 //	@Param			limit	query		int						false	"Limit"
 //	@Param			search	query		string					false	"Search"
@@ -49,7 +49,8 @@ func NewProdukHandler(r fiber.Router, validator *validator.Validate, controller 
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/produk [get]
 func (h *ProdukHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -93,8 +94,8 @@ func (h *ProdukHandler) Index(c *fiber.Ctx) error {
 //	@ID				produk-view
 //	@Tags			Produk
 //	@Produce		json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		string				true	"Id PRODUK"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id PRODUK"	Format(uuid)
 //	@Success		200		{object}	others.ProdukModel	"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -103,13 +104,18 @@ func (h *ProdukHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/produk/{id} [get]
 func (h *ProdukHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	id := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
 
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -123,7 +129,7 @@ func (h *ProdukHandler) View(c *fiber.Ctx) error {
 //	@ID				produk-create
 //	@Tags			Produk
 //	@Accept			multipart/form-data
-//	@Param			id_bumd		path		int					true	"Id BUMD"
+//	@Param			id_bumd		path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nama_produk	formData	string				false	"Nama Produk"
 //	@Param			deskripsi	formData	int					false	"Deskripsi Produk"
 //	@Param			foto_produk	formData	file				false	"Foto Produk"
@@ -134,7 +140,8 @@ func (h *ProdukHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/produk [post]
 func (h *ProdukHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -145,16 +152,6 @@ func (h *ProdukHandler) Create(c *fiber.Ctx) error {
 
 	if err := h.Validate.Struct(payload); err != nil {
 		return err
-	}
-
-	if payload.FotoProduk != nil {
-		const maxFileSize = 2 * 1024 * 1024 // 2 MB
-		if err := utils.ValidateFile(payload.FotoProduk, maxFileSize, []string{"application/pdf"}); err != nil {
-			return utils.RequestError{
-				Code:    fiber.StatusBadRequest,
-				Message: err.Error(),
-			}
-		}
 	}
 
 	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, payload)
@@ -171,7 +168,7 @@ func (h *ProdukHandler) Create(c *fiber.Ctx) error {
 //	@ID				produk-update
 //	@Tags			Produk
 //	@Accept			multipart/form-data
-//	@Param			id_bumd		path		int					true	"Id BUMD"
+//	@Param			id_bumd		path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nama_produk	formData	string				false	"Nama Produk"
 //	@Param			deskripsi	formData	int					false	"Deskripsi Produk"
 //	@Param			foto_produk	formData	file				false	"Foto Produk"
@@ -182,11 +179,16 @@ func (h *ProdukHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/produk/{id} [put]
 func (h *ProdukHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	id := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
 	payload := new(others.ProdukForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
@@ -196,17 +198,7 @@ func (h *ProdukHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	if payload.FotoProduk != nil {
-		const maxFileSize = 2 * 1024 * 1024 // 2 MB
-		if err := utils.ValidateFile(payload.FotoProduk, maxFileSize, []string{"application/pdf"}); err != nil {
-			return utils.RequestError{
-				Code:    fiber.StatusBadRequest,
-				Message: err.Error(),
-			}
-		}
-	}
-
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, payload)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, parsedId, payload)
 	if err != nil {
 		return err
 	}
@@ -220,8 +212,8 @@ func (h *ProdukHandler) Update(c *fiber.Ctx) error {
 //	@ID				produk-delete
 //	@Tags			Produk
 //	@Accept			json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		string				true	"Id PRODUK"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id PRODUK"	Format(uuid)
 //	@Success		200		{object}	bool				"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -230,12 +222,17 @@ func (h *ProdukHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/produk/{id} [delete]
 func (h *ProdukHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	id := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id := c.Params("id")
-	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, parsedId)
 	if err != nil {
 		return err
 	}

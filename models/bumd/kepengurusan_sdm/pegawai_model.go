@@ -1,12 +1,14 @@
 package kepengurusan_sdm
 
+import "github.com/google/uuid"
+
 type PegawaiModel struct {
-	ID            int `json:"id"`
-	IDBumd        int `json:"id_bumd"`
-	Tahun         int `json:"tahun"`
-	StatusPegawai int `json:"status_pegawai"`
-	Pendidikan    int `json:"pendidikan"`
-	JumlahPegawai int `json:"jumlah_pegawai"`
+	Id            uuid.UUID `json:"id"`
+	IdBumd        uuid.UUID `json:"id_bumd"`
+	Tahun         int       `json:"tahun"`
+	StatusPegawai int       `json:"status_pegawai"`
+	Pendidikan    int       `json:"pendidikan"`
+	JumlahPegawai int       `json:"jumlah_pegawai"`
 }
 
 type PegawaiForm struct {

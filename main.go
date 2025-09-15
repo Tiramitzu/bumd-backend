@@ -406,7 +406,7 @@ func main() {
 	bumd.NewBumdHandler(
 		rStrict,
 		vld,
-		controller_bumd.NewBumdController(pgxConn, pgxConnMstData),
+		controller_bumd.NewBumdController(pgxConn, pgxConnMstData, minioConn),
 		pgxConn,
 		minioConn,
 	)

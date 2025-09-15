@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type PerdaPendirianHandler struct {
@@ -41,7 +42,7 @@ func NewPerdaPendirianHandler(
 //	@ID				perda_pendirian-index
 //	@Tags			Perda Pendirian
 //	@Produce		json
-//	@Param			id_bumd			path		int							true	"Id BUMD"
+//	@Param			id_bumd			path		string						true	"Id BUMD"	Format(uuid)
 //	@Param			page			query		int							false	"Halaman yang ditampilkan"
 //	@Param			limit			query		int							false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search			query		string						false	"Pencarian"
@@ -55,7 +56,8 @@ func NewPerdaPendirianHandler(
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/perda_pendirian [get]
 func (h *PerdaPendirianHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -72,7 +74,7 @@ func (h *PerdaPendirianHandler) Index(c *fiber.Ctx) error {
 	m, totalCount, pageCount, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
+		parsedIdBumd,
 		page,
 		limit,
 		search,
@@ -104,7 +106,7 @@ func (h *PerdaPendirianHandler) Index(c *fiber.Ctx) error {
 //	@ID				perda_pendirian-view
 //	@Tags			Perda Pendirian
 //	@Produce		json
-//	@Param			id_bumd	path		int							true	"Id BUMD"
+//	@Param			id_bumd	path		string						true	"Id BUMD"	Format(uuid)
 //	@Param			id		path		int							true	"Id untuk get data perda pendirian"
 //	@success		200		{object}	dokumen.PerdaPendirianModel	"Success"
 //	@Failure		400		{object}	utils.RequestError			"Bad request"
@@ -113,15 +115,17 @@ func (h *PerdaPendirianHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/perda_pendirian/{id} [get]
 func (h *PerdaPendirianHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -135,7 +139,7 @@ func (h *PerdaPendirianHandler) View(c *fiber.Ctx) error {
 //	@ID				perda_pendirian-create
 //	@Tags			Perda Pendirian
 //	@Accept			multipart/form-data
-//	@Param			id_bumd			path		int		true	"Id BUMD"
+//	@Param			id_bumd			path		string	true	"Id BUMD"	Format(uuid)
 //	@Param			nomor_perda		formData	string	true	"Nomor Perda"
 //	@Param			tanggal_perda	formData	string	true	"Tanggal Perda"
 //	@Param			keterangan		formData	string	true	"Keterangan"
@@ -150,7 +154,8 @@ func (h *PerdaPendirianHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/perda_pendirian [post]
 func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -176,7 +181,7 @@ func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
 	m, err := h.Controller.Create(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
+		parsedIdBumd,
 		payload,
 	)
 	if err != nil {
@@ -193,7 +198,7 @@ func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
 //	@ID				perda_pendirian-update
 //	@Tags			Perda Pendirian
 //	@Accept			multipart/form-data
-//	@Param			id_bumd			path		int		true	"Id BUMD"
+//	@Param			id_bumd			path		string	true	"Id BUMD"	Format(uuid)
 //	@Param			id				path		int		true	"Id untuk update data perda pendirian"
 //	@Param			nomor_perda		formData	string	true	"Nomor Perda"
 //	@Param			tanggal_perda	formData	string	true	"Tanggal Perda"
@@ -209,11 +214,13 @@ func (h *PerdaPendirianHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/perda_pendirian/{id} [put]
 func (h *PerdaPendirianHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -239,8 +246,8 @@ func (h *PerdaPendirianHandler) Update(c *fiber.Ctx) error {
 	m, err := h.Controller.Update(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
-		id,
+		parsedIdBumd,
+		parsedId,
 		payload,
 	)
 	if err != nil {
@@ -257,8 +264,8 @@ func (h *PerdaPendirianHandler) Update(c *fiber.Ctx) error {
 //	@ID				perda_pendirian-delete
 //	@Tags			Perda Pendirian
 //	@Accept			json
-//	@Param			id_bumd	path	int	true	"Id BUMD"
-//	@Param			id		path	int	true	"Id untuk delete data perda pendirian"
+//	@Param			id_bumd	path	string	true	"Id BUMD"	Format(uuid)
+//	@Param			id		path	int		true	"Id untuk delete data perda pendirian"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -268,19 +275,21 @@ func (h *PerdaPendirianHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/perda_pendirian/{id} [delete]
 func (h *PerdaPendirianHandler) Delete(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 	m, err := h.Controller.Delete(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
-		id,
+		parsedIdBumd,
+		parsedId,
 	)
 	if err != nil {
 		return err

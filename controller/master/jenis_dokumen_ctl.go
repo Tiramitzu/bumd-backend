@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -22,76 +23,53 @@ func NewJenisDokumenController(pgxConn *pgxpool.Pool) *JenisDokumenController {
 func (c *JenisDokumenController) Index(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	// page, limit int,
 	nama string,
 ) (
 	r []models.JenisDokumenModel,
-	totalCount,
-	pageCount int,
 	err error,
 ) {
 	r = make([]models.JenisDokumenModel, 0)
-	// offset := limit * (page - 1)
 
 	var args []interface{}
-	qCount := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE deleted_by = 0
-	`
-
 	q := `
-	SELECT id, nama, deskripsi FROM mst_jenis_dokumen WHERE deleted_by = 0 ORDER BY id ASC
+	SELECT id_jd, nama_jd, deskripsi_jd FROM m_jenis_dokumen WHERE deleted_by = 0 ORDER BY created_at DESC
 	`
 	if nama != "" {
-		qCount += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
-		q += fmt.Sprintf(` AND nama ILIKE $%d`, len(args)+1)
+		q += fmt.Sprintf(` AND nama_jd ILIKE $%d`, len(args)+1)
 		args = append(args, "%"+nama+"%")
 	}
 
-	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
-	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Jenis Dokumen: %w", err)
-	}
-
-	// q += fmt.Sprintf(`
-	// ORDER BY id DESC
-	// LIMIT $%d OFFSET $%d
-	// `, len(args)+1, len(args)+2)
-	// args = append(args, limit, offset)
+	q += `ORDER BY created_at DESC`
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, totalCount, pageCount, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
+			return r, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
 		}
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Jenis Dokumen: %w", err)
+		return r, fmt.Errorf("gagal mengambil data Jenis Dokumen: %w", err)
 	}
 
 	defer rows.Close()
 	for rows.Next() {
 		var m models.JenisDokumenModel
-		err = rows.Scan(&m.ID, &m.Nama, &m.Deskripsi)
+		err = rows.Scan(&m.Id, &m.Nama, &m.Deskripsi)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Jenis Dokumen: %w", err)
+			return r, fmt.Errorf("gagal memindahkan data Jenis Dokumen: %w", err)
 		}
 		r = append(r, m)
 	}
 
-	// pageCount = 1
-	// if totalCount > 0 && totalCount > limit {
-	// 	pageCount = int(math.Ceil(float64(totalCount) / float64(limit)))
-	// }
-
-	return r, totalCount, pageCount, err
+	return r, err
 }
 
-func (c *JenisDokumenController) View(fCtx *fasthttp.RequestCtx, id int) (r models.JenisDokumenModel, err error) {
+func (c *JenisDokumenController) View(fCtx *fasthttp.RequestCtx, id uuid.UUID) (r models.JenisDokumenModel, err error) {
 	q := `
-	SELECT id, nama, deskripsi
-	FROM mst_jenis_dokumen 
-	WHERE id = $1
+	SELECT id_jd, nama_jd, deskripsi_jd
+	FROM m_jenis_dokumen 
+	WHERE id_jd = $1 AND deleted_by = 0
 	AND deleted_by = 0
 	`
-	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama, &r.Deskripsi)
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.Id, &r.Nama, &r.Deskripsi)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
@@ -114,8 +92,16 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 		}
 	}
 
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal membuat data Jenis Dokumen - " + err.Error(),
+		}
+	}
+
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE nama = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM m_jenis_dokumen WHERE nama_jd = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -134,10 +120,10 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q = `
-	INSERT INTO mst_jenis_dokumen (nama, deskripsi, created_by) VALUES ($1, $2, $3)
+	INSERT INTO m_jenis_dokumen (id_jd, nama_jd, deskripsi_jd, created_by) VALUES ($1, $2, $3, $4)
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, payload.Nama, payload.Deskripsi, idUser)
+	_, err = c.pgxConn.Exec(fCtx, q, id, payload.Nama, payload.Deskripsi, idUser)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -148,7 +134,7 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	return true, err
 }
 
-func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.JenisDokumenForm, id int) (r bool, err error) {
+func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.JenisDokumenForm, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -161,7 +147,7 @@ func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE nama = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM m_jenis_dokumen WHERE nama_jd = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, payload.Nama).Scan(&count)
@@ -180,9 +166,9 @@ func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q = `
-	UPDATE mst_jenis_dokumen
-	SET nama = $1, deskripsi = $2, updated_by = $3
-	WHERE id = $4
+	UPDATE m_jenis_dokumen
+	SET nama_jd = $1, deskripsi_jd = $2, updated_by = $3
+	WHERE id_jd = $4
 	`
 
 	_, err = c.pgxConn.Exec(fCtx, q, payload.Nama, payload.Deskripsi, idUser, id)
@@ -196,7 +182,7 @@ func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	return true, err
 }
 
-func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int) (r bool, err error) {
+func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
 	idRole := int(claims["id_role"].(float64))
@@ -209,7 +195,7 @@ func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q := `
-	SELECT COALESCE(COUNT(*), 0) FROM mst_jenis_dokumen WHERE id = $1 AND deleted_by = 0
+	SELECT COALESCE(COUNT(*), 0) FROM m_jenis_dokumen WHERE id_jd = $1 AND deleted_by = 0
 	`
 	var count int
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&count)
@@ -228,9 +214,9 @@ func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q = `
-	UPDATE mst_jenis_dokumen
+	UPDATE m_jenis_dokumen
 	SET deleted_by = $1, deleted_at = $2
-	WHERE id = $3
+	WHERE id_jd = $3
 	`
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, time.Now(), id)

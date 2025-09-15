@@ -17,6 +17,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -58,27 +59,27 @@ func NewBumdHandler(
 	dokumen.NewPerdaPendirianHandler(
 		rData,
 		validator,
-		ctl_dkmn.NewPerdaPendirianController(pgxConn),
+		ctl_dkmn.NewPerdaPendirianController(pgxConn, minioConn),
 	)
 	dokumen.NewAktaNotarisHandler(
 		rData,
 		validator,
-		ctl_dkmn.NewAktaNotarisController(pgxConn),
+		ctl_dkmn.NewAktaNotarisController(pgxConn, minioConn),
 	)
 	dokumen.NewSiupHandler(
 		rData,
 		validator,
-		ctl_dkmn.NewSiupController(pgxConn),
+		ctl_dkmn.NewSiupController(pgxConn, minioConn),
 	)
 	dokumen.NewNibHandler(
 		rData,
 		validator,
-		ctl_dkmn.NewNibController(pgxConn),
+		ctl_dkmn.NewNibController(pgxConn, minioConn),
 	)
 	dokumen.NewTdpHandler(
 		rData,
 		validator,
-		ctl_dkmn.NewTdpController(pgxConn),
+		ctl_dkmn.NewTdpController(pgxConn, minioConn),
 	)
 
 	keuangan.NewModalHandler(
@@ -91,27 +92,32 @@ func NewBumdHandler(
 	others.NewDomisiliHandler(
 		rData,
 		validator,
-		ctl_others.NewDomisiliController(pgxConn),
+		ctl_others.NewDomisiliController(pgxConn, minioConn),
 	)
 	others.NewRKAHandler(
 		rData,
 		validator,
-		ctl_others.NewRKAController(pgxConn),
+		ctl_others.NewRKAController(pgxConn, minioConn),
 	)
 	others.NewRencanaBisnisHandler(
 		rData,
 		validator,
-		ctl_others.NewRencanaBisnisController(pgxConn),
+		ctl_others.NewRencanaBisnisController(pgxConn, minioConn),
 	)
 	others.NewPeraturanHandler(
 		rData,
 		validator,
-		ctl_others.NewPeraturanController(pgxConn),
+		ctl_others.NewPeraturanController(pgxConn, minioConn),
 	)
 	others.NewProdukHandler(
 		rData,
 		validator,
-		ctl_others.NewProdukController(pgxConn),
+		ctl_others.NewProdukController(pgxConn, minioConn),
+	)
+	others.NewKinerjaHandler(
+		rData,
+		validator,
+		ctl_others.NewKinerjaController(pgxConn),
 	)
 
 	// kepengurusan sdm
@@ -136,7 +142,7 @@ func NewBumdHandler(
 //	@Produce		json
 //	@Param			nama				query		string				false	"Nama BUMD"
 //	@Param			penerapan_spi		query		bool				false	"Penerapan SPI"
-//	@Param			induk_perusahaan	query		int					false	"Induk Perusahaan"
+//	@Param			induk_perusahaan	query		string				false	"Induk Perusahaan"	Format(uuid)
 //	@Param			page				query		int					false	"Halaman yang ditampilkan"
 //	@Param			limit				query		int					false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@success		200					{object}	bumd.BumdModel		"Success"
@@ -149,7 +155,12 @@ func NewBumdHandler(
 func (h *BumdHandler) Index(c *fiber.Ctx) error {
 	nama := c.Query("nama")
 	penerapanSPI := c.QueryBool("penerapan_spi", false)
-	indukPerusahaan := c.QueryInt("induk_perusahaan", 0)
+	indukPerusahaan := c.Query("induk_perusahaan", "00000000-0000-0000-0000-000000000000")
+	parsedIndukPerusahaan, err := uuid.Parse(indukPerusahaan)
+	if err != nil {
+		return err
+	}
+
 	page := c.QueryInt("page", 1)
 	var limit int
 	limit = c.QueryInt("limit", 5)
@@ -165,7 +176,7 @@ func (h *BumdHandler) Index(c *fiber.Ctx) error {
 		limit,
 		nama,
 		penerapanSPI,
-		indukPerusahaan,
+		parsedIndukPerusahaan,
 	)
 	if err != nil {
 		return err
@@ -192,7 +203,7 @@ func (h *BumdHandler) Index(c *fiber.Ctx) error {
 //	@ID				bumd-view
 //	@Tags			BUMD
 //	@Produce		json
-//	@Param			id	path		int					true	"Id untuk get data bumd"
+//	@Param			id	path		string				true	"Id untuk get data bumd"	Format(uuid)
 //	@success		200	{object}	bumd.BumdModel		"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
 //	@Failure		404	{object}	utils.RequestError	"Data not found"
@@ -200,11 +211,12 @@ func (h *BumdHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id} [get]
 func (h *BumdHandler) View(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), parsedId)
 	if err != nil {
 		return err
 	}
@@ -256,7 +268,7 @@ func (h *BumdHandler) Create(c *fiber.Ctx) error {
 //	@ID				bumd-update
 //	@Tags			BUMD
 //	@Accept			json
-//	@Param			id		path	int				true	"Id untuk update data bumd"
+//	@Param			id		path	string			true	"Id untuk update data bumd"	Format(uuid)
 //	@Param			payload	body	bumd.BumdForm	true	"Update payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
@@ -267,7 +279,8 @@ func (h *BumdHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id} [put]
 func (h *BumdHandler) Update(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -286,7 +299,7 @@ func (h *BumdHandler) Update(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		payload,
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err
@@ -302,7 +315,7 @@ func (h *BumdHandler) Update(c *fiber.Ctx) error {
 //	@ID				bumd-delete
 //	@Tags			BUMD
 //	@Accept			json
-//	@Param			id	path	int	true	"Id untuk delete data bumd"
+//	@Param			id	path	string	true	"Id untuk delete data bumd"	Format(uuid)
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -312,7 +325,8 @@ func (h *BumdHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id} [delete]
 func (h *BumdHandler) Delete(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -320,7 +334,7 @@ func (h *BumdHandler) Delete(c *fiber.Ctx) error {
 	m, err := h.Controller.Delete(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err
@@ -336,7 +350,7 @@ func (h *BumdHandler) Delete(c *fiber.Ctx) error {
 //	@ID				spi-view
 //	@Tags			BUMD
 //	@Produce		json
-//	@Param			id	path		int					true	"Id untuk get data spi"
+//	@Param			id	path		string				true	"Id untuk get data spi"	Format(uuid)
 //	@success		200	{object}	bumd.SPIModel		"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
 //	@Failure		404	{object}	utils.RequestError	"Data not found"
@@ -344,11 +358,12 @@ func (h *BumdHandler) Delete(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id}/spi [get]
 func (h *BumdHandler) SPI(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.SPI(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	m, err := h.Controller.SPI(c.Context(), c.Locals("jwt").(*jwt.Token), parsedId)
 	if err != nil {
 		return err
 	}
@@ -362,7 +377,7 @@ func (h *BumdHandler) SPI(c *fiber.Ctx) error {
 //	@ID				spi-update
 //	@Tags			BUMD
 //	@Accept			multipart/form-data
-//	@Param			id				path		int		true	"Id untuk update data spi"
+//	@Param			id				path		string	true	"Id untuk update data spi"	Format(uuid)
 //	@Param			penerapan_spi	formData	bool	false	"Penerapan SPI"
 //	@Param			file_spi		formData	file	false	"File SPI"
 //	@Produce		json
@@ -374,7 +389,8 @@ func (h *BumdHandler) SPI(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id}/spi [put]
 func (h *BumdHandler) SPIUpdate(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -403,7 +419,7 @@ func (h *BumdHandler) SPIUpdate(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		payload,
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err
@@ -418,7 +434,7 @@ func (h *BumdHandler) SPIUpdate(c *fiber.Ctx) error {
 //	@ID				npwp-view
 //	@Tags			BUMD
 //	@Produce		json
-//	@Param			id	path		int					true	"Id untuk get data npwp"
+//	@Param			id	path		string				true	"Id untuk get data npwp"	Format(uuid)
 //	@success		200	{object}	bumd.NPWPModel		"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
 //	@Failure		404	{object}	utils.RequestError	"Data not found"
@@ -426,11 +442,12 @@ func (h *BumdHandler) SPIUpdate(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id}/npwp [get]
 func (h *BumdHandler) NPWP(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.NPWP(c.Context(), c.Locals("jwt").(*jwt.Token), id)
+	m, err := h.Controller.NPWP(c.Context(), c.Locals("jwt").(*jwt.Token), parsedId)
 	if err != nil {
 		return err
 	}
@@ -444,7 +461,7 @@ func (h *BumdHandler) NPWP(c *fiber.Ctx) error {
 //	@ID				npwp-update
 //	@Tags			BUMD
 //	@Accept			json
-//	@Param			id		path		int		true	"Id untuk update data npwp"
+//	@Param			id		path		string	true	"Id bumd untuk update data npwp"	Format(uuid)
 //	@Param			npwp	formData	string	false	"NPWP"
 //	@Param			pemberi	formData	string	false	"Pemberi"
 //	@Param			file	formData	file	false	"File"
@@ -457,7 +474,8 @@ func (h *BumdHandler) NPWP(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id}/npwp [put]
 func (h *BumdHandler) NPWPUpdate(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -486,7 +504,7 @@ func (h *BumdHandler) NPWPUpdate(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		payload,
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err

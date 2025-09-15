@@ -1,10 +1,14 @@
 package keuangan
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type KeuModalModel struct {
-	Id         int64     `json:"id"`
-	IdBumd     int64     `json:"id_bumd"`
+	Id         uuid.UUID `json:"id"`
+	IdBumd     uuid.UUID `json:"id_bumd"`
 	IdProv     int64     `json:"id_prov"`
 	NamaProv   string    `json:"nama_prov"`
 	IdKab      int64     `json:"id_kab"`

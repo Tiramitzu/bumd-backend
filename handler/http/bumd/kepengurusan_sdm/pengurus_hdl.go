@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type PengurusHandler struct {
@@ -37,7 +38,7 @@ func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl
 //	@ID				pengurus-index
 //	@Tags			Pengurus
 //	@Produce		json
-//	@Param			id_bumd	path		int									true	"Id Bumd"
+//	@Param			id_bumd	path		string								true	"Id Bumd"	Format(uuid)
 //	@Param			page	query		int									false	"Halaman yang ditampilkan"
 //	@Param			limit	query		int									false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search	query		string								false	"Search"
@@ -49,7 +50,11 @@ func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus [get]
 func (h *PengurusHandler) Index(c *fiber.Ctx) error {
-	idBumd := c.QueryInt("id_bumd", 0)
+	idBumd := c.Query("id_bumd", "")
+	parsedIdBumd, err := uuid.Parse(idBumd)
+	if err != nil {
+		return err
+	}
 	page := c.QueryInt("page", 1)
 	search := c.Query("search", "")
 	var limit int
@@ -64,7 +69,7 @@ func (h *PengurusHandler) Index(c *fiber.Ctx) error {
 		c.Locals("jwt").(*jwt.Token),
 		page,
 		limit,
-		idBumd,
+		parsedIdBumd,
 		search,
 	)
 	if err != nil {
@@ -91,25 +96,28 @@ func (h *PengurusHandler) Index(c *fiber.Ctx) error {
 //	@ID				pengurus-view
 //	@Tags			Pengurus
 //	@Produce		json
-//	@Param			id	path		int								true	"Id Pengurus"
-//	@success		200	{object}	kepengurusan_sdm.PengurusModel	"Success"
-//	@Failure		400	{object}	utils.RequestError				"Bad request"
-//	@Failure		404	{object}	utils.RequestError				"Data not found"
-//	@Failure		422	{array}		utils.RequestError				"Data validation failed"
-//	@Failure		500	{object}	utils.RequestError				"Server error"
+//	@Param			id		path		string							true	"Id Pengurus"	Format(uuid)
+//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
+//	@success		200		{object}	kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400		{object}	utils.RequestError				"Bad request"
+//	@Failure		404		{object}	utils.RequestError				"Data not found"
+//	@Failure		422		{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/pengurus/:id [get]
+//	@Router			/strict/bumd/{id_bumd}/pengurus/{id} [get]
 func (h *PengurusHandler) View(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -123,7 +131,7 @@ func (h *PengurusHandler) View(c *fiber.Ctx) error {
 //	@ID				pengurus-create
 //	@Tags			Pengurus
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		int								true	"Id Bumd"
+//	@Param			id_bumd					path		string							true	"Id Bumd"	Format(uuid)
 //	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"
 //	@Param			nama_pengurus			formData	string							true	"Nama Pengurus"
 //	@Param			nik						formData	string							true	"NIK"
@@ -141,7 +149,8 @@ func (h *PengurusHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus [post]
 func (h *PengurusHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -165,7 +174,7 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, formModel)
+	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, formModel)
 	if err != nil {
 		return err
 	}
@@ -179,8 +188,8 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 //	@ID				pengurus-update
 //	@Tags			Pengurus
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		int								true	"Id Bumd"
-//	@Param			id						path		int								true	"Id Pengurus"
+//	@Param			id_bumd					path		string							true	"Id Bumd"		Format(uuid)
+//	@Param			id						path		string							true	"Id Pengurus"	Format(uuid)
 //	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"
 //	@Param			nama_pengurus			formData	string							true	"Nama Pengurus"
 //	@Param			nik						formData	string							true	"NIK"
@@ -196,14 +205,16 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 //	@Failure		422						{array}		utils.RequestError				"Data validation failed"
 //	@Failure		500						{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/pengurus/:id [put]
+//	@Router			/strict/bumd/{id_bumd}/pengurus/{id} [put]
 func (h *PengurusHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -228,7 +239,7 @@ func (h *PengurusHandler) Update(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, formModel)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId, formModel)
 	if err != nil {
 		return err
 	}
@@ -241,27 +252,29 @@ func (h *PengurusHandler) Update(c *fiber.Ctx) error {
 //	@Description	delete pengurus.
 //	@ID				pengurus-delete
 //	@Tags			Pengurus
-//	@Param			id_bumd	path		int								true	"Id Bumd"
-//	@Param			id		path		int								true	"Id Pengurus"
+//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
+//	@Param			id		path		string							true	"Id Pengurus"	Format(uuid)
 //	@success		200		{object}	kepengurusan_sdm.PengurusModel	"Success"
 //	@Failure		400		{object}	utils.RequestError				"Bad request"
 //	@Failure		404		{object}	utils.RequestError				"Data not found"
 //	@Failure		422		{array}		utils.RequestError				"Data validation failed"
 //	@Failure		500		{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/pengurus/:id [delete]
+//	@Router			/strict/bumd/{id_bumd}/pengurus/{id} [delete]
 func (h *PengurusHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
 
-	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type PeraturanHandler struct {
@@ -37,7 +38,7 @@ func NewPeraturanHandler(r fiber.Router, validator *validator.Validate, controll
 //	@ID				peraturan-index
 //	@Tags			Peraturan
 //	@Produce		json
-//	@Param			id_bumd	path		int						true	"Id BUMD"
+//	@Param			id_bumd	path		string					true	"Id BUMD"	Format(uuid)
 //	@Param			page	query		int						false	"Page"
 //	@Param			limit	query		int						false	"Limit"
 //	@Param			search	query		string					false	"Search"
@@ -49,7 +50,8 @@ func NewPeraturanHandler(r fiber.Router, validator *validator.Validate, controll
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/peraturan [get]
 func (h *PeraturanHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -93,8 +95,8 @@ func (h *PeraturanHandler) Index(c *fiber.Ctx) error {
 //	@ID				peraturan-view
 //	@Tags			Peraturan
 //	@Produce		json
-//	@Param			id_bumd	path		int						true	"Id BUMD"
-//	@Param			id		path		string					true	"Id PERATURAN"
+//	@Param			id_bumd	path		string					true	"Id BUMD"		Format(uuid)
+//	@Param			id		path		string					true	"Id PERATURAN"	Format(uuid)
 //	@Success		200		{object}	others.PeraturanModel	"Success"
 //	@Failure		400		{object}	utils.RequestError		"Bad request"
 //	@Failure		404		{object}	utils.RequestError		"Data not found"
@@ -103,13 +105,18 @@ func (h *PeraturanHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/peraturan/{id} [get]
 func (h *PeraturanHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	id := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
 
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -123,7 +130,7 @@ func (h *PeraturanHandler) View(c *fiber.Ctx) error {
 //	@ID				peraturan-create
 //	@Tags			Peraturan
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		int					true	"Id BUMD"
+//	@Param			id_bumd					path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nomor					formData	string				false	"Nomor"
 //	@Param			jenis_peraturan			formData	int					false	"Jenis Peraturan"
 //	@Param			tanggal_berlaku			formData	string				false	"Tanggal Berlaku"
@@ -136,7 +143,8 @@ func (h *PeraturanHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/peraturan [post]
 func (h *PeraturanHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -173,8 +181,8 @@ func (h *PeraturanHandler) Create(c *fiber.Ctx) error {
 //	@ID				peraturan-update
 //	@Tags			Peraturan
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		int					true	"Id BUMD"
-//	@Param			id						path		string				true	"Id PERATURAN"
+//	@Param			id_bumd					path		string				true	"Id BUMD"		Format(uuid)
+//	@Param			id						path		string				true	"Id PERATURAN"	Format(uuid)
 //	@Param			nomor					formData	string				true	"Nomor"
 //	@Param			jenis_peraturan			formData	int					true	"Jenis Peraturan"
 //	@Param			tanggal_berlaku			formData	string				false	"Tanggal Berlaku"
@@ -187,11 +195,16 @@ func (h *PeraturanHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/peraturan/{id} [put]
 func (h *PeraturanHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	id := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
 	payload := new(others.PeraturanForm)
 	if err := c.BodyParser(payload); err != nil {
 		return err
@@ -211,7 +224,7 @@ func (h *PeraturanHandler) Update(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, payload)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, parsedId, payload)
 	if err != nil {
 		return err
 	}
@@ -225,8 +238,8 @@ func (h *PeraturanHandler) Update(c *fiber.Ctx) error {
 //	@ID				peraturan-delete
 //	@Tags			Peraturan
 //	@Accept			json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		string				true	"Id PERATURAN"
+//	@Param			id_bumd	path		string				true	"Id BUMD"		Format(uuid)
+//	@Param			id		path		string				true	"Id PERATURAN"	Format(uuid)
 //	@Success		200		{object}	bool				"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -235,12 +248,17 @@ func (h *PeraturanHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/peraturan/{id} [delete]
 func (h *PeraturanHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	id := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id := c.Params("id")
-	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, parsedId)
 	if err != nil {
 		return err
 	}

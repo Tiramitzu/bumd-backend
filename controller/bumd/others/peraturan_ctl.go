@@ -9,31 +9,37 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/minio/minio-go/v7"
 	"github.com/valyala/fasthttp"
 )
 
 type PeraturanController struct {
-	pgxConn *pgxpool.Pool
+	pgxConn   *pgxpool.Pool
+	minioConn *utils.MinioConn
 }
 
-func NewPeraturanController(pgxConn *pgxpool.Pool) *PeraturanController {
-	return &PeraturanController{pgxConn: pgxConn}
+func NewPeraturanController(pgxConn *pgxpool.Pool, minioConn *utils.MinioConn) *PeraturanController {
+	return &PeraturanController{pgxConn: pgxConn, minioConn: minioConn}
 }
 
 func (c *PeraturanController) Index(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	idBumd,
+	idBumd uuid.UUID,
 	page,
 	limit int,
 	search string,
 ) (r []others.PeraturanModel, totalCount, pageCount int, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -42,17 +48,17 @@ func (c *PeraturanController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_peraturan WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1`
 	q := `
-	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, mst_jenis_dokumen.nama as nama_jenis_peraturan
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd
 	FROM trn_peraturan
-	LEFT JOIN mst_jenis_dokumen ON trn_peraturan.jenis_peraturan = mst_jenis_dokumen.id
+	LEFT JOIN m_jenis_dokumen ON trn_peraturan.jenis_peraturan = m_jenis_dokumen.id_jd
 	WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
 	args = append(args, idBumd)
 	if search != "" {
-		qCount += fmt.Sprintf(` AND nomor_peraturan ILIKE $%d OR tanggal_berlaku ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
-		q += fmt.Sprintf(` AND nomor_peraturan ILIKE $%d OR tanggal_berlaku ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
+		qCount += fmt.Sprintf(` AND nomor_peraturan ILIKE $%d OR tanggal_berlaku_peraturan ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
+		q += fmt.Sprintf(` AND nomor_peraturan ILIKE $%d OR tanggal_berlaku_peraturan ILIKE $%d OR keterangan_peraturan ILIKE $%d OR nama_jenis_peraturan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
 		args = append(args, "%"+search+"%")
 	}
 
@@ -61,7 +67,7 @@ func (c *PeraturanController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PERATURAN: %w", err)
 	}
 
-	q += fmt.Sprintf(` ORDER BY id_peraturan DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -71,7 +77,7 @@ func (c *PeraturanController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m others.PeraturanModel
-		err = rows.Scan(&m.ID, &m.Nomor, &m.TanggalBerlaku, &m.KeteranganPeraturan, &m.FilePeraturan, &m.IDBumd, &m.JenisPeraturan, &m.NamaJenisPeraturan)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.TanggalBerlaku, &m.KeteranganPeraturan, &m.FilePeraturan, &m.IdBumd, &m.JenisPeraturan, &m.NamaJenisPeraturan)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data PERATURAN: %w", err)
 		}
@@ -86,22 +92,25 @@ func (c *PeraturanController) Index(
 	return r, totalCount, pageCount, err
 }
 
-func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id string) (r others.PeraturanModel, err error) {
+func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r others.PeraturanModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, mst_jenis_dokumen.nama as nama_jenis_peraturan
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd
 	FROM trn_peraturan
-	LEFT JOIN mst_jenis_dokumen ON trn_peraturan.jenis_peraturan = mst_jenis_dokumen.id
+	LEFT JOIN m_jenis_dokumen ON trn_peraturan.jenis_peraturan = m_jenis_dokumen.id_jd
 	WHERE trn_peraturan.id_peraturan = $1 AND trn_peraturan.id_bumd = $2 AND trn_peraturan.deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.ID, &r.Nomor, &r.TanggalBerlaku, &r.KeteranganPeraturan, &r.FilePeraturan, &r.IDBumd, &r.JenisPeraturan, &r.NamaJenisPeraturan)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.TanggalBerlaku, &r.KeteranganPeraturan, &r.FilePeraturan, &r.IdBumd, &r.JenisPeraturan, &r.NamaJenisPeraturan)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{
@@ -115,10 +124,16 @@ func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	return r, err
 }
 
-func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *others.PeraturanForm) (r bool, err error) {
+func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, payload *others.PeraturanForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -136,16 +151,23 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO trn_peraturan (nomor_peraturan, keterangan_peraturan, id_bumd, jenis_peraturan, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING id_peraturan
+	INSERT INTO trn_peraturan (id_peraturan, nomor_peraturan, keterangan_peraturan, id_bumd, jenis_peraturan, created_by) VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
-	var id int
-	err = tx.QueryRow(context.Background(), q, payload.Nomor, payload.KeteranganPeraturan, idBumd, payload.JenisPeraturan, idUser).Scan(&id)
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id PERATURAN. - " + err.Error(),
+		}
+	}
+
+	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.KeteranganPeraturan, idBumd, payload.JenisPeraturan, idUser)
 	if err != nil {
 		err = utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -157,7 +179,7 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	if payload.TanggalBerlaku != nil {
 		q = `
 		UPDATE trn_peraturan
-		SET tanggal_berlaku = $1
+		SET tanggal_berlaku_peraturan = $1
 		WHERE id_peraturan = $2 AND id_bumd = $3
 		`
 		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
@@ -182,6 +204,20 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 		// upload file
 		objectName := "trn_peraturan/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.FilePeraturan.Size,
+			minio.PutObjectOptions{ContentType: payload.FilePeraturan.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
 		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id_peraturan=$2 AND id_bumd=$3`
@@ -198,10 +234,16 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	return true, err
 }
 
-func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id string, payload *others.PeraturanForm) (r bool, err error) {
+func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID, payload *others.PeraturanForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
@@ -219,7 +261,7 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		}
 	}()
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -238,7 +280,7 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	if payload.TanggalBerlaku != nil {
 		q = `
 		UPDATE trn_peraturan
-		SET tanggal_berlaku = $1
+		SET tanggal_berlaku_peraturan = $1
 		WHERE id_peraturan = $2 AND id_bumd = $3
 		`
 		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
@@ -263,6 +305,20 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 		// upload file
 		objectName := "trn_peraturan/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.FilePeraturan.Size,
+			minio.PutObjectOptions{ContentType: payload.FilePeraturan.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		// update file
 		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id_peraturan=$2`
@@ -279,12 +335,18 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	return true, err
 }
 
-func (c *PeraturanController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id string) (r bool, err error) {
+func (c *PeraturanController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 	q := `

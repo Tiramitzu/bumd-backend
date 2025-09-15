@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type PegawaiHandler struct {
@@ -36,7 +37,7 @@ func NewPegawaiHandler(r fiber.Router, vld *validator.Validate, controller *ctl.
 //	@ID				pegawai-index
 //	@Tags			Pegawai
 //	@Produce		json
-//	@Param			id_bumd	query		int								true	"Id Bumd"
+//	@Param			id_bumd	query		string							true	"Id Bumd"	Format(uuid)
 //	@Param			page	query		int								false	"Halaman yang ditampilkan"
 //	@Param			limit	query		int								false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search	query		string							false	"Search"
@@ -48,7 +49,11 @@ func NewPegawaiHandler(r fiber.Router, vld *validator.Validate, controller *ctl.
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai [get]
 func (h *PegawaiHandler) Index(c *fiber.Ctx) error {
-	idBumd := c.QueryInt("id_bumd", 0)
+	idBumd := c.Query("id_bumd", "")
+	parsedIdBumd, err := uuid.Parse(idBumd)
+	if err != nil {
+		return err
+	}
 	page := c.QueryInt("page", 1)
 	search := c.Query("search", "")
 	var limit int
@@ -63,7 +68,7 @@ func (h *PegawaiHandler) Index(c *fiber.Ctx) error {
 		c.Locals("jwt").(*jwt.Token),
 		page,
 		limit,
-		idBumd,
+		parsedIdBumd,
 		search,
 	)
 	if err != nil {
@@ -90,25 +95,28 @@ func (h *PegawaiHandler) Index(c *fiber.Ctx) error {
 //	@ID				pegawai-view
 //	@Tags			Pegawai
 //	@Produce		json
-//	@Param			id	path		int								true	"Id Pegawai"
-//	@success		200	{object}	kepengurusan_sdm.PegawaiModel	"Success"
-//	@Failure		400	{object}	utils.RequestError				"Bad request"
-//	@Failure		404	{object}	utils.RequestError				"Data not found"
-//	@Failure		422	{array}		utils.RequestError				"Data validation failed"
-//	@Failure		500	{object}	utils.RequestError				"Server error"
+//	@Param			id		path		string							true	"Id Pegawai"	Format(uuid)
+//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
+//	@success		200		{object}	kepengurusan_sdm.PegawaiModel	"Success"
+//	@Failure		400		{object}	utils.RequestError				"Bad request"
+//	@Failure		404		{object}	utils.RequestError				"Data not found"
+//	@Failure		422		{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/pegawai/:id [get]
+//	@Router			/strict/bumd/{id_bumd}/pegawai/{id} [get]
 func (h *PegawaiHandler) View(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -122,6 +130,7 @@ func (h *PegawaiHandler) View(c *fiber.Ctx) error {
 //	@ID				pegawai-create
 //	@Tags			Pegawai
 //	@Accept			json
+//	@Param			id_bumd	path		string							true	"Id Bumd"	Format(uuid)
 //	@Param			payload	body		kepengurusan_sdm.PegawaiForm	true	"Pegawai payload"
 //	@success		200		{object}	kepengurusan_sdm.PegawaiModel	"Success"
 //	@Failure		400		{object}	utils.RequestError				"Bad request"
@@ -131,7 +140,8 @@ func (h *PegawaiHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai [post]
 func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -141,7 +151,7 @@ func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, payload)
+	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, payload)
 	if err != nil {
 		return err
 	}
@@ -155,7 +165,8 @@ func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
 //	@ID				pegawai-update
 //	@Tags			Pegawai
 //	@Accept			json
-//	@Param			id_bumd	path		int								true	"Id Bumd"
+//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
+//	@Param			id		path		string							true	"Id Pegawai"	Format(uuid)
 //	@Param			payload	body		kepengurusan_sdm.PegawaiForm	true	"Pegawai payload"
 //	@success		200		{object}	kepengurusan_sdm.PegawaiModel	"Success"
 //	@Failure		400		{object}	utils.RequestError				"Bad request"
@@ -163,14 +174,16 @@ func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
 //	@Failure		422		{array}		utils.RequestError				"Data validation failed"
 //	@Failure		500		{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/pegawai/:id [put]
+//	@Router			/strict/bumd/{id_bumd}/pegawai/{id} [put]
 func (h *PegawaiHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -180,7 +193,7 @@ func (h *PegawaiHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, payload)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId, payload)
 	if err != nil {
 		return err
 	}
@@ -193,27 +206,29 @@ func (h *PegawaiHandler) Update(c *fiber.Ctx) error {
 //	@Description	delete pegawai.
 //	@ID				pegawai-delete
 //	@Tags			Pegawai
-//	@Param			id_bumd	path		int								true	"Id Bumd"
-//	@Param			id		path		int								true	"Id Pegawai"
+//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
+//	@Param			id		path		string							true	"Id Pegawai"	Format(uuid)
 //	@success		200		{object}	kepengurusan_sdm.PegawaiModel	"Success"
 //	@Failure		400		{object}	utils.RequestError				"Bad request"
 //	@Failure		404		{object}	utils.RequestError				"Data not found"
 //	@Failure		422		{array}		utils.RequestError				"Data validation failed"
 //	@Failure		500		{object}	utils.RequestError				"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/strict/bumd/{id_bumd}/pegawai/:id [delete]
+//	@Router			/strict/bumd/{id_bumd}/pegawai/{id} [delete]
 func (h *PegawaiHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
 
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
 
-	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}

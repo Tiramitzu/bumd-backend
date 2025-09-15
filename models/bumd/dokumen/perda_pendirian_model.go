@@ -3,16 +3,18 @@ package dokumen
 import (
 	"mime/multipart"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type PerdaPendirianModel struct {
-	ID         int64     `json:"id" xml:"id"`
+	Id         uuid.UUID `json:"id" xml:"id"`
+	IdBumd     uuid.UUID `json:"id_bumd" xml:"id_bumd"`
 	Nomor      string    `json:"nomor" xml:"nomor"`
 	Tanggal    time.Time `json:"tanggal" xml:"tanggal"`
 	Keterangan string    `json:"keterangan" xml:"keterangan"`
 	File       string    `json:"file" xml:"file"`
 	ModalDasar float64   `json:"modal_dasar" xml:"modal_dasar"`
-	IDBumd     int32     `json:"id_bumd" xml:"id_bumd"`
 }
 
 type PerdaPendirianForm struct {

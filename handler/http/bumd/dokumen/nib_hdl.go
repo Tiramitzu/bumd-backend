@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type NibHandler struct {
@@ -37,7 +38,7 @@ func NewNibHandler(r fiber.Router, validator *validator.Validate, controller *ct
 //	@ID				nib-index
 //	@Tags			Nib
 //	@Produce		json
-//	@Param			id_bumd			path		int					true	"Id BUMD"
+//	@Param			id_bumd			path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			page			query		int					false	"Page"
 //	@Param			limit			query		int					false	"Limit"
 //	@Param			search			query		string				false	"Search"
@@ -51,7 +52,8 @@ func NewNibHandler(r fiber.Router, validator *validator.Validate, controller *ct
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/nib [get]
 func (h *NibHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -67,7 +69,7 @@ func (h *NibHandler) Index(c *fiber.Ctx) error {
 	m, totalCount, pageCount, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
+		parsedIdBumd,
 		page,
 		limit,
 		isSeumurHidup,
@@ -97,8 +99,8 @@ func (h *NibHandler) Index(c *fiber.Ctx) error {
 //	@ID				nib-view
 //	@Tags			Nib
 //	@Produce		json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id NIB"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id NIB"	Format(uuid)
 //	@Success		200		{object}	dokumen.NibModel	"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -107,16 +109,18 @@ func (h *NibHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/nib/{id} [get]
 func (h *NibHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
 
-	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.View(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}
@@ -130,7 +134,7 @@ func (h *NibHandler) View(c *fiber.Ctx) error {
 //	@ID				nib-create
 //	@Tags			Nib
 //	@Accept			multipart/form-data
-//	@Param			id_bumd				path		int					true	"Id BUMD"
+//	@Param			id_bumd				path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nomor				formData	string				false	"Nomor"
 //	@Param			instansi_pemberi	formData	string				false	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				false	"Tanggal"
@@ -145,7 +149,8 @@ func (h *NibHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/nib [post]
 func (h *NibHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -168,7 +173,7 @@ func (h *NibHandler) Create(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, payload)
+	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, payload)
 	if err != nil {
 		return err
 	}
@@ -182,8 +187,8 @@ func (h *NibHandler) Create(c *fiber.Ctx) error {
 //	@ID				nib-update
 //	@Tags			Nib
 //	@Accept			multipart/form-data
-//	@Param			id_bumd				path		int					true	"Id BUMD"
-//	@Param			id					path		int					true	"Id NIB"
+//	@Param			id_bumd				path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id					path		string				true	"Id NIB"	Format(uuid)
 //	@Param			nomor				formData	string				true	"Nomor"
 //	@Param			instansi_pemberi	formData	string				true	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				true	"Tanggal"
@@ -198,11 +203,13 @@ func (h *NibHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/nib/{id} [put]
 func (h *NibHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -225,7 +232,7 @@ func (h *NibHandler) Update(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, payload)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId, payload)
 	if err != nil {
 		return err
 	}
@@ -239,8 +246,8 @@ func (h *NibHandler) Update(c *fiber.Ctx) error {
 //	@ID				nib-delete
 //	@Tags			Nib
 //	@Accept			json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id NIB"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id NIB"	Format(uuid)
 //	@Success		200		{object}	bool				"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -249,15 +256,17 @@ func (h *NibHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/nib/{id} [delete]
 func (h *NibHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type JenisDokumenHandler struct {
@@ -44,36 +45,17 @@ func NewJenisDokumenHandler(r fiber.Router, validator *validator.Validate, contr
 //	@Security		ApiKeyAuth
 //	@Router			/strict/jenis_dokumen [get]
 func (h *JenisDokumenHandler) Index(c *fiber.Ctx) error {
-	// page := c.QueryInt("page", 1)
 	nama := c.Query("nama")
-	// var limit int
-	// limit = c.QueryInt("limit", 5)
 
-	// if limit > 5 {
-	// 	limit = 5
-	// }
-
-	m, _, _, err := h.Controller.Index(
+	m, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		// page,
-		// limit,
 		nama,
 	)
 	if err != nil {
 		return err
 	}
 
-	// c.Append("x-pagination-total-count", strconv.Itoa(totalCount))
-	// c.Append("x-pagination-page-count", strconv.Itoa(pageCount))
-	// c.Append("x-pagination-page-size", strconv.Itoa(limit))
-	// if page > 1 {
-	// 	c.Append("x-pagination-previous-page", strconv.Itoa(page-1))
-	// }
-	// c.Append("x-pagination-current-page", strconv.Itoa(page))
-	// if page < pageCount {
-	// 	c.Append("x-pagination-next-page", strconv.Itoa(page+1))
-	// }
 	return c.JSON(m)
 }
 
@@ -84,7 +66,7 @@ func (h *JenisDokumenHandler) Index(c *fiber.Ctx) error {
 //	@ID				jenis_dokumen-view
 //	@Tags			Jenis dokumen
 //	@Produce		json
-//	@Param			id	path		int							true	"Id untuk get data jenis dokumen"
+//	@Param			id	path		string						true	"Id untuk get data jenis dokumen"	Format(uuid)
 //	@success		200	{object}	models.JenisDokumenModel	"Success"
 //	@Failure		400	{object}	utils.RequestError			"Bad request"
 //	@Failure		404	{object}	utils.RequestError			"Data not found"
@@ -92,11 +74,12 @@ func (h *JenisDokumenHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/jenis_dokumen/{id} [get]
 func (h *JenisDokumenHandler) View(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.View(c.Context(), id)
+	m, err := h.Controller.View(c.Context(), parsedId)
 	if err != nil {
 		return err
 	}
@@ -148,7 +131,7 @@ func (h *JenisDokumenHandler) Create(c *fiber.Ctx) error {
 //	@ID				jenis_dokumen-update
 //	@Tags			Jenis dokumen
 //	@Accept			json
-//	@Param			id		path	int						true	"Id untuk update data jenis dokumen"
+//	@Param			id		path	string					true	"Id untuk update data jenis dokumen"	Format(uuid)
 //	@Param			payload	body	models.JenisDokumenForm	true	"Update payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
@@ -164,7 +147,8 @@ func (h *JenisDokumenHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -173,7 +157,7 @@ func (h *JenisDokumenHandler) Update(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		payload,
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err
@@ -189,7 +173,7 @@ func (h *JenisDokumenHandler) Update(c *fiber.Ctx) error {
 //	@ID				jenis_dokumen-delete
 //	@Tags			Jenis dokumen
 //	@Accept			json
-//	@Param			id	path	int	true	"Id untuk delete data jenis dokumen"
+//	@Param			id	path	string	true	"Id untuk delete data jenis dokumen"	Format(uuid)
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -199,7 +183,8 @@ func (h *JenisDokumenHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/jenis_dokumen/{id} [delete]
 func (h *JenisDokumenHandler) Delete(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -207,7 +192,7 @@ func (h *JenisDokumenHandler) Delete(c *fiber.Ctx) error {
 	m, err := h.Controller.Delete(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err

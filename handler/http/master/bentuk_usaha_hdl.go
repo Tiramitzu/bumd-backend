@@ -3,11 +3,11 @@ package http_mst
 import (
 	controller "microdata/kemendagri/bumd/controller/master"
 	models "microdata/kemendagri/bumd/models/master"
-	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type BentukUsahaHandler struct {
@@ -36,8 +36,6 @@ func NewBentukUsahaHandler(r fiber.Router, validator *validator.Validate, contro
 //	@ID				bentuk_usaha-index
 //	@Tags			Bentuk Usaha
 //	@Produce		json
-//	@Param			page	query		int						false	"Halaman yang ditampilkan"
-//	@Param			limit	query		int						false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			nama	query		string					false	"Nama Bentuk Usaha"
 //	@success		200		{object}	models.BentukUsahaModel	"Success"
 //	@Failure		400		{object}	utils.RequestError		"Bad request"
@@ -47,36 +45,17 @@ func NewBentukUsahaHandler(r fiber.Router, validator *validator.Validate, contro
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bentuk_usaha [get]
 func (h *BentukUsahaHandler) Index(c *fiber.Ctx) error {
-	page := c.QueryInt("page", 1)
 	nama := c.Query("nama")
-	var limit int
-	limit = c.QueryInt("limit", 5)
 
-	if limit > 5 {
-		limit = 5
-	}
-
-	m, totalCount, pageCount, err := h.Controller.Index(
+	m, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		page,
-		limit,
 		nama,
 	)
 	if err != nil {
 		return err
 	}
 
-	c.Append("x-pagination-total-count", strconv.Itoa(totalCount))
-	c.Append("x-pagination-page-count", strconv.Itoa(pageCount))
-	c.Append("x-pagination-page-size", strconv.Itoa(limit))
-	if page > 1 {
-		c.Append("x-pagination-previous-page", strconv.Itoa(page-1))
-	}
-	c.Append("x-pagination-current-page", strconv.Itoa(page))
-	if page < pageCount {
-		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
-	}
 	return c.JSON(m)
 }
 
@@ -87,7 +66,7 @@ func (h *BentukUsahaHandler) Index(c *fiber.Ctx) error {
 //	@ID				bentuk_usaha-view
 //	@Tags			Bentuk Usaha
 //	@Produce		json
-//	@Param			id	path		int						true	"Id untuk get data bentuk usaha"
+//	@Param			id	path		string					true	"Id untuk get data bentuk usaha"	Format(uuid)
 //	@success		200	{object}	models.BentukUsahaModel	"Success"
 //	@Failure		400	{object}	utils.RequestError		"Bad request"
 //	@Failure		404	{object}	utils.RequestError		"Data not found"
@@ -95,11 +74,12 @@ func (h *BentukUsahaHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bentuk_usaha/{id} [get]
 func (h *BentukUsahaHandler) View(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
-	m, err := h.Controller.View(c.Context(), id)
+	m, err := h.Controller.View(c.Context(), parsedId)
 	if err != nil {
 		return err
 	}
@@ -151,7 +131,7 @@ func (h *BentukUsahaHandler) Create(c *fiber.Ctx) error {
 //	@ID				bentuk_usaha-update
 //	@Tags			Bentuk Usaha
 //	@Accept			json
-//	@Param			id		path	int						true	"Id untuk update data bentuk usaha"
+//	@Param			id		path	string					true	"Id untuk update data bentuk usaha"	Format(uuid)
 //	@Param			payload	body	models.BentukUsahaForm	true	"Update payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
@@ -167,7 +147,8 @@ func (h *BentukUsahaHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -176,7 +157,7 @@ func (h *BentukUsahaHandler) Update(c *fiber.Ctx) error {
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
 		payload,
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err
@@ -192,7 +173,7 @@ func (h *BentukUsahaHandler) Update(c *fiber.Ctx) error {
 //	@ID				bentuk_usaha-delete
 //	@Tags			Bentuk Usaha
 //	@Accept			json
-//	@Param			id	path	int	true	"Id untuk delete data bentuk usaha"
+//	@Param			id	path	string	true	"Id untuk delete data bentuk usaha"	Format(uuid)
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
 //	@Failure		400	{object}	utils.RequestError	"Bad request"
@@ -202,7 +183,8 @@ func (h *BentukUsahaHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bentuk_usaha/{id} [delete]
 func (h *BentukUsahaHandler) Delete(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -210,7 +192,7 @@ func (h *BentukUsahaHandler) Delete(c *fiber.Ctx) error {
 	m, err := h.Controller.Delete(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		id,
+		parsedId,
 	)
 	if err != nil {
 		return err

@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type SiupHandler struct {
@@ -37,7 +38,7 @@ func NewSiupHandler(r fiber.Router, validator *validator.Validate, controller *c
 //	@ID				siup-index
 //	@Tags			Siup
 //	@Produce		json
-//	@Param			id_bumd			path		int					true	"Id BUMD"
+//	@Param			id_bumd			path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			page			query		int					false	"Page"
 //	@Param			limit			query		int					false	"Limit"
 //	@Param			search			query		string				false	"Search"
@@ -51,7 +52,8 @@ func NewSiupHandler(r fiber.Router, validator *validator.Validate, controller *c
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/siup [get]
 func (h *SiupHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -97,8 +99,8 @@ func (h *SiupHandler) Index(c *fiber.Ctx) error {
 //	@ID				siup-view
 //	@Tags			Siup
 //	@Produce		json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id SIUP"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id SIUP"	Format(uuid)
 //	@Success		200		{object}	dokumen.SiupModel	"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -107,11 +109,13 @@ func (h *SiupHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/siup/{id} [get]
 func (h *SiupHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idStr := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return err
 	}
@@ -130,7 +134,7 @@ func (h *SiupHandler) View(c *fiber.Ctx) error {
 //	@ID				siup-create
 //	@Tags			Siup
 //	@Accept			multipart/form-data
-//	@Param			id_bumd				path		int					true	"Id BUMD"
+//	@Param			id_bumd				path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nomor				formData	string				false	"Nomor"
 //	@Param			instansi_pemberi	formData	string				false	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				false	"Tanggal"
@@ -145,7 +149,8 @@ func (h *SiupHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/siup [post]
 func (h *SiupHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
@@ -182,8 +187,8 @@ func (h *SiupHandler) Create(c *fiber.Ctx) error {
 //	@ID				siup-update
 //	@Tags			Siup
 //	@Accept			multipart/form-data
-//	@Param			id_bumd				path		int					true	"Id BUMD"
-//	@Param			id					path		int					true	"Id SIUP"
+//	@Param			id_bumd				path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id					path		string				true	"Id SIUP"	Format(uuid)
 //	@Param			nomor				formData	string				true	"Nomor"
 //	@Param			instansi_pemberi	formData	string				true	"Instansi Pemberi"
 //	@Param			tanggal				formData	string				true	"Tanggal"
@@ -198,11 +203,13 @@ func (h *SiupHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/siup/{id} [put]
 func (h *SiupHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idStr := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return err
 	}
@@ -239,8 +246,8 @@ func (h *SiupHandler) Update(c *fiber.Ctx) error {
 //	@ID				siup-delete
 //	@Tags			Siup
 //	@Accept			json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id SIUP"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id SIUP"	Format(uuid)
 //	@Success		200		{object}	bool				"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -249,11 +256,13 @@ func (h *SiupHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/siup/{id} [delete]
 func (h *SiupHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumdStr := c.Params("id_bumd")
+	idStr := c.Params("id")
+	idBumd, err := uuid.Parse(idBumdStr)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
 		return err
 	}

@@ -8,11 +8,11 @@ definitions:
       email:
         type: string
       id_bentuk_hukum:
-        type: integer
+        type: string
       id_bentuk_usaha:
-        type: integer
+        type: string
       id_induk_perusahaan:
-        type: integer
+        type: string
       nama:
         type: string
       narahubung:
@@ -34,6 +34,10 @@ definitions:
         type: string
       bentuk_usaha:
         type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
       deskripsi:
         type: string
       email:
@@ -41,15 +45,15 @@ definitions:
       file_spi:
         type: string
       id:
-        type: integer
+        type: string
       id_bentuk_hukum:
-        type: integer
+        type: string
       id_bentuk_usaha:
-        type: integer
+        type: string
       id_daerah:
         type: integer
       id_induk_perusahaan:
-        type: integer
+        type: string
       id_provinsi:
         type: integer
       logo:
@@ -76,6 +80,10 @@ definitions:
         type: string
       penerapan_spi:
         type: boolean
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
       website:
         type: string
     type: object
@@ -100,9 +108,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       keterangan:
         type: string
       nomor:
@@ -117,9 +125,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       instansi_pemberi:
         type: string
       is_seumur_hidup:
@@ -140,9 +148,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       keterangan:
         type: string
       modal_dasar:
@@ -157,9 +165,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       instansi_pemberi:
         type: string
       is_seumur_hidup:
@@ -180,9 +188,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       instansi_pemberi:
         type: string
       is_seumur_hidup:
@@ -221,9 +229,9 @@ definitions:
   kepengurusan_sdm.PegawaiModel:
     properties:
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       jumlah_pegawai:
         type: integer
       pendidikan:
@@ -242,9 +250,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       jabatan_struktur:
         type: integer
       nama_pengurus:
@@ -278,9 +286,9 @@ definitions:
   keuangan.KeuModalModel:
     properties:
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       id_kab:
         type: integer
       id_prov:
@@ -312,7 +320,7 @@ definitions:
       deskripsi:
         type: string
       id:
-        type: integer
+        type: string
       nama:
         type: string
     type: object
@@ -328,7 +336,7 @@ definitions:
       deskripsi:
         type: string
       id:
-        type: integer
+        type: string
       nama:
         type: string
     type: object
@@ -344,7 +352,7 @@ definitions:
       deskripsi:
         type: string
       id:
-        type: integer
+        type: string
       nama:
         type: string
     type: object
@@ -371,7 +379,7 @@ definitions:
   models.User:
     properties:
       id_bumd:
-        type: integer
+        type: string
       id_daerah:
         type: integer
       id_role:
@@ -388,7 +396,7 @@ definitions:
   models.UserDetail:
     properties:
       id_bumd:
-        type: integer
+        type: string
       id_daerah:
         type: integer
       id_role:
@@ -436,9 +444,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       instansi_pemberi:
         type: string
       is_seumur_hidup:
@@ -454,6 +462,104 @@ definitions:
       tanggal:
         type: string
     type: object
+  others.KinerjaForm:
+    properties:
+      aktiva_tetap:
+        type: number
+      akumulasi_depresiasi:
+        type: number
+      capital_employed:
+        type: number
+      ebit:
+        type: number
+      ebitda:
+        type: number
+      harga_pokok_penjualan:
+        type: number
+      harta_lancar:
+        type: number
+      kas:
+        type: number
+      kewajiban_lancar:
+        type: number
+      kredit_bermasalah:
+        type: number
+      modal_sendiri:
+        type: number
+      penjualan_bersih:
+        type: number
+      penyusutan:
+        type: number
+      persediaan:
+        type: number
+      piutang_dagang:
+        type: number
+      setara_kas:
+        type: number
+      tahun:
+        type: integer
+      total_aset_akhir:
+        type: number
+      total_aset_awal:
+        type: number
+      total_kredit:
+        type: number
+    type: object
+  others.KinerjaModel:
+    properties:
+      aktiva_tetap:
+        type: number
+      akumulasi_depresiasi:
+        type: number
+      capital_employed:
+        type: number
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      ebit:
+        type: number
+      ebitda:
+        type: number
+      harga_pokok_penjualan:
+        type: number
+      harta_lancar:
+        type: number
+      id_bumd:
+        type: integer
+      id_kinerja:
+        type: integer
+      kas:
+        type: number
+      kewajiban_lancar:
+        type: number
+      kredit_bermasalah:
+        type: number
+      modal_sendiri:
+        type: number
+      penjualan_bersih:
+        type: number
+      penyusutan:
+        type: number
+      persediaan:
+        type: number
+      piutang_dagang:
+        type: number
+      setara_kas:
+        type: number
+      tahun:
+        type: integer
+      total_aset_akhir:
+        type: number
+      total_aset_awal:
+        type: number
+      total_kredit:
+        type: number
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
   others.PeraturanModel:
     properties:
       file_peraturan:
@@ -461,7 +567,7 @@ definitions:
       id:
         type: string
       id_bumd:
-        type: integer
+        type: string
       jenis_peraturan:
         type: integer
       keterangan_peraturan:
@@ -480,9 +586,9 @@ definitions:
       foto_produk:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       nama_produk:
         type: string
     type: object
@@ -491,9 +597,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       instansi_pemberi:
         type: string
       is_seumur_hidup:
@@ -514,9 +620,9 @@ definitions:
       file:
         type: string
       id:
-        type: integer
+        type: string
       id_bumd:
-        type: integer
+        type: string
       instansi_pemberi:
         type: string
       is_seumur_hidup:
@@ -662,14 +768,6 @@ paths:
       description: get data bentuk badan hukum.
       operationId: bentuk_badan_hukum-index
       parameters:
-      - description: Halaman yang ditampilkan
-        in: query
-        name: page
-        type: integer
-      - description: Jumlah data per halaman, maksimal 5 data per halaman
-        in: query
-        name: limit
-        type: integer
       - description: Nama Bentuk Badan Hukum
         in: query
         name: nama
@@ -754,10 +852,11 @@ paths:
       operationId: bentuk_badan_hukum-delete
       parameters:
       - description: Id untuk delete data bentuk badan hukum
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -793,10 +892,11 @@ paths:
       operationId: bentuk_badan_hukum-view
       parameters:
       - description: Id untuk get data bentuk badan hukum
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -828,10 +928,11 @@ paths:
       operationId: bentuk_badan_hukum-update
       parameters:
       - description: Id untuk update data bentuk badan hukum
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Update payload
         in: body
         name: payload
@@ -873,14 +974,6 @@ paths:
       description: get data bentuk usaha.
       operationId: bentuk_usaha-index
       parameters:
-      - description: Halaman yang ditampilkan
-        in: query
-        name: page
-        type: integer
-      - description: Jumlah data per halaman, maksimal 5 data per halaman
-        in: query
-        name: limit
-        type: integer
       - description: Nama Bentuk Usaha
         in: query
         name: nama
@@ -965,10 +1058,11 @@ paths:
       operationId: bentuk_usaha-delete
       parameters:
       - description: Id untuk delete data bentuk usaha
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1004,10 +1098,11 @@ paths:
       operationId: bentuk_usaha-view
       parameters:
       - description: Id untuk get data bentuk usaha
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1039,10 +1134,11 @@ paths:
       operationId: bentuk_usaha-update
       parameters:
       - description: Id untuk update data bentuk usaha
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Update payload
         in: body
         name: payload
@@ -1093,9 +1189,10 @@ paths:
         name: penerapan_spi
         type: boolean
       - description: Induk Perusahaan
+        format: uuid
         in: query
         name: induk_perusahaan
-        type: integer
+        type: string
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -1182,10 +1279,11 @@ paths:
       operationId: akta_notaris-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -1235,10 +1333,11 @@ paths:
       operationId: akta_notaris-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor Akta notaris
         in: formData
         name: nomor
@@ -1301,15 +1400,17 @@ paths:
       operationId: akta_notaris-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id untuk delete data akta notaris
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1345,15 +1446,17 @@ paths:
       operationId: akta_notaris-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id untuk get data akta notaris
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1385,15 +1488,17 @@ paths:
       operationId: akta_notaris-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id untuk update data akta notaris
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor Akta notaris
         in: formData
         name: nomor
@@ -1449,10 +1554,11 @@ paths:
       operationId: domisili-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -1512,10 +1618,11 @@ paths:
       operationId: domisili-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -1576,15 +1683,17 @@ paths:
       operationId: domisili-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id DOMISILI
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -1618,15 +1727,17 @@ paths:
       operationId: domisili-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id DOMISILI
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1664,15 +1775,17 @@ paths:
       operationId: domisili-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id DOMISILI
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -1730,16 +1843,255 @@ paths:
       summary: update data domisili
       tags:
       - Domisili
+  /strict/bumd/{id_bumd}/kinerja:
+    get:
+      description: get data kinerja.
+      operationId: kinerja-index
+      parameters:
+      - description: Id BUMD
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
+      - description: Tahun
+        in: query
+        name: tahun
+        type: integer
+      - description: Halaman yang ditampilkan
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman, maksimal 5 data per halaman
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/others.KinerjaModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data kinerja
+      tags:
+      - Kinerja
+    post:
+      description: create data kinerja.
+      operationId: kinerja-create
+      parameters:
+      - description: Id BUMD
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/others.KinerjaForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.KinerjaModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: create data kinerja
+      tags:
+      - Kinerja
+  /strict/bumd/{id_bumd}/kinerja/{id}:
+    delete:
+      description: delete data kinerja.
+      operationId: kinerja-delete
+      parameters:
+      - description: Id BUMD
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
+      - description: Id Kinerja
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.KinerjaModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: delete data kinerja
+      tags:
+      - Kinerja
+    get:
+      description: get data kinerja.
+      operationId: kinerja-view
+      parameters:
+      - description: Id BUMD
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
+      - description: Id Kinerja
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.KinerjaModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data kinerja
+      tags:
+      - Kinerja
+    put:
+      description: update data kinerja.
+      operationId: kinerja-update
+      parameters:
+      - description: Id BUMD
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
+      - description: Id Kinerja
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/others.KinerjaForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/others.KinerjaModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data kinerja
+      tags:
+      - Kinerja
   /strict/bumd/{id_bumd}/modal:
     get:
       description: get data modal.
       operationId: modal-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -1783,10 +2135,11 @@ paths:
       operationId: modal-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Create payload
         in: body
         name: payload
@@ -1829,15 +2182,17 @@ paths:
       operationId: modal-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id Modal
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1867,15 +2222,17 @@ paths:
       operationId: modal-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id Modal
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -1907,10 +2264,11 @@ paths:
       operationId: modal-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Update payload
         in: body
         name: payload
@@ -1953,10 +2311,11 @@ paths:
       operationId: nib-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -2016,10 +2375,11 @@ paths:
       operationId: nib-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -2080,15 +2440,17 @@ paths:
       operationId: nib-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id NIB
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -2122,15 +2484,17 @@ paths:
       operationId: nib-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id NIB
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -2168,15 +2532,17 @@ paths:
       operationId: nib-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id NIB
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -2240,10 +2606,11 @@ paths:
       operationId: pegawai-index
       parameters:
       - description: Id Bumd
+        format: uuid
         in: query
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -2294,6 +2661,12 @@ paths:
       description: create pegawai.
       operationId: pegawai-create
       parameters:
+      - description: Id Bumd
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
       - description: Pegawai payload
         in: body
         name: payload
@@ -2328,21 +2701,23 @@ paths:
       summary: create pegawai
       tags:
       - Pegawai
-  /strict/bumd/{id_bumd}/pegawai/:id:
+  /strict/bumd/{id_bumd}/pegawai/{id}:
     delete:
       description: delete pegawai.
       operationId: pegawai-delete
       parameters:
       - description: Id Bumd
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id Pegawai
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -2376,10 +2751,17 @@ paths:
       operationId: pegawai-view
       parameters:
       - description: Id Pegawai
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
+      - description: Id Bumd
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2417,10 +2799,17 @@ paths:
       operationId: pegawai-update
       parameters:
       - description: Id Bumd
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
+      - description: Id Pegawai
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Pegawai payload
         in: body
         name: payload
@@ -2461,10 +2850,11 @@ paths:
       operationId: pengurus-index
       parameters:
       - description: Id Bumd
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -2516,10 +2906,11 @@ paths:
       operationId: pengurus-create
       parameters:
       - description: Id Bumd
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Jabatan Struktur
         in: formData
         name: jabatan_struktur
@@ -2593,21 +2984,23 @@ paths:
       summary: create pengurus
       tags:
       - Pengurus
-  /strict/bumd/{id_bumd}/pengurus/:id:
+  /strict/bumd/{id_bumd}/pengurus/{id}:
     delete:
       description: delete pengurus.
       operationId: pengurus-delete
       parameters:
       - description: Id Bumd
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id Pengurus
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -2641,10 +3034,17 @@ paths:
       operationId: pengurus-view
       parameters:
       - description: Id Pengurus
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
+      - description: Id Bumd
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -2682,15 +3082,17 @@ paths:
       operationId: pengurus-update
       parameters:
       - description: Id Bumd
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id Pengurus
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Jabatan Struktur
         in: formData
         name: jabatan_struktur
@@ -2770,10 +3172,11 @@ paths:
       operationId: peraturan-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -2825,10 +3228,11 @@ paths:
       operationId: peraturan-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -2881,11 +3285,13 @@ paths:
       operationId: peraturan-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id PERATURAN
+        format: uuid
         in: path
         name: id
         required: true
@@ -2923,11 +3329,13 @@ paths:
       operationId: peraturan-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id PERATURAN
+        format: uuid
         in: path
         name: id
         required: true
@@ -2969,11 +3377,13 @@ paths:
       operationId: peraturan-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id PERATURAN
+        format: uuid
         in: path
         name: id
         required: true
@@ -3031,10 +3441,11 @@ paths:
       operationId: perda_pendirian-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Halaman yang ditampilkan
         in: query
         name: page
@@ -3094,10 +3505,11 @@ paths:
       operationId: perda_pendirian-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor Perda
         in: formData
         name: nomor_perda
@@ -3160,10 +3572,11 @@ paths:
       operationId: perda_pendirian-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id untuk delete data perda pendirian
         in: path
         name: id
@@ -3204,10 +3617,11 @@ paths:
       operationId: perda_pendirian-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id untuk get data perda pendirian
         in: path
         name: id
@@ -3244,10 +3658,11 @@ paths:
       operationId: perda_pendirian-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id untuk update data perda pendirian
         in: path
         name: id
@@ -3313,10 +3728,11 @@ paths:
       operationId: produk-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -3368,10 +3784,11 @@ paths:
       operationId: produk-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nama Produk
         in: formData
         name: nama_produk
@@ -3416,11 +3833,13 @@ paths:
       operationId: produk-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id PRODUK
+        format: uuid
         in: path
         name: id
         required: true
@@ -3458,11 +3877,13 @@ paths:
       operationId: produk-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id PRODUK
+        format: uuid
         in: path
         name: id
         required: true
@@ -3504,10 +3925,11 @@ paths:
       operationId: produk-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nama Produk
         in: formData
         name: nama_produk
@@ -3550,10 +3972,11 @@ paths:
       operationId: rencana_bisnis-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -3613,10 +4036,11 @@ paths:
       operationId: rencana_bisnis-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -3677,15 +4101,17 @@ paths:
       operationId: rencana_bisnis-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id RENCANA BISNIS
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -3719,15 +4145,17 @@ paths:
       operationId: rencana_bisnis-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id RENCANA BISNIS
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -3765,15 +4193,17 @@ paths:
       operationId: rencana_bisnis-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id RENCANA BISNIS
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -3837,10 +4267,11 @@ paths:
       operationId: rka-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -3900,10 +4331,11 @@ paths:
       operationId: rka-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -3964,15 +4396,17 @@ paths:
       operationId: rka-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id RKA
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -4006,15 +4440,17 @@ paths:
       operationId: rka-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id RKA
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4052,15 +4488,17 @@ paths:
       operationId: rka-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id RKA
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -4124,10 +4562,11 @@ paths:
       operationId: siup-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -4187,10 +4626,11 @@ paths:
       operationId: siup-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -4251,15 +4691,17 @@ paths:
       operationId: siup-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id SIUP
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -4293,15 +4735,17 @@ paths:
       operationId: siup-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id SIUP
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4339,15 +4783,17 @@ paths:
       operationId: siup-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id SIUP
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -4411,10 +4857,11 @@ paths:
       operationId: tdp-index
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Page
         in: query
         name: page
@@ -4474,10 +4921,11 @@ paths:
       operationId: tdp-create
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -4538,15 +4986,17 @@ paths:
       operationId: tdp-delete
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id TDP
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: Success
@@ -4580,15 +5030,17 @@ paths:
       operationId: tdp-view
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id TDP
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4626,15 +5078,17 @@ paths:
       operationId: tdp-update
       parameters:
       - description: Id BUMD
+        format: uuid
         in: path
         name: id_bumd
         required: true
-        type: integer
+        type: string
       - description: Id TDP
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Nomor
         in: formData
         name: nomor
@@ -4700,10 +5154,11 @@ paths:
       operationId: bumd-delete
       parameters:
       - description: Id untuk delete data bumd
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4739,10 +5194,11 @@ paths:
       operationId: bumd-view
       parameters:
       - description: Id untuk get data bumd
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4774,10 +5230,11 @@ paths:
       operationId: bumd-update
       parameters:
       - description: Id untuk update data bumd
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Update payload
         in: body
         name: payload
@@ -4820,10 +5277,11 @@ paths:
       operationId: npwp-view
       parameters:
       - description: Id untuk get data npwp
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4854,11 +5312,12 @@ paths:
       description: update data npwp by id.
       operationId: npwp-update
       parameters:
-      - description: Id untuk update data npwp
+      - description: Id bumd untuk update data npwp
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: NPWP
         in: formData
         name: npwp
@@ -4907,10 +5366,11 @@ paths:
       operationId: spi-view
       parameters:
       - description: Id untuk get data spi
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -4942,10 +5402,11 @@ paths:
       operationId: spi-update
       parameters:
       - description: Id untuk update data spi
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Penerapan SPI
         in: formData
         name: penerapan_spi
@@ -5073,10 +5534,11 @@ paths:
       operationId: jenis_dokumen-delete
       parameters:
       - description: Id untuk delete data jenis dokumen
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -5112,10 +5574,11 @@ paths:
       operationId: jenis_dokumen-view
       parameters:
       - description: Id untuk get data jenis dokumen
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -5147,10 +5610,11 @@ paths:
       operationId: jenis_dokumen-update
       parameters:
       - description: Id untuk update data jenis dokumen
+        format: uuid
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Update payload
         in: body
         name: payload

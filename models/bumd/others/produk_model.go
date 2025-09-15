@@ -1,13 +1,17 @@
 package others
 
-import "mime/multipart"
+import (
+	"mime/multipart"
+
+	"github.com/google/uuid"
+)
 
 type ProdukModel struct {
-	ID         int    `json:"id"`
-	IDBumd     int    `json:"id_bumd"`
-	NamaProduk string `json:"nama_produk"`
-	Deskripsi  string `json:"deskripsi"`
-	FotoProduk string `json:"foto_produk"`
+	Id         uuid.UUID `json:"id"`
+	IdBumd     uuid.UUID `json:"id_bumd"`
+	NamaProduk string    `json:"nama_produk"`
+	Deskripsi  string    `json:"deskripsi"`
+	FotoProduk string    `json:"foto_produk"`
 }
 
 type ProdukForm struct {

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -23,22 +24,24 @@ func NewModalController(pgxConn *pgxpool.Pool) *ModalController {
 func (c *ModalController) Index(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
-	idBumd,
+	idBumd uuid.UUID,
 	page,
 	limit int,
 	search string,
 ) (r []keuangan.KeuModalModel, totalCount, pageCount int, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
-
-	if idBumdClaims > 0 {
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, err
+	}
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	r = make([]keuangan.KeuModalModel, 0)
 	offset := limit * (page - 1)
 
-	qCount := `SELECT COALESCE(COUNT(*), 0) FROM keu_modal WHERE deleted_by = 0 AND id_bumd = $1`
+	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_modal WHERE deleted_by = 0 AND id_bumd = $1`
 
 	q := `WITH 
 	data_daerah_prov_temp AS
@@ -66,26 +69,26 @@ func (c *ModalController) Index(
 		(id_daerah INT4, nama_daerah VARCHAR)
 	)
 	SELECT
-		id,
+		id_modal,
 		id_bumd,
 		id_prov,
 		COALESCE(data_daerah_prov_temp.nama_daerah, '-'),
 		id_kab,
 		COALESCE(data_daerah_kab_temp.nama_daerah, '-'),
-		pemegang,
-		no_ba,
-		tanggal,
-		jumlah,
-		keterangan
-	FROM keu_modal
-	LEFT JOIN data_daerah_prov_temp ON keu_modal.id_prov = data_daerah_prov_temp.id_daerah
-	LEFT JOIN data_daerah_kab_temp ON keu_modal.id_kab = data_daerah_kab_temp.id_daerah
+		pemegang_modal,
+		no_ba_modal,
+		tanggal_modal,
+		jumlah_modal,
+		keterangan_modal
+	FROM trn_modal
+	LEFT JOIN data_daerah_prov_temp ON trn_modal.id_prov = data_daerah_prov_temp.id_daerah
+	LEFT JOIN data_daerah_kab_temp ON trn_modal.id_kab = data_daerah_kab_temp.id_daerah
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
 	var args []interface{}
 	args = append(args, idBumd)
 	if search != "" {
-		qCount += fmt.Sprintf(` AND pemegang ILIKE $%d OR no_ba ILIKE $%d OR tanggal ILIKE $%d OR jumlah ILIKE $%d OR keterangan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
+		qCount += fmt.Sprintf(` AND pemegang_modal ILIKE $%d OR no_ba_modal ILIKE $%d OR tanggal_modal ILIKE $%d OR jumlah_modal ILIKE $%d OR keterangan_modal ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
 	}
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
@@ -96,11 +99,11 @@ func (c *ModalController) Index(
 	args = append(args, os.Getenv("DB_SERVER_URL_MST_DATA"))
 
 	if search != "" {
-		q += fmt.Sprintf(` AND pemegang ILIKE $%d OR no_ba ILIKE $%d OR tanggal ILIKE $%d OR jumlah ILIKE $%d OR keterangan ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
+		q += fmt.Sprintf(` AND pemegang_modal ILIKE $%d OR no_ba_modal ILIKE $%d OR tanggal_modal ILIKE $%d OR jumlah_modal ILIKE $%d OR keterangan_modal ILIKE $%d`, len(args)+1, len(args)+1, len(args)+1, len(args)+1, len(args)+1)
 		args = append(args, "%"+search+"%")
 	}
 
-	q += fmt.Sprintf(` ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -124,7 +127,6 @@ func (c *ModalController) Index(
 			&m.Jumlah,
 			&m.Keterangan,
 		)
-		m.IdBumd = int64(idBumd)
 		if err != nil {
 			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Modal: %w", err)
 		}
@@ -139,11 +141,14 @@ func (c *ModalController) Index(
 	return r, totalCount, pageCount, err
 }
 
-func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd, id int) (r keuangan.KeuModalModel, err error) {
+func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, id uuid.UUID) (r keuangan.KeuModalModel, err error) {
 	claims := user.Claims.(jwt.MapClaims)
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, fmt.Errorf("gagal mengambil data Modal: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
@@ -160,7 +165,7 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 			WHERE
 				is_deleted = 0
 		')
-		AS data_daerah_prov_temp
+	AS data_daerah_prov_temp
 		(id_daerah INT4, nama_daerah VARCHAR)
 	),
 	data_daerah_kab_temp AS
@@ -176,21 +181,21 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	(id_daerah INT4, nama_daerah VARCHAR)
 	)
 	SELECT
-		id,
+		id_modal,
 		id_bumd,
 		id_prov,
 		COALESCE(data_daerah_prov_temp.nama_daerah, '-'),
 		id_kab,
 		COALESCE(data_daerah_kab_temp.nama_daerah, '-'),
-		pemegang,
-		no_ba,
-		tanggal,
-		jumlah,
-		keterangan
-	FROM keu_modal
-	LEFT JOIN data_daerah_prov_temp ON keu_modal.id_prov = data_daerah_prov_temp.id_daerah
-	LEFT JOIN data_daerah_kab_temp ON keu_modal.id_kab = data_daerah_kab_temp.id_daerah
-	WHERE deleted_by = 0 AND id_bumd = $1 AND id = $2
+		pemegang_modal,
+		no_ba_modal,
+		tanggal_modal,
+		jumlah_modal,
+		keterangan_modal
+	FROM trn_modal
+	LEFT JOIN data_daerah_prov_temp ON trn_modal.id_prov = data_daerah_prov_temp.id_daerah
+	LEFT JOIN data_daerah_kab_temp ON trn_modal.id_kab = data_daerah_kab_temp.id_daerah
+	WHERE deleted_by = 0 AND id_bumd = $1 AND id_modal = $2
 	`
 
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&r.Id, &r.IdBumd, &r.IdProv, &r.NamaProv, &r.IdKab, &r.NamaKab, &r.Pemegang, &r.NoBa, &r.Tanggal, &r.Jumlah, &r.Keterangan)
@@ -201,49 +206,60 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	return r, err
 }
 
-func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, payload *keuangan.KeuModalForm) (r bool, err error) {
+func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, payload *keuangan.KeuModalForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Modal: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	INSERT INTO keu_modal (id_bumd, id_prov, id_kab, pemegang, no_ba, tanggal, jumlah, keterangan, created_by)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+	INSERT INTO trn_modal (id_modal, id_bumd, id_prov, id_kab, pemegang_modal, no_ba_modal, tanggal_modal, jumlah_modal, keterangan_modal, created_by)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
-	_, err = c.pgxConn.Exec(fCtx, q, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan, idUser)
+	id, err := uuid.NewV7()
+	if err != nil {
+		return false, err
+	}
+
+	_, err = c.pgxConn.Exec(fCtx, q, id, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan, idUser)
 	if err != nil {
 		return r, fmt.Errorf("gagal membuat data Modal: %w", err)
 	}
 	return true, err
 }
 
-func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id int, payload *keuangan.KeuModalForm) (r bool, err error) {
+func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, id uuid.UUID, payload *keuangan.KeuModalForm) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, fmt.Errorf("gagal mengambil data Modal: %w", err)
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	UPDATE keu_modal
+	UPDATE trn_modal
 	SET
 		id_prov = $3,
 		id_kab = $4,
-		pemegang = $5,
-		no_ba = $6,
-		tanggal = $7,
-		jumlah = $8,
-		keterangan = $9,
+		pemegang_modal = $5,
+		no_ba_modal = $6,
+		tanggal_modal = $7,
+		jumlah_modal = $8,
+		keterangan_modal = $9,
 		updated_by = $10,
 		updated_at = NOW()
-	WHERE id = $1 
+	WHERE id_modal = $1 
 		AND id_bumd = $2
 		AND deleted_by = 0
 	`
@@ -255,21 +271,24 @@ func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	return true, err
 }
 
-func (c *ModalController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd int, id int) (r bool, err error) {
+func (c *ModalController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd uuid.UUID, id uuid.UUID) (r bool, err error) {
 	claims := user.Claims.(jwt.MapClaims)
 	idUser := int(claims["id_user"].(float64))
-	idBumdClaims := int(claims["id_bumd"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return false, err
+	}
 
-	if idBumdClaims > 0 {
+	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
 	}
 
 	q := `
-	UPDATE keu_modal
+	UPDATE trn_modal
 	SET
 		deleted_by = $1,
 		deleted_at = NOW()
-	WHERE id = $2
+	WHERE id_modal = $2
 		AND id_bumd = $3
 	`
 

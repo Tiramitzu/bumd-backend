@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type ModalHandler struct {
@@ -36,7 +37,7 @@ func NewModalHandler(r fiber.Router, validator *validator.Validate, controller *
 //	@ID				modal-index
 //	@Tags			Modal
 //	@Produce		json
-//	@Param			id_bumd	path		int						true	"Id BUMD"
+//	@Param			id_bumd	path		string					true	"Id BUMD"	Format(uuid)
 //	@Param			page	query		int						false	"Halaman yang ditampilkan"
 //	@Param			limit	query		int						false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search	query		string					false	"Pencarian"
@@ -47,7 +48,8 @@ func NewModalHandler(r fiber.Router, validator *validator.Validate, controller *
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/modal [get]
 func (h *ModalHandler) Index(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -62,7 +64,7 @@ func (h *ModalHandler) Index(c *fiber.Ctx) error {
 	m, totalCount, pageCount, err := h.Controller.Index(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
+		parsedIdBumd,
 		page,
 		limit,
 		search,
@@ -93,8 +95,8 @@ func (h *ModalHandler) Index(c *fiber.Ctx) error {
 //	@ID				modal-view
 //	@Tags			Modal
 //	@Produce		json
-//	@Param			id_bumd	path		int						true	"Id BUMD"
-//	@Param			id		path		int						true	"Id Modal"
+//	@Param			id_bumd	path		string					true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string					true	"Id Modal"	Format(uuid)
 //	@success		200		{object}	keuangan.KeuModalModel	"Success"
 //	@Failure		400		{object}	utils.RequestError		"Bad request"
 //	@Failure		404		{object}	utils.RequestError		"Data not found"
@@ -102,11 +104,13 @@ func (h *ModalHandler) Index(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/modal/{id} [get]
 func (h *ModalHandler) View(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -114,8 +118,8 @@ func (h *ModalHandler) View(c *fiber.Ctx) error {
 	m, err := h.Controller.View(
 		c.Context(),
 		c.Locals("jwt").(*jwt.Token),
-		idBumd,
-		id,
+		parsedIdBumd,
+		parsedId,
 	)
 	if err != nil {
 		return err
@@ -130,7 +134,7 @@ func (h *ModalHandler) View(c *fiber.Ctx) error {
 //	@ID				modal-create
 //	@Tags			Modal
 //	@Accept			json
-//	@Param			id_bumd	path	int						true	"Id BUMD"
+//	@Param			id_bumd	path	string					true	"Id BUMD"	Format(uuid)
 //	@Param			payload	body	keuangan.KeuModalForm	true	"Create payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
@@ -141,7 +145,8 @@ func (h *ModalHandler) View(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/modal [post]
 func (h *ModalHandler) Create(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
@@ -154,7 +159,7 @@ func (h *ModalHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, payload)
+	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, payload)
 	if err != nil {
 		return err
 	}
@@ -168,7 +173,7 @@ func (h *ModalHandler) Create(c *fiber.Ctx) error {
 //	@ID				modal-update
 //	@Tags			Modal
 //	@Accept			json
-//	@Param			id_bumd	path	int						true	"Id BUMD"
+//	@Param			id_bumd	path	string					true	"Id BUMD"	Format(uuid)
 //	@Param			payload	body	keuangan.KeuModalForm	true	"Update payload"
 //	@Produce		json
 //	@success		200	{object}	boolean				"Success"
@@ -179,11 +184,13 @@ func (h *ModalHandler) Create(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/modal/{id} [put]
 func (h *ModalHandler) Update(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
@@ -196,7 +203,7 @@ func (h *ModalHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id, payload)
+	m, err := h.Controller.Update(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId, payload)
 	if err != nil {
 		return err
 	}
@@ -210,8 +217,8 @@ func (h *ModalHandler) Update(c *fiber.Ctx) error {
 //	@ID				modal-delete
 //	@Tags			Modal
 //	@Produce		json
-//	@Param			id_bumd	path		int					true	"Id BUMD"
-//	@Param			id		path		int					true	"Id Modal"
+//	@Param			id_bumd	path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id		path		string				true	"Id Modal"	Format(uuid)
 //	@success		200		{object}	boolean				"Success"
 //	@Failure		400		{object}	utils.RequestError	"Bad request"
 //	@Failure		404		{object}	utils.RequestError	"Data not found"
@@ -219,16 +226,18 @@ func (h *ModalHandler) Update(c *fiber.Ctx) error {
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/modal/{id} [delete]
 func (h *ModalHandler) Delete(c *fiber.Ctx) error {
-	idBumd, err := c.ParamsInt("id_bumd")
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
 	}
-	id, err := c.ParamsInt("id")
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return err
 	}
 
-	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, id)
+	m, err := h.Controller.Delete(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId)
 	if err != nil {
 		return err
 	}

@@ -164,18 +164,6 @@ const docTemplate = `{
                 "operationId": "bentuk_badan_hukum-index",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Halaman yang ditampilkan",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "description": "Nama Bentuk Badan Hukum",
                         "name": "nama",
@@ -302,7 +290,8 @@ const docTemplate = `{
                 "operationId": "bentuk_badan_hukum-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data bentuk badan hukum",
                         "name": "id",
                         "in": "path",
@@ -356,7 +345,8 @@ const docTemplate = `{
                 "operationId": "bentuk_badan_hukum-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk update data bentuk badan hukum",
                         "name": "id",
                         "in": "path",
@@ -428,7 +418,8 @@ const docTemplate = `{
                 "operationId": "bentuk_badan_hukum-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk delete data bentuk badan hukum",
                         "name": "id",
                         "in": "path",
@@ -489,18 +480,6 @@ const docTemplate = `{
                 "summary": "get data bentuk usaha",
                 "operationId": "bentuk_usaha-index",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Halaman yang ditampilkan",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
-                        "name": "limit",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "description": "Nama Bentuk Usaha",
@@ -628,7 +607,8 @@ const docTemplate = `{
                 "operationId": "bentuk_usaha-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data bentuk usaha",
                         "name": "id",
                         "in": "path",
@@ -682,7 +662,8 @@ const docTemplate = `{
                 "operationId": "bentuk_usaha-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk update data bentuk usaha",
                         "name": "id",
                         "in": "path",
@@ -754,7 +735,8 @@ const docTemplate = `{
                 "operationId": "bentuk_usaha-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk delete data bentuk usaha",
                         "name": "id",
                         "in": "path",
@@ -828,7 +810,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Induk Perusahaan",
                         "name": "induk_perusahaan",
                         "in": "query"
@@ -966,7 +949,8 @@ const docTemplate = `{
                 "operationId": "akta_notaris-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -1047,7 +1031,8 @@ const docTemplate = `{
                 "operationId": "akta_notaris-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -1143,14 +1128,16 @@ const docTemplate = `{
                 "operationId": "akta_notaris-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data akta notaris",
                         "name": "id",
                         "in": "path",
@@ -1204,14 +1191,16 @@ const docTemplate = `{
                 "operationId": "akta_notaris-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk update data akta notaris",
                         "name": "id",
                         "in": "path",
@@ -1301,14 +1290,16 @@ const docTemplate = `{
                 "operationId": "akta_notaris-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk delete data akta notaris",
                         "name": "id",
                         "in": "path",
@@ -1370,7 +1361,8 @@ const docTemplate = `{
                 "operationId": "domisili-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -1463,7 +1455,8 @@ const docTemplate = `{
                 "operationId": "domisili-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -1561,14 +1554,16 @@ const docTemplate = `{
                 "operationId": "domisili-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id DOMISILI",
                         "name": "id",
                         "in": "path",
@@ -1628,14 +1623,16 @@ const docTemplate = `{
                 "operationId": "domisili-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id DOMISILI",
                         "name": "id",
                         "in": "path",
@@ -1736,14 +1733,16 @@ const docTemplate = `{
                 "operationId": "domisili-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id DOMISILI",
                         "name": "id",
                         "in": "path",
@@ -1755,6 +1754,366 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/kinerja": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data kinerja.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kinerja"
+                ],
+                "summary": "get data kinerja",
+                "operationId": "kinerja-index",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tahun",
+                        "name": "tahun",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/others.KinerjaModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create data kinerja.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kinerja"
+                ],
+                "summary": "create data kinerja",
+                "operationId": "kinerja-create",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/others.KinerjaForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.KinerjaModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/kinerja/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data kinerja.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kinerja"
+                ],
+                "summary": "get data kinerja",
+                "operationId": "kinerja-view",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Kinerja",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.KinerjaModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data kinerja.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kinerja"
+                ],
+                "summary": "update data kinerja",
+                "operationId": "kinerja-update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Kinerja",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/others.KinerjaForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.KinerjaModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete data kinerja.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kinerja"
+                ],
+                "summary": "delete data kinerja",
+                "operationId": "kinerja-delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Kinerja",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/others.KinerjaModel"
                         }
                     },
                     "400": {
@@ -1805,7 +2164,8 @@ const docTemplate = `{
                 "operationId": "modal-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -1877,7 +2237,8 @@ const docTemplate = `{
                 "operationId": "modal-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -1948,14 +2309,16 @@ const docTemplate = `{
                 "operationId": "modal-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Modal",
                         "name": "id",
                         "in": "path",
@@ -2009,7 +2372,8 @@ const docTemplate = `{
                 "operationId": "modal-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -2078,14 +2442,16 @@ const docTemplate = `{
                 "operationId": "modal-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Modal",
                         "name": "id",
                         "in": "path",
@@ -2138,7 +2504,8 @@ const docTemplate = `{
                 "operationId": "nib-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -2231,7 +2598,8 @@ const docTemplate = `{
                 "operationId": "nib-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -2329,14 +2697,16 @@ const docTemplate = `{
                 "operationId": "nib-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id NIB",
                         "name": "id",
                         "in": "path",
@@ -2396,14 +2766,16 @@ const docTemplate = `{
                 "operationId": "nib-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id NIB",
                         "name": "id",
                         "in": "path",
@@ -2504,14 +2876,16 @@ const docTemplate = `{
                 "operationId": "nib-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id NIB",
                         "name": "id",
                         "in": "path",
@@ -2573,7 +2947,8 @@ const docTemplate = `{
                 "operationId": "pegawai-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
                         "in": "query",
@@ -2654,6 +3029,14 @@ const docTemplate = `{
                 "operationId": "pegawai-create",
                 "parameters": [
                     {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Pegawai payload",
                         "name": "payload",
                         "in": "body",
@@ -2700,7 +3083,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/strict/bumd/{id_bumd}/pegawai/:id": {
+        "/strict/bumd/{id_bumd}/pegawai/{id}": {
             "get": {
                 "security": [
                     {
@@ -2718,9 +3101,18 @@ const docTemplate = `{
                 "operationId": "pegawai-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Pegawai",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
                         "in": "path",
                         "required": true
                     }
@@ -2778,9 +3170,18 @@ const docTemplate = `{
                 "operationId": "pegawai-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Pegawai",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -2844,14 +3245,16 @@ const docTemplate = `{
                 "operationId": "pegawai-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Pegawai",
                         "name": "id",
                         "in": "path",
@@ -2913,7 +3316,8 @@ const docTemplate = `{
                 "operationId": "pengurus-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
                         "in": "path",
@@ -2994,7 +3398,8 @@ const docTemplate = `{
                 "operationId": "pengurus-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
                         "in": "path",
@@ -3101,7 +3506,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/strict/bumd/{id_bumd}/pengurus/:id": {
+        "/strict/bumd/{id_bumd}/pengurus/{id}": {
             "get": {
                 "security": [
                     {
@@ -3119,9 +3524,18 @@ const docTemplate = `{
                 "operationId": "pengurus-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Pengurus",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
                         "in": "path",
                         "required": true
                     }
@@ -3179,14 +3593,16 @@ const docTemplate = `{
                 "operationId": "pengurus-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Pengurus",
                         "name": "id",
                         "in": "path",
@@ -3306,14 +3722,16 @@ const docTemplate = `{
                 "operationId": "pengurus-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id Pengurus",
                         "name": "id",
                         "in": "path",
@@ -3375,7 +3793,8 @@ const docTemplate = `{
                 "operationId": "peraturan-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3456,7 +3875,8 @@ const docTemplate = `{
                 "operationId": "peraturan-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3542,7 +3962,8 @@ const docTemplate = `{
                 "operationId": "peraturan-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3550,6 +3971,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Id PERATURAN",
                         "name": "id",
                         "in": "path",
@@ -3609,7 +4031,8 @@ const docTemplate = `{
                 "operationId": "peraturan-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3617,6 +4040,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Id PERATURAN",
                         "name": "id",
                         "in": "path",
@@ -3703,7 +4127,8 @@ const docTemplate = `{
                 "operationId": "peraturan-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3711,6 +4136,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Id PERATURAN",
                         "name": "id",
                         "in": "path",
@@ -3772,7 +4198,8 @@ const docTemplate = `{
                 "operationId": "perda_pendirian-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3867,7 +4294,8 @@ const docTemplate = `{
                 "operationId": "perda_pendirian-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -3963,7 +4391,8 @@ const docTemplate = `{
                 "operationId": "perda_pendirian-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4024,7 +4453,8 @@ const docTemplate = `{
                 "operationId": "perda_pendirian-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4128,7 +4558,8 @@ const docTemplate = `{
                 "operationId": "perda_pendirian-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4197,7 +4628,8 @@ const docTemplate = `{
                 "operationId": "produk-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4278,7 +4710,8 @@ const docTemplate = `{
                 "operationId": "produk-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4352,7 +4785,8 @@ const docTemplate = `{
                 "operationId": "produk-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4360,6 +4794,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Id PRODUK",
                         "name": "id",
                         "in": "path",
@@ -4419,7 +4854,8 @@ const docTemplate = `{
                 "operationId": "produk-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4491,7 +4927,8 @@ const docTemplate = `{
                 "operationId": "produk-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4499,6 +4936,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "format": "uuid",
                         "description": "Id PRODUK",
                         "name": "id",
                         "in": "path",
@@ -4560,7 +4998,8 @@ const docTemplate = `{
                 "operationId": "rencana_bisnis-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4653,7 +5092,8 @@ const docTemplate = `{
                 "operationId": "rencana_bisnis-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -4751,14 +5191,16 @@ const docTemplate = `{
                 "operationId": "rencana_bisnis-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id RENCANA BISNIS",
                         "name": "id",
                         "in": "path",
@@ -4818,14 +5260,16 @@ const docTemplate = `{
                 "operationId": "rencana_bisnis-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id RENCANA BISNIS",
                         "name": "id",
                         "in": "path",
@@ -4926,14 +5370,16 @@ const docTemplate = `{
                 "operationId": "rencana_bisnis-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id RENCANA BISNIS",
                         "name": "id",
                         "in": "path",
@@ -4995,7 +5441,8 @@ const docTemplate = `{
                 "operationId": "rka-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -5088,7 +5535,8 @@ const docTemplate = `{
                 "operationId": "rka-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -5186,14 +5634,16 @@ const docTemplate = `{
                 "operationId": "rka-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id RKA",
                         "name": "id",
                         "in": "path",
@@ -5253,14 +5703,16 @@ const docTemplate = `{
                 "operationId": "rka-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id RKA",
                         "name": "id",
                         "in": "path",
@@ -5361,14 +5813,16 @@ const docTemplate = `{
                 "operationId": "rka-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id RKA",
                         "name": "id",
                         "in": "path",
@@ -5430,7 +5884,8 @@ const docTemplate = `{
                 "operationId": "siup-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -5523,7 +5978,8 @@ const docTemplate = `{
                 "operationId": "siup-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -5621,14 +6077,16 @@ const docTemplate = `{
                 "operationId": "siup-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id SIUP",
                         "name": "id",
                         "in": "path",
@@ -5688,14 +6146,16 @@ const docTemplate = `{
                 "operationId": "siup-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id SIUP",
                         "name": "id",
                         "in": "path",
@@ -5796,14 +6256,16 @@ const docTemplate = `{
                 "operationId": "siup-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id SIUP",
                         "name": "id",
                         "in": "path",
@@ -5865,7 +6327,8 @@ const docTemplate = `{
                 "operationId": "tdp-index",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -5958,7 +6421,8 @@ const docTemplate = `{
                 "operationId": "tdp-create",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
@@ -6056,14 +6520,16 @@ const docTemplate = `{
                 "operationId": "tdp-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id TDP",
                         "name": "id",
                         "in": "path",
@@ -6123,14 +6589,16 @@ const docTemplate = `{
                 "operationId": "tdp-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id TDP",
                         "name": "id",
                         "in": "path",
@@ -6231,14 +6699,16 @@ const docTemplate = `{
                 "operationId": "tdp-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id BUMD",
                         "name": "id_bumd",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id TDP",
                         "name": "id",
                         "in": "path",
@@ -6300,7 +6770,8 @@ const docTemplate = `{
                 "operationId": "bumd-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data bumd",
                         "name": "id",
                         "in": "path",
@@ -6354,7 +6825,8 @@ const docTemplate = `{
                 "operationId": "bumd-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk update data bumd",
                         "name": "id",
                         "in": "path",
@@ -6426,7 +6898,8 @@ const docTemplate = `{
                 "operationId": "bumd-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk delete data bumd",
                         "name": "id",
                         "in": "path",
@@ -6488,7 +6961,8 @@ const docTemplate = `{
                 "operationId": "npwp-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data npwp",
                         "name": "id",
                         "in": "path",
@@ -6542,8 +7016,9 @@ const docTemplate = `{
                 "operationId": "npwp-update",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Id untuk update data npwp",
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id bumd untuk update data npwp",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -6622,7 +7097,8 @@ const docTemplate = `{
                 "operationId": "spi-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data spi",
                         "name": "id",
                         "in": "path",
@@ -6676,7 +7152,8 @@ const docTemplate = `{
                 "operationId": "spi-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk update data spi",
                         "name": "id",
                         "in": "path",
@@ -6876,7 +7353,8 @@ const docTemplate = `{
                 "operationId": "jenis_dokumen-view",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk get data jenis dokumen",
                         "name": "id",
                         "in": "path",
@@ -6930,7 +7408,8 @@ const docTemplate = `{
                 "operationId": "jenis_dokumen-update",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk update data jenis dokumen",
                         "name": "id",
                         "in": "path",
@@ -7002,7 +7481,8 @@ const docTemplate = `{
                 "operationId": "jenis_dokumen-delete",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Id untuk delete data jenis dokumen",
                         "name": "id",
                         "in": "path",
@@ -7726,13 +8206,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id_bentuk_hukum": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bentuk_usaha": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_induk_perusahaan": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nama": {
                     "type": "string"
@@ -7766,6 +8246,12 @@ const docTemplate = `{
                 "bentuk_usaha": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
                 "deskripsi": {
                     "type": "string"
                 },
@@ -7776,19 +8262,19 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bentuk_hukum": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bentuk_usaha": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_daerah": {
                     "type": "integer"
                 },
                 "id_induk_perusahaan": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_provinsi": {
                     "type": "integer"
@@ -7829,6 +8315,12 @@ const docTemplate = `{
                 "penerapan_spi": {
                     "type": "boolean"
                 },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                },
                 "website": {
                     "type": "string"
                 }
@@ -7866,10 +8358,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "keterangan": {
                     "type": "string"
@@ -7892,10 +8384,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "instansi_pemberi": {
                     "type": "string"
@@ -7927,10 +8419,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "keterangan": {
                     "type": "string"
@@ -7953,10 +8445,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "instansi_pemberi": {
                     "type": "string"
@@ -7988,10 +8480,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "instansi_pemberi": {
                     "type": "string"
@@ -8050,10 +8542,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "jumlah_pegawai": {
                     "type": "integer"
@@ -8082,10 +8574,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "jabatan_struktur": {
                     "type": "integer"
@@ -8137,10 +8629,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_kab": {
                     "type": "integer"
@@ -8189,7 +8681,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nama": {
                     "type": "string"
@@ -8214,7 +8706,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nama": {
                     "type": "string"
@@ -8239,7 +8731,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nama": {
                     "type": "string"
@@ -8279,7 +8771,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_daerah": {
                     "type": "integer"
@@ -8305,7 +8797,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_daerah": {
                     "type": "integer"
@@ -8378,10 +8870,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "instansi_pemberi": {
                     "type": "string"
@@ -8406,6 +8898,154 @@ const docTemplate = `{
                 }
             }
         },
+        "others.KinerjaForm": {
+            "type": "object",
+            "properties": {
+                "aktiva_tetap": {
+                    "type": "number"
+                },
+                "akumulasi_depresiasi": {
+                    "type": "number"
+                },
+                "capital_employed": {
+                    "type": "number"
+                },
+                "ebit": {
+                    "type": "number"
+                },
+                "ebitda": {
+                    "type": "number"
+                },
+                "harga_pokok_penjualan": {
+                    "type": "number"
+                },
+                "harta_lancar": {
+                    "type": "number"
+                },
+                "kas": {
+                    "type": "number"
+                },
+                "kewajiban_lancar": {
+                    "type": "number"
+                },
+                "kredit_bermasalah": {
+                    "type": "number"
+                },
+                "modal_sendiri": {
+                    "type": "number"
+                },
+                "penjualan_bersih": {
+                    "type": "number"
+                },
+                "penyusutan": {
+                    "type": "number"
+                },
+                "persediaan": {
+                    "type": "number"
+                },
+                "piutang_dagang": {
+                    "type": "number"
+                },
+                "setara_kas": {
+                    "type": "number"
+                },
+                "tahun": {
+                    "type": "integer"
+                },
+                "total_aset_akhir": {
+                    "type": "number"
+                },
+                "total_aset_awal": {
+                    "type": "number"
+                },
+                "total_kredit": {
+                    "type": "number"
+                }
+            }
+        },
+        "others.KinerjaModel": {
+            "type": "object",
+            "properties": {
+                "aktiva_tetap": {
+                    "type": "number"
+                },
+                "akumulasi_depresiasi": {
+                    "type": "number"
+                },
+                "capital_employed": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "ebit": {
+                    "type": "number"
+                },
+                "ebitda": {
+                    "type": "number"
+                },
+                "harga_pokok_penjualan": {
+                    "type": "number"
+                },
+                "harta_lancar": {
+                    "type": "number"
+                },
+                "id_bumd": {
+                    "type": "integer"
+                },
+                "id_kinerja": {
+                    "type": "integer"
+                },
+                "kas": {
+                    "type": "number"
+                },
+                "kewajiban_lancar": {
+                    "type": "number"
+                },
+                "kredit_bermasalah": {
+                    "type": "number"
+                },
+                "modal_sendiri": {
+                    "type": "number"
+                },
+                "penjualan_bersih": {
+                    "type": "number"
+                },
+                "penyusutan": {
+                    "type": "number"
+                },
+                "persediaan": {
+                    "type": "number"
+                },
+                "piutang_dagang": {
+                    "type": "number"
+                },
+                "setara_kas": {
+                    "type": "number"
+                },
+                "tahun": {
+                    "type": "integer"
+                },
+                "total_aset_akhir": {
+                    "type": "number"
+                },
+                "total_aset_awal": {
+                    "type": "number"
+                },
+                "total_kredit": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
+                }
+            }
+        },
         "others.PeraturanModel": {
             "type": "object",
             "properties": {
@@ -8416,7 +9056,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "jenis_peraturan": {
                     "type": "integer"
@@ -8445,10 +9085,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nama_produk": {
                     "type": "string"
@@ -8462,10 +9102,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "instansi_pemberi": {
                     "type": "string"
@@ -8497,10 +9137,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "instansi_pemberi": {
                     "type": "string"
