@@ -204,7 +204,7 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 		t_daerah.sub_domain
 	FROM users
 	LEFT JOIN roles ON roles.id = users.id_role
-	LEFT JOIN bumd ON bumd.id = users.id_bumd
+	LEFT JOIN m_bumd ON bumd.id = users.id_bumd
 	LEFT JOIN t_daerah ON t_daerah.id_daerah = users.id_daerah
 		WHERE users.id=$1 AND users.id_daerah=$2 AND users.id_role=$3`
 	err = c.pgxConn.QueryRow(context.Background(), qStr, userId, idDaerah, idRole, os.Getenv("DB_SERVER_URL_MST_DATA")).Scan(
