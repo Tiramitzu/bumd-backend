@@ -16,9 +16,9 @@ services:
       REDIS_PORT: "6379"
       REDIS_USERNAME: "default"
       REDIS_PASSWORD: "123456"
-      MINIO_ENDPOINT: "filestorage.kemendagri.go.id:9000"
-      MINIO_ACCESS_KEY: "goY8Ux3UCW8XT2u2I38Z"
-      MINIO_SECRET_KEY: "R9GKokjsDCkadFbJAeCHa7mrFjO0AcvKq1hMyZFh"
+      MINIO_ENDPOINT: "192.168.191.10:9000"
+      MINIO_ACCESS_KEY: "myuser"
+      MINIO_SECRET_KEY: "mysecret123"
       MINIO_BUCKET_NAME: "bumd"
     ports:
       - 8000:8000
