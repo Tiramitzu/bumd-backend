@@ -76,8 +76,8 @@ func (c *PerdaPendirianController) Index(
 		args = append(args, modalDasarMin)
 	}
 	if modalDasarMax > 0 {
-		qCount += fmt.Sprintf(` AND modal_dasar <= $%d`, len(args)+1)
-		q += fmt.Sprintf(` AND modal_dasar <= $%d`, len(args)+1)
+		qCount += fmt.Sprintf(` AND modal_dasar_perda_pendirian <= $%d`, len(args)+1)
+		q += fmt.Sprintf(` AND modal_dasar_perda_pendirian <= $%d`, len(args)+1)
 		args = append(args, modalDasarMax)
 	}
 
@@ -86,7 +86,7 @@ func (c *PerdaPendirianController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Akta Notaris: %w", err)
 	}
 
-	q += fmt.Sprintf(`ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(`ORDER BY id_perda_pendirian DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -283,7 +283,7 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 	q := `
 	UPDATE trn_perda_pendirian
 	SET nomor_perda_pendirian = $1, tanggal_perda_pendirian = $2, keterangan_perda_pendirian = $3, modal_dasar_perda_pendirian = $4, updated_by = $5, updated_at = NOW()
-	WHERE id = $6 AND id_bumd = $7
+	WHERE id_perda_pendirian = $6 AND id_bumd = $7
 	`
 	args = append(args, payload.Nomor, payload.Tanggal, payload.Keterangan, modalDasar, idUser, id, idBumd)
 
