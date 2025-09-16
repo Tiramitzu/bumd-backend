@@ -255,7 +255,7 @@ func (c *AktaNotarisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 	q := `
 	UPDATE trn_akta_notaris
 	SET nomor_akta_notaris = $1, notaris_akta_notaris = $2, tanggal_akta_notaris = $3, keterangan_akta_notaris = $4, updated_by = $5, updated_at = NOW()
-	WHERE id = $6 AND id_bumd = $7
+	WHERE id_akta_notaris = $6 AND id_bumd = $7
 	`
 	args = append(args, payload.Nomor, payload.Notaris, payload.Tanggal, payload.Keterangan, idUser, id, idBumd)
 

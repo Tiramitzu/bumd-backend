@@ -118,7 +118,7 @@ func (c *NibController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd,
 		ELSE 0
 	END as is_seumur_hidup
 	FROM trn_nib
-	WHERE id = $1 AND id_bumd = $2 AND deleted_by = 0
+	WHERE id_nib = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
 	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.InstansiPemberi, &r.Tanggal, &r.Kualifikasi, &r.Klasifikasi, &r.MasaBerlaku, &r.File, &r.IdBumd, &r.IsSeumurHidup)
@@ -267,7 +267,7 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	q := `
 	UPDATE trn_nib
 	SET nomor_nib = $1, instansi_pemberi_nib = $2, tanggal_nib = $3, kualifikasi_nib = $4, klasifikasi_nib = $5, updated_by = $6, updated_at = NOW()
-	WHERE id = $7 AND id_bumd = $8
+	WHERE id_nib = $7 AND id_bumd = $8
 	`
 	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
@@ -343,7 +343,7 @@ func (c *NibController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	q := `
 	UPDATE trn_nib
 	SET deleted_by = $1, deleted_at = NOW()
-	WHERE id = $2 AND id_bumd = $3
+	WHERE id_nib = $2 AND id_bumd = $3
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
