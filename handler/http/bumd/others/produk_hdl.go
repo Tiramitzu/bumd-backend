@@ -131,7 +131,7 @@ func (h *ProdukHandler) View(c *fiber.Ctx) error {
 //	@Accept			multipart/form-data
 //	@Param			id_bumd		path		string				true	"Id BUMD"	Format(uuid)
 //	@Param			nama_produk	formData	string				false	"Nama Produk"
-//	@Param			deskripsi	formData	int					false	"Deskripsi Produk"
+//	@Param			deskripsi	formData	string				false	"Deskripsi Produk"
 //	@Param			foto_produk	formData	file				false	"Foto Produk"
 //	@Success		200			{object}	bool				"Success"
 //	@Failure		400			{object}	utils.RequestError	"Bad request"
@@ -146,8 +146,17 @@ func (h *ProdukHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 	payload := new(others.ProdukForm)
+
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("foto_produk")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.FotoProduk = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {
@@ -169,8 +178,9 @@ func (h *ProdukHandler) Create(c *fiber.Ctx) error {
 //	@Tags			Produk
 //	@Accept			multipart/form-data
 //	@Param			id_bumd		path		string				true	"Id BUMD"	Format(uuid)
+//	@Param			id			path		string				true	"Id PRODUK"	Format(uuid)
 //	@Param			nama_produk	formData	string				false	"Nama Produk"
-//	@Param			deskripsi	formData	int					false	"Deskripsi Produk"
+//	@Param			deskripsi	formData	string				false	"Deskripsi Produk"
 //	@Param			foto_produk	formData	file				false	"Foto Produk"
 //	@Success		200			{object}	bool				"Success"
 //	@Failure		400			{object}	utils.RequestError	"Bad request"
@@ -190,8 +200,17 @@ func (h *ProdukHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 	payload := new(others.ProdukForm)
+
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("foto_produk")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.FotoProduk = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {

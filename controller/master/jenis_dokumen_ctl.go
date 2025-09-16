@@ -32,7 +32,7 @@ func (c *JenisDokumenController) Index(
 
 	var args []interface{}
 	q := `
-	SELECT id_jd, nama_jd, deskripsi_jd FROM m_jenis_dokumen WHERE deleted_by = 0 ORDER BY created_at DESC
+	SELECT id_jd, nama_jd, deskripsi_jd FROM m_jenis_dokumen WHERE deleted_by = 0
 	`
 	if nama != "" {
 		q += fmt.Sprintf(` AND nama_jd ILIKE $%d`, len(args)+1)

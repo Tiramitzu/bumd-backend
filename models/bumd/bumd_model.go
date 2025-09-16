@@ -54,14 +54,22 @@ type BumdForm struct {
 	PenerapanSPI      bool      `json:"penerapan_spi" xml:"penerapan_spi"`
 }
 
+type LogoModel struct {
+	Logo string `json:"logo" xml:"logo"`
+}
+
+type LogoForm struct {
+	Logo *multipart.FileHeader `json:"logo" xml:"logo" form:"logo"`
+}
+
 type SPIModel struct {
 	PenerapanSPI bool   `json:"penerapan_spi" xml:"penerapan_spi"`
 	FileSPI      string `json:"file_spi" xml:"file_spi"`
 }
 
 type SPIForm struct {
-	PenerapanSPI bool                  `json:"penerapan_spi" xml:"penerapan_spi"`
-	FileSPI      *multipart.FileHeader `json:"file_spi" xml:"file_spi"`
+	PenerapanSPI bool                  `json:"penerapan_spi" xml:"penerapan_spi" form:"penerapan_spi"`
+	FileSPI      *multipart.FileHeader `json:"file_spi" xml:"file_spi" form:"file_spi"`
 }
 
 type NPWPModel struct {
@@ -71,7 +79,7 @@ type NPWPModel struct {
 }
 
 type NPWPForm struct {
-	NPWP    string                `json:"npwp" xml:"npwp"`
-	Pemberi string                `json:"pemberi" xml:"pemberi"`
-	File    *multipart.FileHeader `json:"file" xml:"file"`
+	NPWP    string                `json:"npwp" xml:"npwp" form:"npwp"`
+	Pemberi string                `json:"pemberi" xml:"pemberi" form:"pemberi"`
+	File    *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 }

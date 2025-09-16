@@ -12,15 +12,17 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/minio/minio-go/v7"
 	"github.com/valyala/fasthttp"
 )
 
 type PengurusController struct {
-	pgxConn *pgxpool.Pool
+	pgxConn   *pgxpool.Pool
+	minioConn *utils.MinioConn
 }
 
-func NewPengurusController(pgxConn *pgxpool.Pool) *PengurusController {
-	return &PengurusController{pgxConn: pgxConn}
+func NewPengurusController(pgxConn *pgxpool.Pool, minioConn *utils.MinioConn) *PengurusController {
+	return &PengurusController{pgxConn: pgxConn, minioConn: minioConn}
 }
 
 func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page, limit int, idBumd uuid.UUID, search string) (r []kepengurusan_sdm.PengurusModel, totalCount, pageCount int, err error) {
@@ -182,7 +184,22 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		}
 		defer src.Close()
 
+		// upload file
 		objectName := "pengurus/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		q = `
 		UPDATE trn_pengurus SET file_pengurus = $1 WHERE id_pengurus = $2 AND id_bumd = $3
@@ -252,7 +269,22 @@ func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		}
 		defer src.Close()
 
+		// upload file
 		objectName := "pengurus/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.File.Size,
+			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
 
 		q = `
 		UPDATE trn_pengurus SET file_pengurus = $1 WHERE id_pengurus = $2 AND id_bumd = $3

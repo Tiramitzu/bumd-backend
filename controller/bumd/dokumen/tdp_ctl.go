@@ -276,6 +276,12 @@ func (c *TdpController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 		if err != nil {
 			return false, err
 		}
+	} else {
+		q = `UPDATE trn_tdp SET masa_berlaku_tdp=NULL WHERE id_tdp=$1 AND id_bumd=$2`
+		_, err = tx.Exec(context.Background(), q, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.File != nil {

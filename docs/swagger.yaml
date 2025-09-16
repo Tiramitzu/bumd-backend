@@ -87,6 +87,11 @@ definitions:
       website:
         type: string
     type: object
+  bumd.LogoModel:
+    properties:
+      logo:
+        type: string
+    type: object
   bumd.NPWPModel:
     properties:
       file:
@@ -369,6 +374,13 @@ definitions:
     - password
     - username
     type: object
+  models.PendidikanModel:
+    properties:
+      id:
+        type: integer
+      nama:
+        type: string
+    type: object
   models.RolesModel:
     properties:
       id:
@@ -526,9 +538,9 @@ definitions:
       harta_lancar:
         type: number
       id_bumd:
-        type: integer
+        type: string
       id_kinerja:
-        type: integer
+        type: string
       kas:
         type: number
       kewajiban_lancar:
@@ -569,7 +581,7 @@ definitions:
       id_bumd:
         type: string
       jenis_peraturan:
-        type: integer
+        type: string
       keterangan_peraturan:
         type: string
       nama_jenis_peraturan:
@@ -3796,7 +3808,7 @@ paths:
       - description: Deskripsi Produk
         in: formData
         name: deskripsi
-        type: integer
+        type: string
       - description: Foto Produk
         in: formData
         name: foto_produk
@@ -3930,6 +3942,12 @@ paths:
         name: id_bumd
         required: true
         type: string
+      - description: Id PRODUK
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Nama Produk
         in: formData
         name: nama_produk
@@ -3937,7 +3955,7 @@ paths:
       - description: Deskripsi Produk
         in: formData
         name: deskripsi
-        type: integer
+        type: string
       - description: Foto Produk
         in: formData
         name: foto_produk
@@ -5271,6 +5289,87 @@ paths:
       summary: update data bumd
       tags:
       - BUMD
+  /strict/bumd/{id}/logo:
+    get:
+      description: get data logo by id.
+      operationId: logo-view
+      parameters:
+      - description: Id untuk get data logo
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/bumd.LogoModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data logo by id
+      tags:
+      - BUMD
+    put:
+      consumes:
+      - multipart/form-data
+      description: update data logo by id.
+      operationId: logo-update
+      parameters:
+      - description: Id untuk update data logo
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: File
+        in: formData
+        name: file
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: boolean
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data logo by id
+      tags:
+      - BUMD
   /strict/bumd/{id}/npwp:
     get:
       description: get data npwp by id.
@@ -5651,6 +5750,42 @@ paths:
       summary: update data jenis dokumen
       tags:
       - Jenis dokumen
+  /strict/pendidikan:
+    get:
+      description: get all pendidikan.
+      operationId: pendidikan-index
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.PendidikanModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get all pendidikan
+      tags:
+      - Pendidikan
   /strict/roles:
     get:
       description: get data roles.

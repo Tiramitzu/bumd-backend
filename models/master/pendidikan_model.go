@@ -1,6 +1,8 @@
 package models
 
+import "github.com/google/uuid"
+
 type PendidikanModel struct {
-	ID   int    `json:"id"`
-	Nama string `json:"nama"`
+	ID   uuid.UUID `json:"id"`
+	Nama string    `json:"nama"`
 }

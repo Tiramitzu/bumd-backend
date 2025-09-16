@@ -533,6 +533,74 @@ func (c *BumdController) Delete(
 	return true, err
 }
 
+func (c *BumdController) Logo(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	id uuid.UUID,
+) (r bumd.LogoModel, err error) {
+	q := `
+	SELECT logo_bumd FROM trn_bumd WHERE id_bumd = $1 AND deleted_by = 0
+	`
+	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.Logo)
+	if err != nil {
+		return bumd.LogoModel{}, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "Gagal mengambil data logo - " + err.Error(),
+		}
+	}
+	return r, nil
+}
+
+func (c *BumdController) LogoUpdate(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	payload *bumd.LogoForm,
+	id uuid.UUID,
+) (r bool, err error) {
+	if payload.Logo != nil {
+		// generate nama file
+		fileName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), payload.Logo.Filename)
+
+		src, err := payload.Logo.Open()
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal membuka file. " + err.Error(),
+			}
+		}
+		defer src.Close()
+
+		// upload file
+		objectName := "bumd_logo/" + fileName
+		_, err = c.minioConn.MinioClient.PutObject(
+			context.Background(),
+			c.minioConn.BucketName,
+			objectName,
+			src,
+			payload.Logo.Size,
+			minio.PutObjectOptions{ContentType: payload.Logo.Header.Get("Content-Type")},
+		)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupload file. - " + err.Error(),
+			}
+		}
+
+		// update file
+		q := `UPDATE trn_bumd SET logo_bumd=$1 WHERE id_bumd=$2`
+		_, err = c.pgxConn.Exec(fCtx, q, objectName, id)
+		if err != nil {
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate file. - " + err.Error(),
+			}
+		}
+	}
+
+	return true, err
+}
+
 func (c *BumdController) SPI(
 	fCtx *fasthttp.RequestCtx,
 	user *jwt.Token,
@@ -708,6 +776,7 @@ func (c *BumdController) NPWPUpdate(
 			payload.File.Size,
 			minio.PutObjectOptions{ContentType: payload.File.Header.Get("Content-Type")},
 		)
+
 		if err != nil {
 			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,

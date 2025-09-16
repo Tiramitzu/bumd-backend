@@ -49,6 +49,9 @@ func NewBumdHandler(
 	rStrict.Put("/:id", handler.Update)
 	rStrict.Delete("/:id", handler.Delete)
 
+	rStrict.Get("/:id/logo", handler.Logo)
+	rStrict.Put("/:id/logo", handler.LogoUpdate)
+
 	rStrict.Get("/:id/spi", handler.SPI)
 	rStrict.Put("/:id/spi", handler.SPIUpdate)
 
@@ -124,7 +127,7 @@ func NewBumdHandler(
 	kepengurusan_sdm.NewPengurusHandler(
 		rData,
 		validator,
-		ctl_kepengurusan_sdm.NewPengurusController(pgxConn),
+		ctl_kepengurusan_sdm.NewPengurusController(pgxConn, minioConn),
 	)
 	kepengurusan_sdm.NewPegawaiHandler(
 		rData,
@@ -343,6 +346,87 @@ func (h *BumdHandler) Delete(c *fiber.Ctx) error {
 	return c.JSON(m)
 }
 
+// Logo func for get data logo by id.
+//
+//	@Summary		get data logo by id
+//	@Description	get data logo by id.
+//	@ID				logo-view
+//	@Tags			BUMD
+//	@Produce		json
+//	@Param			id	path		string				true	"Id untuk get data logo"	Format(uuid)
+//	@success		200	{object}	bumd.LogoModel		"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id}/logo [get]
+func (h *BumdHandler) Logo(c *fiber.Ctx) error {
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	m, err := h.Controller.Logo(c.Context(), c.Locals("jwt").(*jwt.Token), parsedId)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
+}
+
+// LogoUpdate func for update data logo by id.
+//
+//	@Summary		update data logo by id
+//	@Description	update data logo by id.
+//	@ID				logo-update
+//	@Tags			BUMD
+//	@Accept			multipart/form-data
+//	@Param			id		path		string	true	"Id untuk update data logo"	Format(uuid)
+//	@Param			file	formData	file	false	"File"
+//	@Produce		json
+//	@success		200	{object}	boolean				"Success"
+//	@Failure		400	{object}	utils.RequestError	"Bad request"
+//	@Failure		404	{object}	utils.RequestError	"Data not found"
+//	@Failure		422	{array}		utils.RequestError	"Data validation failed"
+//	@Failure		500	{object}	utils.RequestError	"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id}/logo [put]
+func (h *BumdHandler) LogoUpdate(c *fiber.Ctx) error {
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+
+	payload := new(bumd.LogoForm)
+
+	// Parse form fields first
+	if err := c.BodyParser(payload); err != nil {
+		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.Logo = file
+	}
+
+	if err := h.Validate.Struct(payload); err != nil {
+		return err
+	}
+
+	m, err := h.Controller.LogoUpdate(
+		c.Context(),
+		c.Locals("jwt").(*jwt.Token),
+		payload,
+		parsedId,
+	)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
+}
+
 // SPI func for get data spi by id.
 //
 //	@Summary		get data spi by id
@@ -397,8 +481,16 @@ func (h *BumdHandler) SPIUpdate(c *fiber.Ctx) error {
 
 	payload := new(bumd.SPIForm)
 
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file_spi")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.FileSPI = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {
@@ -482,8 +574,16 @@ func (h *BumdHandler) NPWPUpdate(c *fiber.Ctx) error {
 
 	payload := new(bumd.NPWPForm)
 
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.File = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {

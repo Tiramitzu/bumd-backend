@@ -4724,7 +4724,7 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Deskripsi Produk",
                         "name": "deskripsi",
                         "in": "formData"
@@ -4863,12 +4863,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "format": "uuid",
+                        "description": "Id PRODUK",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Nama Produk",
                         "name": "nama_produk",
                         "in": "formData"
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Deskripsi Produk",
                         "name": "deskripsi",
                         "in": "formData"
@@ -6943,6 +6951,130 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/bumd/{id}/logo": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data logo by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "get data logo by id",
+                "operationId": "logo-view",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id untuk get data logo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/bumd.LogoModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data logo by id.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "update data logo by id",
+                "operationId": "logo-update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id untuk update data logo",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd/{id}/npwp": {
             "get": {
                 "security": [
@@ -7494,6 +7626,62 @@ const docTemplate = `{
                         "description": "Success",
                         "schema": {
                             "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/pendidikan": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get all pendidikan.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pendidikan"
+                ],
+                "summary": "get all pendidikan",
+                "operationId": "pendidikan-index",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PendidikanModel"
+                            }
                         }
                     },
                     "400": {
@@ -8326,6 +8514,14 @@ const docTemplate = `{
                 }
             }
         },
+        "bumd.LogoModel": {
+            "type": "object",
+            "properties": {
+                "logo": {
+                    "type": "string"
+                }
+            }
+        },
         "bumd.NPWPModel": {
             "type": "object",
             "properties": {
@@ -8756,6 +8952,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PendidikanModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "nama": {
+                    "type": "string"
+                }
+            }
+        },
         "models.RolesModel": {
             "type": "object",
             "properties": {
@@ -8994,10 +9201,10 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id_kinerja": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "kas": {
                     "type": "number"
@@ -9059,7 +9266,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "jenis_peraturan": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "keterangan_peraturan": {
                     "type": "string"

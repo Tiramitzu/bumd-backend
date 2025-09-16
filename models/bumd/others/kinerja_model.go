@@ -1,10 +1,14 @@
 package others
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type KinerjaModel struct {
-	IdKinerja           int64     `json:"id_kinerja"`
-	IdBumd              int64     `json:"id_bumd"`
+	IdKinerja           uuid.UUID `json:"id_kinerja"`
+	IdBumd              uuid.UUID `json:"id_bumd"`
 	Tahun               int64     `json:"tahun"`
 	Ebit                float64   `json:"ebit"`
 	Ebitda              float64   `json:"ebitda"`

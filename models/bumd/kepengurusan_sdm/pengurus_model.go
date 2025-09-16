@@ -26,7 +26,7 @@ type PengurusForm struct {
 	NIK                 string                `json:"nik" form:"nik"`
 	Alamat              string                `json:"alamat" form:"alamat"`
 	DeskripsiJabatan    string                `json:"deskripsi_jabatan" form:"deskripsi_jabatan"`
-	PendidikanAkhir     int                   `json:"pendidikan_akhir" form:"pendidikan_akhir"`
+	PendidikanAkhir     uuid.UUID             `json:"pendidikan_akhir" form:"pendidikan_akhir"`
 	TanggalMulaiJabatan string                `json:"tanggal_mulai_jabatan" form:"tanggal_mulai_jabatan"`
 	TanggalAkhirJabatan string                `json:"tanggal_akhir_jabatan" form:"tanggal_akhir_jabatan"`
 	File                *multipart.FileHeader `json:"file" form:"file"`

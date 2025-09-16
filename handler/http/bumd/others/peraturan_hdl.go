@@ -149,8 +149,17 @@ func (h *PeraturanHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 	payload := new(others.PeraturanForm)
+
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file_peraturan")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.FilePeraturan = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {
@@ -206,8 +215,17 @@ func (h *PeraturanHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 	payload := new(others.PeraturanForm)
+
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file_peraturan")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.FilePeraturan = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {

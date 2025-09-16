@@ -67,7 +67,7 @@ func (c *PeraturanController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PERATURAN: %w", err)
 	}
 
-	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY trn_peraturan.created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -284,6 +284,12 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		WHERE id_peraturan = $2 AND id_bumd = $3
 		`
 		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
+	} else {
+		q = `UPDATE trn_peraturan SET tanggal_berlaku_peraturan=NULL WHERE id_peraturan=$2 AND id_bumd=$3`
+		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, err
 		}

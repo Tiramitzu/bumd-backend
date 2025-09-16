@@ -292,6 +292,12 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		if err != nil {
 			return false, err
 		}
+	} else {
+		q = `UPDATE trn_domisili SET masa_berlaku_domisili=NULL WHERE id_domisili=$1 AND id_bumd=$2`
+		_, err = tx.Exec(context.Background(), q, id, idBumd)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	if payload.File != nil {

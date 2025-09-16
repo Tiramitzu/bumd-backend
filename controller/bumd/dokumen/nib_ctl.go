@@ -75,7 +75,7 @@ func (c *NibController) Index(
 		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data NIB: %w", err)
 	}
 
-	q += fmt.Sprintf(` ORDER BY id DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` ORDER BY id_nib DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
@@ -278,6 +278,12 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	if payload.MasaBerlaku != nil {
 		q = `UPDATE trn_nib SET masa_berlaku_nib=$1 WHERE id_nib=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
+		if err != nil {
+			return false, err
+		}
+	} else {
+		q = `UPDATE trn_nib SET masa_berlaku_nib=NULL WHERE id_nib=$1 AND id_bumd=$2`
+		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, err
 		}

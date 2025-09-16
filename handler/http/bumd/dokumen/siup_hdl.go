@@ -155,8 +155,17 @@ func (h *SiupHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 	payload := new(dokumen.SiupForm)
+
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.File = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {
@@ -214,8 +223,17 @@ func (h *SiupHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 	payload := new(dokumen.SiupForm)
+
+	// Parse form fields first
 	if err := c.BodyParser(payload); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.File = file
 	}
 
 	if err := h.Validate.Struct(payload); err != nil {

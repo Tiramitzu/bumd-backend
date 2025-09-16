@@ -32,7 +32,8 @@ func minioConnection(endpoint, accessKey, secretKey string) (*minio.Client, erro
 	// Initialize minio client object.
 	minioClient, err = minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
-		Secure: true,
+		Secure: false,
+		//!CHANGE THIS TO TRUE WHEN DEPLOYING TO PRODUCTION
 	})
 	if err != nil {
 		return minioClient, err

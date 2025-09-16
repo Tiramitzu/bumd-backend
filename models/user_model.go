@@ -41,6 +41,7 @@ type UserDetail struct {
 	KodeDDN    string    `json:"kode_ddn"          xml:"kode_ddn"`
 	KodeProp   string    `json:"kode_prop"    xml:"kode_prop"`
 	SubDomain  string    `json:"sub_domain" xml:"sub_domain"`
+	Logo       string    `json:"logo" xml:"logo"`
 }
 
 // FromJSON decode json to user struct

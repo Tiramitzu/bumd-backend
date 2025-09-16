@@ -2,7 +2,7 @@ CREATE TABLE trn_peraturan (
     id_peraturan                    uuid NOT NULL,
     id_bumd                         uuid NOT NULL,
     nomor_peraturan                 varchar(100) NOT NULL DEFAULT ''::character varying,
-    jenis_peraturan                 int4 NOT NULL DEFAULT 0,
+    jenis_peraturan                 uuid NOT NULL,
     tanggal_berlaku_peraturan       date NOT NULL DEFAULT '0001-01-01',
     keterangan_peraturan            text NOT NULL DEFAULT '',
     file_peraturan                  text NOT NULL DEFAULT '',

@@ -49,7 +49,7 @@ func NewPegawaiHandler(r fiber.Router, vld *validator.Validate, controller *ctl.
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pegawai [get]
 func (h *PegawaiHandler) Index(c *fiber.Ctx) error {
-	idBumd := c.Query("id_bumd", "")
+	idBumd := c.Params("id_bumd")
 	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err

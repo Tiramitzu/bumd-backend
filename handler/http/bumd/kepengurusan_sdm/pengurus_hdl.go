@@ -50,7 +50,7 @@ func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus [get]
 func (h *PengurusHandler) Index(c *fiber.Ctx) error {
-	idBumd := c.Query("id_bumd", "")
+	idBumd := c.Params("id_bumd")
 	parsedIdBumd, err := uuid.Parse(idBumd)
 	if err != nil {
 		return err
@@ -155,18 +155,27 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	formModel := new(kepengurusan_sdm.PengurusForm)
-	if err := c.BodyParser(formModel); err != nil {
+	payload := new(kepengurusan_sdm.PengurusForm)
+
+	// Parse form fields first
+	if err := c.BodyParser(payload); err != nil {
 		return err
 	}
 
-	if err := h.Validate.Struct(formModel); err != nil {
+	// Handle file upload separately
+	file, err := c.FormFile("file")
+	if err == nil {
+		// If file is found, assign it to payload
+		payload.File = file
+	}
+
+	if err := h.Validate.Struct(payload); err != nil {
 		return err
 	}
 
-	if formModel.File != nil {
+	if payload.File != nil {
 		const maxFileSize = 2 * 1024 * 1024 // 2 MB
-		if err := utils.ValidateFile(formModel.File, maxFileSize, []string{"application/pdf", "image/jpeg", "image/png", "image/jpg"}); err != nil {
+		if err := utils.ValidateFile(payload.File, maxFileSize, []string{"application/pdf", "image/jpeg", "image/png", "image/jpg"}); err != nil {
 			return utils.RequestError{
 				Code:    fiber.StatusBadRequest,
 				Message: err.Error(),
@@ -174,7 +183,7 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 		}
 	}
 
-	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, formModel)
+	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, payload)
 	if err != nil {
 		return err
 	}
@@ -221,8 +230,16 @@ func (h *PengurusHandler) Update(c *fiber.Ctx) error {
 
 	formModel := new(kepengurusan_sdm.PengurusForm)
 
+	// Parse form fields first
 	if err := c.BodyParser(formModel); err != nil {
 		return err
+	}
+
+	// Handle file upload separately
+	file, err := c.FormFile("file")
+	if err == nil {
+		// If file is found, assign it to payload
+		formModel.File = file
 	}
 
 	if err := h.Validate.Struct(formModel); err != nil {
