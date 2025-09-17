@@ -63,7 +63,10 @@ func (c *ProdukController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PRODUK: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data PRODUK. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -71,14 +74,20 @@ func (c *ProdukController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data PRODUK: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data PRODUK. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m others.ProdukModel
 		err = rows.Scan(&m.Id, &m.IdBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data PRODUK: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data PRODUK. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -116,7 +125,10 @@ func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 				Message: "Data PRODUK tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data PRODUK: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data PRODUK. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -135,11 +147,10 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -166,11 +177,10 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	}
 	_, err = tx.Exec(context.Background(), q, id, payload.NamaProduk, payload.Deskripsi, idBumd, idUser)
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data PRODUK. - " + err.Error(),
 		}
-		return false, err
 	}
 
 	if payload.FotoProduk != nil {
@@ -179,11 +189,10 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 
 		src, err := payload.FotoProduk.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -208,11 +217,10 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id_produk=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -232,11 +240,10 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -259,7 +266,10 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	args = append(args, payload.NamaProduk, payload.Deskripsi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data PRODUK. - " + err.Error(),
+		}
 	}
 
 	if payload.FotoProduk != nil {
@@ -268,11 +278,10 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 
 		src, err := payload.FotoProduk.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -297,11 +306,10 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 		q = `UPDATE trn_produk SET foto_produk=$1 WHERE id_produk=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -329,7 +337,10 @@ func (c *ProdukController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data PRODUK. - " + err.Error(),
+		}
 	}
 	return true, err
 }

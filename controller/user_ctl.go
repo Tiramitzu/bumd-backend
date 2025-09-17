@@ -42,11 +42,10 @@ func (c *UserController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page,
 	offset := limit * (page - 1)
 
 	if idRole > 2 {
-		err = utils.RequestError{
+		return r, totalCount, pageCount, utils.RequestError{
 			Code:    fasthttp.StatusForbidden,
 			Message: "Anda tidak memiliki akses untuk melihat data User",
 		}
-		return r, totalCount, pageCount, err
 	}
 
 	var args []interface{}
@@ -81,7 +80,10 @@ func (c *UserController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page,
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data User: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data User. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -89,16 +91,25 @@ func (c *UserController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page,
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, totalCount, pageCount, fmt.Errorf("data User tidak ditemukan")
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data User tidak ditemukan",
+			}
 		}
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data User: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data User. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m models.UserModel
 		err = rows.Scan(&m.IdUser, &m.IdDaerah, &m.IdRole, &m.IdBumd, &m.Username, &m.Nama, &m.Logo, &m.Role)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data User: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data User. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -118,11 +129,10 @@ func (c *UserController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int
 	idRole := int(claims["id_role"].(float64))
 	idDaerah := int(claims["id_daerah"].(float64))
 	if idRole > 2 {
-		err = utils.RequestError{
+		return r, utils.RequestError{
 			Code:    fasthttp.StatusForbidden,
 			Message: "Anda tidak memiliki akses untuk melihat data User",
 		}
-		return r, err
 	}
 
 	var args []interface{}
@@ -149,9 +159,15 @@ func (c *UserController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&r.IdUser, &r.IdDaerah, &r.IdRole, &r.IdBumd, &r.Username, &r.Nama, &r.Logo, &r.Role)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data User tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data User tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data User: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data User. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -162,11 +178,10 @@ func (c *UserController) Logout(idUser string) error {
 	err = c.redisCl.Delete("usr:" + idUser)
 
 	if err != nil {
-		err = utils.RequestError{
+		return utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "Failed to remove token data. - " + err.Error(),
 		}
-		return err
 	}
 
 	return err
@@ -224,14 +239,13 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 		&r.Logo,
 	)
 	if err != nil {
-		err = utils.RequestError{
+		return r, utils.RequestError{
 			Code:    fasthttp.StatusNotFound,
 			Message: err.Error(),
 		}
-		return
 	}
 
-	return
+	return r, err
 }
 
 func (c *UserController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payload *models.UserForm) (r bool, err error) {
@@ -245,19 +259,17 @@ func (c *UserController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payl
 	}
 
 	if payload.IdRole < 3 {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusForbidden,
 			Message: "User dengan role ini tidak dapat dibuat melalui API ini",
 		}
-		return
 	}
 
 	if idRole <= payload.IdRole {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusForbidden,
 			Message: "Anda tidak memiliki akses untuk membuat user dengan role ini",
 		}
-		return
 	}
 
 	q := `
@@ -302,11 +314,10 @@ func (c *UserController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payl
 
 		src, err := payload.Logo.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -332,11 +343,10 @@ func (c *UserController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, payl
 		q = `UPDATE users SET logo=$1 WHERE id=$2`
 		_, err = c.pgxConn.Exec(fCtx, q, fileName, idUser)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -368,11 +378,10 @@ func (c *UserController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, payl
 	}
 
 	if idRole < payload.IdRole {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusForbidden,
 			Message: "Anda tidak memiliki akses untuk mengubah user dengan role ini",
 		}
-		return
 	}
 
 	pHash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 14)
@@ -443,11 +452,10 @@ func (c *UserController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, id i
 	}
 
 	if idRole < IdRole {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusForbidden,
 			Message: "Anda tidak memiliki akses untuk menghapus User dengan role ini",
 		}
-		return
 	}
 
 	q = `

@@ -37,7 +37,10 @@ func (c *RKAController) Index(
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal membuat id BUMD. - " + err.Error())
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id BUMD. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -72,7 +75,10 @@ func (c *RKAController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data RKA: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data RKA. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` ORDER BY id_rka DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -80,14 +86,20 @@ func (c *RKAController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data RKA: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data RKA. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m others.RKAModel
 		err = rows.Scan(&m.Id, &m.Nomor, &m.InstansiPemberi, &m.Tanggal, &m.Kualifikasi, &m.Klasifikasi, &m.MasaBerlaku, &m.File, &m.IdBumd, &m.IsSeumurHidup)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data RKA: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data RKA. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -132,7 +144,10 @@ func (c *RKAController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd,
 				Message: "Data RKA tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data RKA: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data RKA. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -151,11 +166,10 @@ func (c *RKAController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -198,7 +212,10 @@ func (c *RKAController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data RKA. - " + err.Error(),
+			}
 		}
 	}
 
@@ -285,7 +302,10 @@ func (c *RKAController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data RKA. - " + err.Error(),
+		}
 	}
 
 	if payload.MasaBerlaku != nil {
@@ -296,13 +316,19 @@ func (c *RKAController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 		`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data RKA. - " + err.Error(),
+			}
 		}
 	} else {
 		q = `UPDATE trn_rka SET masa_berlaku_rka='' WHERE id_rka=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data RKA. - " + err.Error(),
+			}
 		}
 	}
 
@@ -371,7 +397,10 @@ func (c *RKAController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data RKA. - " + err.Error(),
+		}
 	}
 	return true, err
 }

@@ -55,7 +55,10 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 	// Validate form input
 	err = ac.Validate.Struct(f)
 	if err != nil {
-		return
+		return "", "", utils.RequestError{
+			Code:    http.StatusUnprocessableEntity,
+			Message: "gagal validasi data - " + err.Error(),
+		}
 	}
 
 	var passUser string
@@ -73,13 +76,15 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 	err = ac.pgxConn.QueryRow(context.Background(), q, f.Username).Scan(&user.IdUser, &user.IdDaerah, &user.IdRole, &user.IdBumd, &passUser)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			err = utils.RequestError{
+			return "", "", utils.RequestError{
 				Code:    http.StatusUnauthorized,
 				Message: "invalid username or password-",
 			}
-			return
 		}
-		return
+		return "", "", utils.RequestError{
+			Code:    http.StatusInternalServerError,
+			Message: "gagal mengambil data user - " + err.Error(),
+		}
 	}
 
 	if user.IdDaerah > 0 {
@@ -90,11 +95,10 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 	`
 		err = ac.pgxConnMstData.QueryRow(context.Background(), q, user.IdDaerah).Scan(&user.SubDomainDaerah, &user.KodeDDN)
 		if err != nil {
-			err = utils.RequestError{
+			return "", "", utils.RequestError{
 				Code:    http.StatusInternalServerError,
 				Message: "Data Pemerintah Daerah Tidak Tersedia. - " + err.Error(),
 			}
-			return
 		}
 
 		user.KodeProvinsi = strings.Split(user.KodeDDN, ".")[0]
@@ -104,49 +108,48 @@ func (ac *AuthController) Login(f models.LoginForm) (token, refreshToken string,
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(passUser), []byte(f.Password)); err != nil {
-		err = utils.RequestError{
+		return "", "", utils.RequestError{
 			Code:    http.StatusUnauthorized,
 			Message: "invalid username or password",
 		}
-		return
 	}
 	var jwtExpiredDur time.Duration
 	token, refreshToken, jwtExpiredDur, err = ac.jwtManager.Generate(ac.pgxConn, user)
 	if err != nil {
-		return
+		return "", "", utils.RequestError{
+			Code:    http.StatusInternalServerError,
+			Message: "gagal menghasilkan token - " + err.Error(),
+		}
 	}
 
 	// Check and set active session in Redis
 	redisKey := fmt.Sprintf("usr:%d", user.IdUser)
 	existingToken, err := ac.redisCl.Get(redisKey)
 	if err != nil {
-		err = utils.RequestError{
+		return "", "", utils.RequestError{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to check token data. - " + err.Error(),
 		}
-		return
 	} else {
 		if len(existingToken) > 0 {
 			// log.Println("token: ", fmt.Sprintf("%s", existingToken))
 			err = ac.redisCl.Delete(redisKey)
 			if err != nil {
-				err = utils.RequestError{
+				return "", "", utils.RequestError{
 					Code:    http.StatusInternalServerError,
 					Message: "Failed to remove token data. - " + err.Error(),
 				}
-				return
 			}
 		}
 
 		err = ac.redisCl.Set(redisKey, []byte(token), jwtExpiredDur)
 		if err != nil {
-			err = utils.RequestError{
+			return "", "", utils.RequestError{
 				Code:    http.StatusInternalServerError,
 				Message: "Failed to set token data. - " + err.Error(),
 			}
-			return
 		}
 	}
 
-	return
+	return token, refreshToken, err
 }

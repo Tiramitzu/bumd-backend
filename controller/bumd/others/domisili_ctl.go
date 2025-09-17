@@ -37,7 +37,10 @@ func (c *DomisiliController) Index(
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -72,7 +75,10 @@ func (c *DomisiliController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data DOMISILI: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` ORDER BY id_domisili DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -80,14 +86,20 @@ func (c *DomisiliController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m others.DomisiliModel
 		err = rows.Scan(&m.Id, &m.Nomor, &m.InstansiPemberi, &m.Tanggal, &m.Kualifikasi, &m.Klasifikasi, &m.MasaBerlaku, &m.File, &m.IdBumd, &m.IsSeumurHidup)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data DOMISILI: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data DOMISILI. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -104,7 +116,10 @@ func (c *DomisiliController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -129,7 +144,10 @@ func (c *DomisiliController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 				Message: "Data DOMISILI tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -140,16 +158,18 @@ func (c *DomisiliController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -177,11 +197,10 @@ func (c *DomisiliController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 
 	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idBumd, idUser)
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data DOMISILI. - " + err.Error(),
 		}
-		return false, err
 	}
 
 	if payload.MasaBerlaku != nil {
@@ -192,7 +211,10 @@ func (c *DomisiliController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate masa berlaku. - " + err.Error(),
+			}
 		}
 	}
 
@@ -202,11 +224,10 @@ func (c *DomisiliController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 
 		src, err := payload.File.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -231,11 +252,10 @@ func (c *DomisiliController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		q = `UPDATE trn_domisili SET file_domisili=$1 WHERE id_domisili=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -247,16 +267,18 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -279,7 +301,10 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	if payload.MasaBerlaku != nil {
@@ -290,13 +315,19 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data DOMISILI. - " + err.Error(),
+			}
 		}
 	} else {
 		q = `UPDATE trn_domisili SET masa_berlaku_domisili='' WHERE id_domisili=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data DOMISILI. - " + err.Error(),
+			}
 		}
 	}
 
@@ -306,11 +337,10 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 
 		src, err := payload.File.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -335,11 +365,10 @@ func (c *DomisiliController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 		q = `UPDATE trn_domisili SET file_domisili=$1 WHERE id_domisili=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -351,7 +380,10 @@ func (c *DomisiliController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data DOMISILI: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data DOMISILI. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -364,7 +396,10 @@ func (c *DomisiliController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data DOMISILI. - " + err.Error(),
+		}
 	}
 	return true, err
 }

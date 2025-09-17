@@ -39,7 +39,10 @@ func (c *PerdaPendirianController) Index(
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 	if idBumdClaims != uuid.Nil {
 		idBumd = idBumdClaims
@@ -83,7 +86,10 @@ func (c *PerdaPendirianController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Akta Notaris: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(`ORDER BY id_perda_pendirian DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -91,7 +97,10 @@ func (c *PerdaPendirianController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -100,7 +109,10 @@ func (c *PerdaPendirianController) Index(
 		err = rows.Scan(&m.Id, &m.Nomor, &m.Tanggal, &m.Keterangan, &m.File, &m.ModalDasar)
 		m.IdBumd = idBumd
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data Perda Pendirian. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -117,7 +129,10 @@ func (c *PerdaPendirianController) View(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -137,7 +152,10 @@ func (c *PerdaPendirianController) View(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 				Message: "Data Perda Pendirian tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -148,7 +166,10 @@ func (c *PerdaPendirianController) Create(fCtx *fasthttp.RequestCtx, user *jwt.T
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -248,7 +269,10 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
@@ -289,7 +313,10 @@ func (c *PerdaPendirianController) Update(fCtx *fasthttp.RequestCtx, user *jwt.T
 
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	if payload.File != nil {
@@ -341,7 +368,10 @@ func (c *PerdaPendirianController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.T
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data Perda Pendirian: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -356,7 +386,10 @@ func (c *PerdaPendirianController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.T
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data Perda Pendirian. - " + err.Error(),
+		}
 	}
 
 	return true, err

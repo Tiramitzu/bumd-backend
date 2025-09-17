@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	models "microdata/kemendagri/bumd/models/master"
+	"microdata/kemendagri/bumd/utils"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -33,7 +34,10 @@ func (c *RolesController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page
 
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Roles: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data Roles: " + err.Error(),
+		}
 	}
 
 	args = make([]interface{}, 0)
@@ -52,7 +56,10 @@ func (c *RolesController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Roles: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Roles: " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -60,7 +67,10 @@ func (c *RolesController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page
 		var m models.RolesModel
 		err = rows.Scan(&m.ID, &m.Nama)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Roles: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data Roles: " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -82,7 +92,10 @@ func (c *RolesController) View(fCtx *fasthttp.RequestCtx, id int) (r models.Role
 	`
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.ID, &r.Nama)
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data Roles: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Roles: " + err.Error(),
+		}
 	}
 
 	return r, err

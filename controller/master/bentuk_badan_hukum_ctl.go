@@ -37,9 +37,15 @@ func (c *BentukBadanHukumController) Index(fCtx *fasthttp.RequestCtx, user *jwt.
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data Bentuk Badan Hukum tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data Bentuk Badan Hukum tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Bentuk Badan Hukum: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Bentuk Badan Hukum: " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -47,7 +53,10 @@ func (c *BentukBadanHukumController) Index(fCtx *fasthttp.RequestCtx, user *jwt.
 		var m models.BentukBadanHukumModel
 		err = rows.Scan(&m.Id, &m.Nama, &m.Deskripsi)
 		if err != nil {
-			return r, fmt.Errorf("gagal memindahkan data Bentuk Badan Hukum: %w", err)
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data Bentuk Badan Hukum: " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -65,9 +74,15 @@ func (c *BentukBadanHukumController) View(fCtx *fasthttp.RequestCtx, id uuid.UUI
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.Id, &r.Nama, &r.Deskripsi)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data Bentuk Badan Hukum tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data Bentuk Badan Hukum tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Bentuk Badan Hukum: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Bentuk Badan Hukum: " + err.Error(),
+		}
 	}
 
 	return r, err

@@ -37,9 +37,15 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data Bentuk Usaha tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Bentuk Usaha: " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -47,7 +53,10 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 		var m models.BentukUsahaModel
 		err = rows.Scan(&m.Id, &m.Nama, &m.Deskripsi)
 		if err != nil {
-			return r, fmt.Errorf("gagal memindahkan data Bentuk Usaha: %w", err)
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data Bentuk Usaha: " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -65,9 +74,15 @@ func (c *BentukUsahaController) View(fCtx *fasthttp.RequestCtx, id uuid.UUID) (r
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.Id, &r.Nama, &r.Deskripsi)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data Bentuk Usaha tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data Bentuk Usaha tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Bentuk Usaha: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Bentuk Usaha: " + err.Error(),
+		}
 	}
 
 	return r, err

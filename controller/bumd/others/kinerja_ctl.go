@@ -285,7 +285,10 @@ func (c *KinerjaController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 		idUser,
 	)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id KINERJA. - " + err.Error(),
+		}
 	}
 
 	return true, err
@@ -357,7 +360,10 @@ func (c *KinerjaController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 		id,
 	)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data KINERJA. - " + err.Error(),
+		}
 	}
 
 	return true, err
@@ -386,7 +392,10 @@ func (c *KinerjaController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	`
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, idBumd, id)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data KINERJA. - " + err.Error(),
+		}
 	}
 
 	return true, err

@@ -430,7 +430,13 @@ func main() {
 		vld,
 		controller_mst.NewJenisDokumenController(pgxConn),
 	)
-
+	// jenis_laporan
+	http_master.NewJenisLaporanHandler(
+		rStrict,
+		vld,
+		controller_mst.NewJenisLaporanController(pgxConn),
+	)
+	// pendidikan
 	http_master.NewPendidikanHandler(
 		rStrict,
 		vld,

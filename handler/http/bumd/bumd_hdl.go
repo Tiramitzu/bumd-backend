@@ -85,10 +85,16 @@ func NewBumdHandler(
 		ctl_dkmn.NewTdpController(pgxConn, minioConn),
 	)
 
+	// keuangan
 	keuangan.NewModalHandler(
 		rData,
 		validator,
 		ctl_keu.NewModalController(pgxConn),
+	)
+	keuangan.NewLaporanKeuanganHandler(
+		rData,
+		validator,
+		ctl_keu.NewLaporanKeuanganController(pgxConn, minioConn),
 	)
 
 	// others

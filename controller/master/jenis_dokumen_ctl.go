@@ -44,9 +44,15 @@ func (c *JenisDokumenController) Index(
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data Jenis Dokumen tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Jenis Dokumen: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Jenis Dokumen: " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -54,7 +60,10 @@ func (c *JenisDokumenController) Index(
 		var m models.JenisDokumenModel
 		err = rows.Scan(&m.Id, &m.Nama, &m.Deskripsi)
 		if err != nil {
-			return r, fmt.Errorf("gagal memindahkan data Jenis Dokumen: %w", err)
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data Jenis Dokumen: " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -72,9 +81,15 @@ func (c *JenisDokumenController) View(fCtx *fasthttp.RequestCtx, id uuid.UUID) (
 	err = c.pgxConn.QueryRow(fCtx, q, id).Scan(&r.Id, &r.Nama, &r.Deskripsi)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
-			return r, fmt.Errorf("data Jenis Dokumen tidak ditemukan")
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusNotFound,
+				Message: "data Jenis Dokumen tidak ditemukan",
+			}
 		}
-		return r, fmt.Errorf("gagal mengambil data Jenis Dokumen: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Jenis Dokumen: " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -96,7 +111,7 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal membuat data Jenis Dokumen - " + err.Error(),
+			Message: "gagal membuat data Jenis Dokumen - " + err.Error(),
 		}
 	}
 
@@ -108,7 +123,7 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghitung data Jenis Dokumen - " + err.Error(),
+			Message: "gagal menghitung data Jenis Dokumen - " + err.Error(),
 		}
 	}
 
@@ -127,7 +142,7 @@ func (c *JenisDokumenController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal membuat data Jenis Dokumen - " + err.Error(),
+			Message: "gagal membuat data Jenis Dokumen - " + err.Error(),
 		}
 	}
 
@@ -154,7 +169,7 @@ func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghitung data Jenis Dokumen - " + err.Error(),
+			Message: "gagal menghitung data Jenis Dokumen - " + err.Error(),
 		}
 	}
 
@@ -175,7 +190,7 @@ func (c *JenisDokumenController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal memperbarui data Jenis Dokumen - " + err.Error(),
+			Message: "gagal memperbarui data Jenis Dokumen - " + err.Error(),
 		}
 	}
 
@@ -202,7 +217,7 @@ func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghitung data Jenis Dokumen - " + err.Error(),
+			Message: "gagal menghitung data Jenis Dokumen - " + err.Error(),
 		}
 	}
 
@@ -223,7 +238,7 @@ func (c *JenisDokumenController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal menghapus data Jenis Dokumen - " + err.Error(),
+			Message: "gagal menghapus data Jenis Dokumen - " + err.Error(),
 		}
 	}
 

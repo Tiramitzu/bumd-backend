@@ -106,7 +106,10 @@ func (c *BumdController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data BUMD: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data BUMD. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(`
@@ -117,7 +120,10 @@ func (c *BumdController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data BUMD: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data BUMD. - " + err.Error(),
+		}
 	}
 
 	defer rows.Close()
@@ -155,19 +161,28 @@ func (c *BumdController) Index(
 		q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
 		err = c.pgxConnMstData.QueryRow(fCtx, q, m.IdDaerah).Scan(&m.NamaDaerah, &m.IdProvinsi)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengambil data Daerah. - " + err.Error(),
+			}
 		}
 
 		if m.IdDaerah != m.IdProvinsi {
 			q = `SELECT nama_daerah FROM data.m_daerah WHERE id_daerah = $1`
 			err = c.pgxConnMstData.QueryRow(fCtx, q, m.IdProvinsi).Scan(&m.NamaProvinsi)
 			if err != nil {
-				return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+				return r, totalCount, pageCount, utils.RequestError{
+					Code:    fasthttp.StatusInternalServerError,
+					Message: "gagal mengambil data Daerah. - " + err.Error(),
+				}
 			}
 		}
 
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data BUMD: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data BUMD. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -264,20 +279,29 @@ func (c *BumdController) View(
 		&r.UpdatedBy,
 	)
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data BUMD: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data BUMD. - " + err.Error(),
+		}
 	}
 
 	q = `SELECT nama_daerah, id_prop FROM data.m_daerah WHERE id_daerah = $1`
 	err = c.pgxConnMstData.QueryRow(fCtx, q, r.IdDaerah).Scan(&r.NamaDaerah, &r.IdProvinsi)
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Daerah. - " + err.Error(),
+		}
 	}
 
 	if r.IdDaerah != r.IdProvinsi {
 		q = `SELECT nama_daerah FROM data.m_daerah WHERE id_daerah = $1`
 		err = c.pgxConnMstData.QueryRow(fCtx, q, r.IdProvinsi).Scan(&r.NamaProvinsi)
 		if err != nil {
-			return r, fmt.Errorf("gagal mengambil data Daerah: %w", err)
+			return r, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengambil data Daerah. - " + err.Error(),
+			}
 		}
 	}
 
@@ -297,7 +321,7 @@ func (c *BumdController) Create(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal membuat BUMD - " + err.Error(),
+			Message: "gagal membuat BUMD. - " + err.Error(),
 		}
 	}
 
@@ -359,7 +383,7 @@ func (c *BumdController) Create(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal membuat BUMD - " + err.Error(),
+			Message: "gagal membuat BUMD. - " + err.Error(),
 		}
 	}
 
@@ -391,7 +415,7 @@ func (c *BumdController) Update(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal mengubah BUMD - " + err.Error(),
+			Message: "gagal mengubah BUMD. - " + err.Error(),
 		}
 	}
 
@@ -613,7 +637,7 @@ func (c *BumdController) SPI(
 	if err != nil {
 		return bumd.SPIModel{}, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal mengambil data SPI - " + err.Error(),
+			Message: "gagal mengambil data SPI. - " + err.Error(),
 		}
 	}
 	return r, nil
@@ -629,7 +653,7 @@ func (c *BumdController) SPIUpdate(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal memulai transaksi - " + err.Error(),
+			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
 	}
 	defer func() {
@@ -650,7 +674,7 @@ func (c *BumdController) SPIUpdate(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal mengupdate SPI - " + err.Error(),
+			Message: "gagal mengupdate SPI. - " + err.Error(),
 		}
 	}
 
@@ -660,11 +684,10 @@ func (c *BumdController) SPIUpdate(
 
 		src, err := payload.FileSPI.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -689,11 +712,10 @@ func (c *BumdController) SPIUpdate(
 		q = `UPDATE trn_bumd SET file_spi_bumd=$1 WHERE id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 	return true, err
@@ -727,7 +749,7 @@ func (c *BumdController) NPWPUpdate(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal memulai transaksi - " + err.Error(),
+			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
 	}
 	defer func() {
@@ -749,7 +771,7 @@ func (c *BumdController) NPWPUpdate(
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
-			Message: "Gagal mengupdate NPWP - " + err.Error(),
+			Message: "gagal mengupdate NPWP. - " + err.Error(),
 		}
 	}
 

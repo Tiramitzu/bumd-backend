@@ -64,7 +64,10 @@ func (c *PeraturanController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data PERATURAN: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data PERATURAN. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` ORDER BY trn_peraturan.created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -72,14 +75,20 @@ func (c *PeraturanController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data PERATURAN: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data PERATURAN. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m others.PeraturanModel
 		err = rows.Scan(&m.Id, &m.Nomor, &m.TanggalBerlaku, &m.KeteranganPeraturan, &m.FilePeraturan, &m.IdBumd, &m.JenisPeraturan, &m.NamaJenisPeraturan)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data PERATURAN: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data PERATURAN. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -118,7 +127,10 @@ func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 				Message: "Data PERATURAN tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data PERATURAN: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data PERATURAN. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -137,11 +149,10 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -169,11 +180,10 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.KeteranganPeraturan, idBumd, payload.JenisPeraturan, idUser)
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data PERATURAN. - " + err.Error(),
 		}
-		return false, err
 	}
 
 	if payload.TanggalBerlaku != nil {
@@ -184,7 +194,10 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		`
 		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data PERATURAN. - " + err.Error(),
+			}
 		}
 	}
 
@@ -194,11 +207,10 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 		src, err := payload.FilePeraturan.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -223,11 +235,10 @@ func (c *PeraturanController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id_peraturan=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -247,11 +258,10 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -274,7 +284,10 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	args = append(args, payload.Nomor, payload.KeteranganPeraturan, payload.JenisPeraturan, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data PERATURAN. - " + err.Error(),
+		}
 	}
 
 	if payload.TanggalBerlaku != nil {
@@ -285,13 +298,19 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		`
 		_, err = tx.Exec(context.Background(), q, payload.TanggalBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data PERATURAN. - " + err.Error(),
+			}
 		}
 	} else {
 		q = `UPDATE trn_peraturan SET tanggal_berlaku_peraturan='' WHERE id_peraturan=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate masa berlaku. - " + err.Error(),
+			}
 		}
 	}
 
@@ -301,11 +320,10 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 
 		src, err := payload.FilePeraturan.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -330,11 +348,10 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 		q = `UPDATE trn_peraturan SET file_peraturan=$1 WHERE id_peraturan=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -362,7 +379,10 @@ func (c *PeraturanController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data PERATURAN. - " + err.Error(),
+		}
 	}
 	return true, err
 }

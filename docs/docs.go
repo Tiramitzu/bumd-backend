@@ -91,6 +91,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/jenis_laporan": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get jenis laporan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "JenisLaporan"
+                ],
+                "summary": "get jenis laporan",
+                "operationId": "jenis_laporan-index",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Bentuk Usaha",
+                        "name": "bentuk_usaha",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Parent ID",
+                        "name": "parent_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.JenisLaporanModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "403": {
+                        "description": "Login forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/utils.LoginError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/site/index": {
             "get": {
                 "description": "index page.",
@@ -2135,6 +2215,346 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/utils.RequestError"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/laporan_keuangan": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data laporan keuangan.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Laporan Keuangan"
+                ],
+                "summary": "get data laporan keuangan",
+                "operationId": "laporan_keuangan-index",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Halaman yang ditampilkan",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman, maksimal 5 data per halaman",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pencarian",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.LaporanKeuanganModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "create data laporan keuangan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Laporan Keuangan"
+                ],
+                "summary": "create data laporan keuangan",
+                "operationId": "laporan_keuangan-create",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.LaporanKeuanganForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/{id_bumd}/laporan_keuangan/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data laporan keuangan by id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Laporan Keuangan"
+                ],
+                "summary": "get data laporan keuangan by id",
+                "operationId": "laporan_keuangan-view",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Laporan Keuangan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.LaporanKeuanganModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data laporan keuagan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Laporan Keuangan"
+                ],
+                "summary": "update data laporan keuagan",
+                "operationId": "laporan_keuangan-update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/keuangan.LaporanKeuanganForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "delete data laporan keuangan.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Laporan Keuangan"
+                ],
+                "summary": "delete data laporan keuangan",
+                "operationId": "laporan_keuangan-delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Laporan Keuangan",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
                         }
                     },
                     "500": {
@@ -8724,7 +9144,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "pendidikan": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "status_pegawai": {
                     "type": "integer"
@@ -8747,7 +9167,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "pendidikan": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "status_pegawai": {
                     "type": "integer"
@@ -8785,7 +9205,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "pendidikan_akhir": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "tanggal_akhir_jabatan": {
                     "type": "string"
@@ -8856,6 +9276,47 @@ const docTemplate = `{
                 },
                 "tanggal": {
                     "type": "string"
+                }
+            }
+        },
+        "keuangan.LaporanKeuanganForm": {
+            "type": "object"
+        },
+        "keuangan.LaporanKeuanganModel": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "id_bumd": {
+                    "type": "string"
+                },
+                "id_jenis_laporan": {
+                    "type": "string"
+                },
+                "id_jenis_laporan_item": {
+                    "type": "string"
+                },
+                "jumlah": {
+                    "type": "number"
+                },
+                "tahun": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "integer"
                 }
             }
         },
@@ -8934,6 +9395,32 @@ const docTemplate = `{
                 }
             }
         },
+        "models.JenisLaporanModel": {
+            "type": "object",
+            "properties": {
+                "bentuk_usaha": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "keterangan": {
+                    "type": "string"
+                },
+                "kode": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "uraian": {
+                    "type": "string"
+                }
+            }
+        },
         "models.LoginForm": {
             "type": "object",
             "required": [
@@ -8956,7 +9443,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "nama": {
                     "type": "string"
@@ -9019,6 +9506,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "kode_prop": {
+                    "type": "string"
+                },
+                "logo": {
                     "type": "string"
                 },
                 "nama_bumd": {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"microdata/kemendagri/bumd/models/bumd/keuangan"
+	"microdata/kemendagri/bumd/utils"
 	"os"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -93,7 +94,10 @@ func (c *ModalController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data Modal: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data Modal. - " + err.Error(),
+		}
 	}
 
 	args = append(args, os.Getenv("DB_SERVER_URL_MST_DATA"))
@@ -108,7 +112,10 @@ func (c *ModalController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data Modal: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Modal. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 
@@ -128,7 +135,10 @@ func (c *ModalController) Index(
 			&m.Keterangan,
 		)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data Modal: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data Modal. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -145,7 +155,10 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data Modal: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Modal. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -200,7 +213,10 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&r.Id, &r.IdBumd, &r.IdProv, &r.NamaProv, &r.IdKab, &r.NamaKab, &r.Pemegang, &r.NoBa, &r.Tanggal, &r.Jumlah, &r.Keterangan)
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data Modal: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Modal. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -211,7 +227,10 @@ func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data Modal: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Modal. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -225,12 +244,18 @@ func (c *ModalController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat data Modal. - " + err.Error(),
+		}
 	}
 
 	_, err = c.pgxConn.Exec(fCtx, q, id, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan, idUser)
 	if err != nil {
-		return r, fmt.Errorf("gagal membuat data Modal: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat data Modal. - " + err.Error(),
+		}
 	}
 	return true, err
 }
@@ -240,7 +265,10 @@ func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data Modal: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Modal. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -266,7 +294,10 @@ func (c *ModalController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 
 	_, err = c.pgxConn.Exec(fCtx, q, id, idBumd, payload.IdProv, payload.IdKab, payload.Pemegang, payload.NoBa, payload.Tanggal, payload.Jumlah, payload.Keterangan, idUser)
 	if err != nil {
-		return r, fmt.Errorf("gagal mengubah data Modal: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengubah data Modal. - " + err.Error(),
+		}
 	}
 	return true, err
 }
@@ -276,7 +307,10 @@ func (c *ModalController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Modal. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -294,7 +328,10 @@ func (c *ModalController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 
 	_, err = c.pgxConn.Exec(fCtx, q, idUser, id, idBumd)
 	if err != nil {
-		return r, fmt.Errorf("gagal menghapus data Modal: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data Modal. - " + err.Error(),
+		}
 	}
 	return true, err
 }

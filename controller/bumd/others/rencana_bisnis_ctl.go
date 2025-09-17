@@ -72,7 +72,10 @@ func (c *RencanaBisnisController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data RENCANA BISNIS: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data RENCANA BISNIS. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` ORDER BY created_at DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -80,14 +83,20 @@ func (c *RencanaBisnisController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data RENCANA BISNIS: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data RENCANA BISNIS. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m others.RencanaBisnisModel
 		err = rows.Scan(&m.Id, &m.Nomor, &m.InstansiPemberi, &m.Tanggal, &m.Kualifikasi, &m.Klasifikasi, &m.MasaBerlaku, &m.File, &m.IdBumd, &m.IsSeumurHidup)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data RENCANA BISNIS: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data RENCANA BISNIS. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -129,7 +138,10 @@ func (c *RencanaBisnisController) View(fCtx *fasthttp.RequestCtx, user *jwt.Toke
 				Message: "Data RENCANA BISNIS tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data RENCANA BISNIS: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data RENCANA BISNIS. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -148,11 +160,10 @@ func (c *RencanaBisnisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.To
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -180,11 +191,10 @@ func (c *RencanaBisnisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.To
 
 	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idBumd, idUser)
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data RENCANA BISNIS. - " + err.Error(),
 		}
-		return false, err
 	}
 
 	if payload.MasaBerlaku != nil {
@@ -195,7 +205,10 @@ func (c *RencanaBisnisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.To
 		`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data RENCANA BISNIS. - " + err.Error(),
+			}
 		}
 	}
 
@@ -205,11 +218,10 @@ func (c *RencanaBisnisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.To
 
 		src, err := payload.File.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -234,11 +246,10 @@ func (c *RencanaBisnisController) Create(fCtx *fasthttp.RequestCtx, user *jwt.To
 		q = `UPDATE trn_rencana_bisnis SET file_rencana_bisnis=$1 WHERE id_rencana_bisnis=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -258,11 +269,10 @@ func (c *RencanaBisnisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.To
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -285,7 +295,10 @@ func (c *RencanaBisnisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.To
 	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data RENCANA BISNIS. - " + err.Error(),
+		}
 	}
 
 	if payload.MasaBerlaku != nil {
@@ -296,13 +309,19 @@ func (c *RencanaBisnisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.To
 		`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data RENCANA BISNIS. - " + err.Error(),
+			}
 		}
 	} else {
 		q = `UPDATE trn_rencana_bisnis SET masa_berlaku_rencana_bisnis='' WHERE id_rencana_bisnis=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate data RENCANA BISNIS. - " + err.Error(),
+			}
 		}
 	}
 
@@ -312,11 +331,10 @@ func (c *RencanaBisnisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.To
 
 		src, err := payload.File.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -341,11 +359,10 @@ func (c *RencanaBisnisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.To
 		q = `UPDATE trn_rencana_bisnis SET file_rencana_bisnis=$1 WHERE id_rencana_bisnis=$2`
 		_, err = tx.Exec(context.Background(), q, objectName, id)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -373,7 +390,10 @@ func (c *RencanaBisnisController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.To
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data RENCANA BISNIS. - " + err.Error(),
+		}
 	}
 	return true, err
 }

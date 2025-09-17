@@ -37,7 +37,10 @@ func (c *NibController) Index(
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -72,7 +75,10 @@ func (c *NibController) Index(
 
 	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal menghitung total data NIB: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data NIB. - " + err.Error(),
+		}
 	}
 
 	q += fmt.Sprintf(` ORDER BY id_nib DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
@@ -80,14 +86,20 @@ func (c *NibController) Index(
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
-		return r, totalCount, pageCount, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var m dokumen.NibModel
 		err = rows.Scan(&m.Id, &m.Nomor, &m.InstansiPemberi, &m.Tanggal, &m.Kualifikasi, &m.Klasifikasi, &m.MasaBerlaku, &m.File, &m.IdBumd, &m.IsSeumurHidup)
 		if err != nil {
-			return r, totalCount, pageCount, fmt.Errorf("gagal memindahkan data NIB: %w", err)
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal memindahkan data NIB. - " + err.Error(),
+			}
 		}
 		r = append(r, m)
 	}
@@ -104,7 +116,10 @@ func (c *NibController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd,
 	claims := user.Claims.(jwt.MapClaims)
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return r, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -129,7 +144,10 @@ func (c *NibController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd,
 				Message: "Data NIB tidak ditemukan",
 			}
 		}
-		return r, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return r, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 
 	return r, err
@@ -140,16 +158,18 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -169,23 +189,28 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 	id, err := uuid.NewV7()
 	if err != nil {
-		return false, fmt.Errorf("gagal membuat id NIB: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal membuat id NIB. - " + err.Error(),
+		}
 	}
 
 	_, err = tx.Exec(context.Background(), q, id, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idBumd, idUser)
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memasukkan data NIB. - " + err.Error(),
 		}
-		return false, err
 	}
 
 	if payload.MasaBerlaku != nil {
 		q = `UPDATE trn_nib SET masa_berlaku_nib=$1 WHERE id_nib=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate masa berlaku. - " + err.Error(),
+			}
 		}
 	}
 
@@ -195,11 +220,10 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 		src, err := payload.File.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -224,11 +248,10 @@ func (c *NibController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 		q = `UPDATE trn_nib SET file_nib=$1 WHERE id_nib=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -240,16 +263,18 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 
 	tx, err := c.pgxConn.BeginTx(context.TODO(), pgx.TxOptions{})
 	if err != nil {
-		err = utils.RequestError{
+		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
 			Message: "gagal memulai transaksi. - " + err.Error(),
 		}
-		return false, err
 	}
 	defer func() {
 		if err != nil {
@@ -272,20 +297,29 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	args = append(args, payload.Nomor, payload.InstansiPemberi, payload.Tanggal, payload.Kualifikasi, payload.Klasifikasi, idUser, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengupdate data NIB. - " + err.Error(),
+		}
 	}
 
 	if payload.MasaBerlaku != nil {
 		q = `UPDATE trn_nib SET masa_berlaku_nib=$1 WHERE id_nib=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, payload.MasaBerlaku, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate masa berlaku. - " + err.Error(),
+			}
 		}
 	} else {
 		q = `UPDATE trn_nib SET masa_berlaku_nib='' WHERE id_nib=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
-			return false, err
+			return false, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengupdate masa berlaku. - " + err.Error(),
+			}
 		}
 	}
 
@@ -295,11 +329,10 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 
 		src, err := payload.File.Open()
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal membuka file. " + err.Error(),
 			}
-			return false, err
 		}
 		defer src.Close()
 
@@ -324,11 +357,10 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 		q = `UPDATE trn_nib SET file_nib=$1 WHERE id_nib=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, objectName, id, idBumd)
 		if err != nil {
-			err = utils.RequestError{
+			return false, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
 				Message: "gagal mengupdate file. - " + err.Error(),
 			}
-			return false, err
 		}
 	}
 
@@ -340,7 +372,10 @@ func (c *NibController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	idUser := int(claims["id_user"].(float64))
 	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
 	if err != nil {
-		return false, fmt.Errorf("gagal mengambil data NIB: %w", err)
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data NIB. - " + err.Error(),
+		}
 	}
 
 	if idBumdClaims != uuid.Nil {
@@ -353,7 +388,10 @@ func (c *NibController) Delete(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 	`
 	_, err = c.pgxConn.Exec(context.Background(), q, idUser, id, idBumd)
 	if err != nil {
-		return false, err
+		return false, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghapus data NIB. - " + err.Error(),
+		}
 	}
 	return true, err
 }
