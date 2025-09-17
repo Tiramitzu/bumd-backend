@@ -22,10 +22,10 @@ type LaporanKeuanganModel struct {
 }
 
 type LaporanKeuanganForm struct {
-	IdBumd             uuid.UUID             `json:"id_bumd" xml:"id_bumd"`
-	IdJenisLaporan     int                   `json:"id_jenis_laporan" xml:"id_jenis_laporan"`
-	IdJenisLaporanItem int                   `json:"id_jenis_laporan_item" xml:"id_jenis_laporan_item"`
-	Tahun              int                   `json:"tahun" xml:"tahun"`
-	Jumlah             float64               `json:"jumlah" xml:"jumlah"`
-	File               *multipart.FileHeader `json:"file" xml:"file"`
+	IdBumd             uuid.UUID             `json:"id_bumd" xml:"id_bumd" form:"id_bumd"`
+	IdJenisLaporan     int                   `json:"id_jenis_laporan" xml:"id_jenis_laporan" form:"id_jenis_laporan"`
+	IdJenisLaporanItem int                   `json:"id_jenis_laporan_item" xml:"id_jenis_laporan_item" form:"id_jenis_laporan_item"`
+	Tahun              int                   `json:"tahun" xml:"tahun" form:"tahun"`
+	Jumlah             float64               `json:"jumlah" xml:"jumlah" form:"jumlah"`
+	File               *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 }
