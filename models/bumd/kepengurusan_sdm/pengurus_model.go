@@ -2,6 +2,7 @@ package kepengurusan_sdm
 
 import (
 	"mime/multipart"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -14,9 +15,9 @@ type PengurusModel struct {
 	NIK                 string    `json:"nik"`
 	Alamat              string    `json:"alamat"`
 	DeskripsiJabatan    string    `json:"deskripsi_jabatan"`
-	PendidikanAkhir     int       `json:"pendidikan_akhir"`
-	TanggalMulaiJabatan string    `json:"tanggal_mulai_jabatan"`
-	TanggalAkhirJabatan string    `json:"tanggal_akhir_jabatan"`
+	PendidikanAkhir     uuid.UUID `json:"pendidikan_akhir"`
+	TanggalMulaiJabatan time.Time `json:"tanggal_mulai_jabatan"`
+	TanggalAkhirJabatan time.Time `json:"tanggal_akhir_jabatan"`
 	File                string    `json:"file"`
 }
 
