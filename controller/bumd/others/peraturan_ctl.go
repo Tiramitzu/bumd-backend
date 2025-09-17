@@ -288,7 +288,7 @@ func (c *PeraturanController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 			return false, err
 		}
 	} else {
-		q = `UPDATE trn_peraturan SET tanggal_berlaku_peraturan=NULL WHERE id_peraturan=$2 AND id_bumd=$3`
+		q = `UPDATE trn_peraturan SET tanggal_berlaku_peraturan='' WHERE id_peraturan=$2 AND id_bumd=$3`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, err
