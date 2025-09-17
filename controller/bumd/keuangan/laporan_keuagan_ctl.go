@@ -50,8 +50,10 @@ func (c *LaporanKeuanganController) Index(
 	SELECT
 		id_laporan_keuangan,
 		id_bumd,
-		id_jenis_laporan,
-		id_jenis_laporan_item,
+		tlk.id_jenis_laporan,
+		tlk.id_jenis_laporan_item,
+		mjl.uraian_jenis_laporan,
+		mjl_item.uraian_jenis_laporan,
 		tahun_laporan_keuangan,
 		jumlah_laporan_keuangan,
 		file_laporan_keuangan,
@@ -59,7 +61,9 @@ func (c *LaporanKeuanganController) Index(
 		created_by,
 		updated_at, 
 		updated_by 
-	FROM trn_laporan_keuangan 
+	FROM trn_laporan_keuangan tlk
+	LEFT JOIN m_jenis_laporan mjl ON mjl.id_jenis_laporan = tlk.id_jenis_laporan
+	LEFT JOIN m_jenis_laporan mjl_item ON mjl_item.id_jenis_laporan = tlk.id_jenis_laporan_item
 	WHERE id_bumd = $1 
 		AND deleted_by = 0 
 	LIMIT $2 
@@ -85,7 +89,7 @@ func (c *LaporanKeuanganController) Index(
 
 	for rows.Next() {
 		var m keuangan.LaporanKeuanganModel
-		err = rows.Scan(&m.Id, &m.IdBumd, &m.IdJenisLaporan, &m.IdJenisLaporanItem, &m.Tahun, &m.Jumlah, &m.File, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.IdJenisLaporan, &m.IdJenisLaporanItem, &m.NamaJenisLaporan, &m.NamaJenisLaporanItem, &m.Tahun, &m.Jumlah, &m.File, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -117,9 +121,26 @@ func (c *LaporanKeuanganController) View(ctx context.Context, user *jwt.Token, i
 	}
 
 	q := `
-	SELECT id_laporan_keuangan, id_bumd, id_jenis_laporan, id_jenis_laporan_item, tahun_laporan_keuangan, jumlah_laporan_keuangan, file_laporan_keuangan, created_at, created_by, updated_at, updated_by FROM trn_laporan_keuangan WHERE id_bumd = $1 AND id_laporan_keuangan = $2 AND deleted_by = 0`
+	SELECT 
+		id_laporan_keuangan,
+		id_bumd,
+		tlk.id_jenis_laporan,
+		tlk.id_jenis_laporan_item,
+		mjl.uraian_jenis_laporan,
+		mjl_item.uraian_jenis_laporan,
+		tahun_laporan_keuangan,
+		jumlah_laporan_keuangan,
+		file_laporan_keuangan,
+		created_at,
+		created_by,
+		updated_at,
+		updated_by
+	FROM trn_laporan_keuangan tlk
+	LEFT JOIN m_jenis_laporan mjl ON mjl.id_jenis_laporan = tlk.id_jenis_laporan
+	LEFT JOIN m_jenis_laporan mjl_item ON mjl_item.id_jenis_laporan = tlk.id_jenis_laporan_item
+	WHERE id_bumd = $1 AND id_laporan_keuangan = $2 AND deleted_by = 0`
 
-	err = c.pgxConn.QueryRow(ctx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.IdJenisLaporan, &r.IdJenisLaporanItem, &r.Tahun, &r.Jumlah, &r.File, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
+	err = c.pgxConn.QueryRow(ctx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.IdJenisLaporan, &r.IdJenisLaporanItem, &r.NamaJenisLaporan, &r.NamaJenisLaporanItem, &r.Tahun, &r.Jumlah, &r.File, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		return r, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
