@@ -161,10 +161,10 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	}
 
 	q := `
-	INSERT INTO trn_pengurus (id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus, created_by)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+	INSERT INTO trn_pengurus (id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, created_by)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
-	err = tx.QueryRow(fCtx, q, id, idBumd, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, payload.File, idUser).Scan(&id)
+	err = tx.QueryRow(fCtx, q, id, idBumd, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, idUser).Scan(&id)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -247,9 +247,9 @@ func (c *PengurusController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 	}()
 
 	q := `
-	UPDATE trn_pengurus SET jabatan_struktur_pengurus = $1, nama_pengurus = $2, nik_pengurus = $3, alamat_pengurus = $4, deskripsi_jabatan_pengurus = $5, pendidikan_akhir_pengurus = $6, tanggal_mulai_jabatan_pengurus = $7, tanggal_akhir_jabatan_pengurus = $8, file_pengurus = $9, updated_at = NOW(), updated_by = $10 WHERE id_pengurus = $11 AND id_bumd = $12
+	UPDATE trn_pengurus SET jabatan_struktur_pengurus = $1, nama_pengurus = $2, nik_pengurus = $3, alamat_pengurus = $4, deskripsi_jabatan_pengurus = $5, pendidikan_akhir_pengurus = $6, tanggal_mulai_jabatan_pengurus = $7, tanggal_akhir_jabatan_pengurus = $8, updated_at = NOW(), updated_by = $9 WHERE id_pengurus = $10 AND id_bumd = $11
 	`
-	_, err = tx.Exec(fCtx, q, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, payload.File, idUser, id, idBumd)
+	_, err = tx.Exec(fCtx, q, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, idUser, id, idBumd)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
