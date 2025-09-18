@@ -18,6 +18,10 @@ type KeuModalModel struct {
 	Tanggal    time.Time `json:"tanggal" example:"2021-01-01T00:00:00Z"`
 	Jumlah     float64   `json:"jumlah" example:"1000000"`
 	Keterangan string    `json:"keterangan" example:"Keterangan Modal"`
+	CreatedAt  time.Time `json:"created_at" example:"2021-01-01T00:00:00Z"`
+	CreatedBy  int64     `json:"created_by" example:"1"`
+	UpdatedAt  time.Time `json:"updated_at" example:"2021-01-01T00:00:00Z"`
+	UpdatedBy  int64     `json:"updated_by" example:"1"`
 }
 
 type KeuModalForm struct {

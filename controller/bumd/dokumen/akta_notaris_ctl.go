@@ -51,7 +51,7 @@ func (c *AktaNotarisController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, file_akta_notaris FROM trn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1
+	SELECT id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, file_akta_notaris, created_at, created_by, updated_at, updated_by FROM trn_akta_notaris WHERE deleted_by = 0 AND id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
@@ -96,7 +96,7 @@ func (c *AktaNotarisController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m dokumen.AktaNotarisModel
-		err = rows.Scan(&m.Id, &m.Nomor, &m.Notaris, &m.Tanggal, &m.Keterangan, &m.File)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.Notaris, &m.Tanggal, &m.Keterangan, &m.File, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		m.IdBumd = idBumd
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
@@ -130,10 +130,10 @@ func (c *AktaNotarisController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token,
 	}
 
 	q := `
-	SELECT id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, file_akta_notaris FROM trn_akta_notaris WHERE id_akta_notaris = $1 AND id_bumd = $2 AND deleted_by = 0
+	SELECT id_akta_notaris, nomor_akta_notaris, notaris_akta_notaris, tanggal_akta_notaris, keterangan_akta_notaris, file_akta_notaris, created_at, created_by, updated_at, updated_by FROM trn_akta_notaris WHERE id_akta_notaris = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.Notaris, &r.Tanggal, &r.Keterangan, &r.File)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.Notaris, &r.Tanggal, &r.Keterangan, &r.File, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	r.IdBumd = idBumd
 	if err != nil {
 		if err.Error() == "no rows in result set" {

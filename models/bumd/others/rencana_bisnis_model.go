@@ -18,6 +18,10 @@ type RencanaBisnisModel struct {
 	File            string     `json:"file" xml:"file" example:"/path/to/file.pdf"`
 	Kualifikasi     int32      `json:"kualifikasi" xml:"kualifikasi" example:"1"`
 	IsSeumurHidup   int32      `json:"is_seumur_hidup" xml:"is_seumur_hidup" example:"1"`
+	CreatedAt       time.Time  `json:"created_at" xml:"created_at" example:"2021-01-01T00:00:00Z"`
+	CreatedBy       int64      `json:"created_by" xml:"created_by" example:"1"`
+	UpdatedAt       time.Time  `json:"updated_at" xml:"updated_at" example:"2021-01-01T00:00:00Z"`
+	UpdatedBy       int64      `json:"updated_by" xml:"updated_by" example:"1"`
 }
 
 type RencanaBisnisForm struct {

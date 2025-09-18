@@ -56,7 +56,7 @@ func (c *SiupController) Index(
 	CASE
 		WHEN masa_berlaku_siup IS NULL THEN 1
 		ELSE 0
-	END as is_seumur_hidup
+	END as is_seumur_hidup, created_at, created_by, updated_at, updated_by
 	FROM trn_siup
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
@@ -94,7 +94,7 @@ func (c *SiupController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m dokumen.SiupModel
-		err = rows.Scan(&m.Id, &m.Nomor, &m.InstansiPemberi, &m.Tanggal, &m.Kualifikasi, &m.Klasifikasi, &m.MasaBerlaku, &m.File, &m.IdBumd, &m.IsSeumurHidup)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.InstansiPemberi, &m.Tanggal, &m.Kualifikasi, &m.Klasifikasi, &m.MasaBerlaku, &m.File, &m.IdBumd, &m.IsSeumurHidup, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -131,12 +131,12 @@ func (c *SiupController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBumd
 	CASE
 		WHEN masa_berlaku_siup IS NULL THEN 1
 		ELSE 0
-	END as is_seumur_hidup
+	END as is_seumur_hidup, created_at, created_by, updated_at, updated_by
 	FROM trn_siup
 	WHERE id_siup = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.InstansiPemberi, &r.Tanggal, &r.Kualifikasi, &r.Klasifikasi, &r.MasaBerlaku, &r.File, &r.IdBumd, &r.IsSeumurHidup)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.InstansiPemberi, &r.Tanggal, &r.Kualifikasi, &r.Klasifikasi, &r.MasaBerlaku, &r.File, &r.IdBumd, &r.IsSeumurHidup, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{

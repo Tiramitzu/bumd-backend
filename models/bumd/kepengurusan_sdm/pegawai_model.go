@@ -1,6 +1,10 @@
 package kepengurusan_sdm
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type PegawaiModel struct {
 	Id             uuid.UUID `json:"id" example:"123e4567-e89b-12d3-a456-426614174000"`
@@ -10,6 +14,10 @@ type PegawaiModel struct {
 	Pendidikan     uuid.UUID `json:"pendidikan" example:"01994c79-6d4d-7e5e-9d30-3d28773ae539"`
 	NamaPendidikan string    `json:"nama_pendidikan" example:"S3 (Doktor)"`
 	JumlahPegawai  int       `json:"jumlah_pegawai" example:"100"`
+	CreatedAt      time.Time `json:"created_at" example:"2021-01-01T00:00:00Z"`
+	CreatedBy      int64     `json:"created_by" example:"1"`
+	UpdatedAt      time.Time `json:"updated_at" example:"2021-01-01T00:00:00Z"`
+	UpdatedBy      int64     `json:"updated_by" example:"1"`
 }
 
 type PegawaiForm struct {

@@ -16,6 +16,10 @@ type PeraturanModel struct {
 	FilePeraturan       string     `json:"file_peraturan" xml:"file_peraturan" example:"/path/to/file.pdf"`
 	JenisPeraturan      uuid.UUID  `json:"jenis_peraturan" xml:"jenis_peraturan" example:"01994c04-699d-75e0-a288-13980f8c854d"`
 	NamaJenisPeraturan  string     `json:"nama_jenis_peraturan" xml:"nama_jenis_peraturan" example:"SOP"`
+	CreatedAt           time.Time  `json:"created_at" xml:"created_at" example:"2021-01-01T00:00:00Z"`
+	CreatedBy           int64      `json:"created_by" xml:"created_by" example:"1"`
+	UpdatedAt           time.Time  `json:"updated_at" xml:"updated_at" example:"2021-01-01T00:00:00Z"`
+	UpdatedBy           int64      `json:"updated_by" xml:"updated_by" example:"1"`
 }
 
 type PeraturanForm struct {

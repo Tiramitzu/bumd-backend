@@ -15,6 +15,10 @@ type PerdaPendirianModel struct {
 	Keterangan string    `json:"keterangan" xml:"keterangan" example:"Keterangan"`
 	File       string    `json:"file" xml:"file" example:"/path/to/file.pdf"`
 	ModalDasar float64   `json:"modal_dasar" xml:"modal_dasar" example:"1000000"`
+	CreatedAt  time.Time `json:"created_at" xml:"created_at" example:"2021-01-01T00:00:00Z"`
+	CreatedBy  int64     `json:"created_by" xml:"created_by" example:"1"`
+	UpdatedAt  time.Time `json:"updated_at" xml:"updated_at" example:"2021-01-01T00:00:00Z"`
+	UpdatedBy  int64     `json:"updated_by" xml:"updated_by" example:"1"`
 }
 
 type PerdaPendirianForm struct {

@@ -53,7 +53,7 @@ func (c *PerdaPendirianController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, file_perda_pendirian, modal_dasar_perda_pendirian FROM trn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1
+	SELECT id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, file_perda_pendirian, modal_dasar_perda_pendirian, created_at, created_by, updated_at, updated_by FROM trn_perda_pendirian WHERE deleted_by = 0 AND id_bumd = $1
 	`
 
 	args := make([]interface{}, 0)
@@ -106,7 +106,7 @@ func (c *PerdaPendirianController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m dokumen.PerdaPendirianModel
-		err = rows.Scan(&m.Id, &m.Nomor, &m.Tanggal, &m.Keterangan, &m.File, &m.ModalDasar)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.Tanggal, &m.Keterangan, &m.File, &m.ModalDasar, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		m.IdBumd = idBumd
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
@@ -140,11 +140,11 @@ func (c *PerdaPendirianController) View(fCtx *fasthttp.RequestCtx, user *jwt.Tok
 	}
 
 	q := `
-	SELECT id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, file_perda_pendirian, modal_dasar_perda_pendirian FROM trn_perda_pendirian WHERE id_perda_pendirian = $1 AND id_bumd = $2 AND deleted_by = 0
+	SELECT id_perda_pendirian, nomor_perda_pendirian, tanggal_perda_pendirian, keterangan_perda_pendirian, file_perda_pendirian, modal_dasar_perda_pendirian, created_at, created_by, updated_at, updated_by FROM trn_perda_pendirian WHERE id_perda_pendirian = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
 	r.IdBumd = idBumd
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.Tanggal, &r.Keterangan, &r.File, &r.ModalDasar)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.Tanggal, &r.Keterangan, &r.File, &r.ModalDasar, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{

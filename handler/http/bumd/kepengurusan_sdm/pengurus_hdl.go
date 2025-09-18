@@ -197,9 +197,9 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 //	@ID				pengurus-update
 //	@Tags			Pengurus
 //	@Accept			multipart/form-data
-//	@Param			id_bumd					path		string							true	"Id Bumd"		Format(uuid)
-//	@Param			id						path		string							true	"Id Pengurus"	Format(uuid)
-//	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"	Min(0) Max(2)
+//	@Param			id_bumd					path		string							true	"Id Bumd"			Format(uuid)
+//	@Param			id						path		string							true	"Id Pengurus"		Format(uuid)
+//	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"	Min(0)	Max(2)
 //	@Param			nama_pengurus			formData	string							true	"Nama Pengurus"
 //	@Param			nik						formData	string							true	"NIK"
 //	@Param			alamat					formData	string							true	"Alamat"

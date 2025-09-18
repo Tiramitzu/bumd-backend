@@ -80,7 +80,11 @@ func (c *ModalController) Index(
 		no_ba_modal,
 		tanggal_modal,
 		jumlah_modal,
-		keterangan_modal
+		keterangan_modal,
+		created_at,
+		created_by,
+		updated_at,
+		updated_by
 	FROM trn_modal
 	LEFT JOIN data_daerah_prov_temp ON trn_modal.id_prov = data_daerah_prov_temp.id_daerah
 	LEFT JOIN data_daerah_kab_temp ON trn_modal.id_kab = data_daerah_kab_temp.id_daerah
@@ -133,6 +137,10 @@ func (c *ModalController) Index(
 			&m.Tanggal,
 			&m.Jumlah,
 			&m.Keterangan,
+			&m.CreatedAt,
+			&m.CreatedBy,
+			&m.UpdatedAt,
+			&m.UpdatedBy,
 		)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
@@ -204,14 +212,18 @@ func (c *ModalController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 		no_ba_modal,
 		tanggal_modal,
 		jumlah_modal,
-		keterangan_modal
+		keterangan_modal,
+		created_at,
+		created_by,
+		updated_at,
+		updated_by
 	FROM trn_modal
 	LEFT JOIN data_daerah_prov_temp ON trn_modal.id_prov = data_daerah_prov_temp.id_daerah
 	LEFT JOIN data_daerah_kab_temp ON trn_modal.id_kab = data_daerah_kab_temp.id_daerah
 	WHERE deleted_by = 0 AND id_bumd = $1 AND id_modal = $2
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&r.Id, &r.IdBumd, &r.IdProv, &r.NamaProv, &r.IdKab, &r.NamaKab, &r.Pemegang, &r.NoBa, &r.Tanggal, &r.Jumlah, &r.Keterangan)
+	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&r.Id, &r.IdBumd, &r.IdProv, &r.NamaProv, &r.IdKab, &r.NamaKab, &r.Pemegang, &r.NoBa, &r.Tanggal, &r.Jumlah, &r.Keterangan, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		return r, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,

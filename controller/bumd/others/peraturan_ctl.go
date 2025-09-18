@@ -48,7 +48,7 @@ func (c *PeraturanController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_peraturan WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1`
 	q := `
-	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd, created_at, created_by, updated_at, updated_by
 	FROM trn_peraturan
 	LEFT JOIN m_jenis_dokumen ON trn_peraturan.jenis_peraturan = m_jenis_dokumen.id_jd
 	WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1
@@ -83,7 +83,7 @@ func (c *PeraturanController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m others.PeraturanModel
-		err = rows.Scan(&m.Id, &m.Nomor, &m.TanggalBerlaku, &m.KeteranganPeraturan, &m.FilePeraturan, &m.IdBumd, &m.JenisPeraturan, &m.NamaJenisPeraturan)
+		err = rows.Scan(&m.Id, &m.Nomor, &m.TanggalBerlaku, &m.KeteranganPeraturan, &m.FilePeraturan, &m.IdBumd, &m.JenisPeraturan, &m.NamaJenisPeraturan, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -113,13 +113,13 @@ func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	}
 
 	q := `
-	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd, created_at, created_by, updated_at, updated_by
 	FROM trn_peraturan
 	LEFT JOIN m_jenis_dokumen ON trn_peraturan.jenis_peraturan = m_jenis_dokumen.id_jd
 	WHERE trn_peraturan.id_peraturan = $1 AND trn_peraturan.id_bumd = $2 AND trn_peraturan.deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.TanggalBerlaku, &r.KeteranganPeraturan, &r.FilePeraturan, &r.IdBumd, &r.JenisPeraturan, &r.NamaJenisPeraturan)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.Nomor, &r.TanggalBerlaku, &r.KeteranganPeraturan, &r.FilePeraturan, &r.IdBumd, &r.JenisPeraturan, &r.NamaJenisPeraturan, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{

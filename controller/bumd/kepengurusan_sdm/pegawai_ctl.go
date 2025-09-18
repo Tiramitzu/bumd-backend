@@ -37,7 +37,7 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_pegawai WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai
+	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai, created_at, created_by, updated_at, updated_by
 	FROM trn_pegawai
 	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_pegawai
 	WHERE trn_pegawai.deleted_by = 0 AND id_bumd = $1
@@ -72,7 +72,7 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 	defer rows.Close()
 	for rows.Next() {
 		var m kepengurusan_sdm.PegawaiModel
-		err = rows.Scan(&m.Id, &m.IdBumd, &m.Tahun, &m.StatusPegawai, &m.Pendidikan, &m.NamaPendidikan, &m.JumlahPegawai)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.Tahun, &m.StatusPegawai, &m.Pendidikan, &m.NamaPendidikan, &m.JumlahPegawai, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -102,13 +102,13 @@ func (c *PegawaiController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	}
 
 	q := `
-	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai
+	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai, created_at, created_by, updated_at, updated_by
 	FROM trn_pegawai
 	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_pegawai
 	WHERE trn_pegawai.deleted_by = 0 AND id_bumd = $1 AND id_pegawai = $2
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.Tahun, &r.StatusPegawai, &r.Pendidikan, &r.NamaPendidikan, &r.JumlahPegawai)
+	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.Tahun, &r.StatusPegawai, &r.Pendidikan, &r.NamaPendidikan, &r.JumlahPegawai, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		return
 	}

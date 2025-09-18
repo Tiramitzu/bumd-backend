@@ -91,86 +91,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/jenis_laporan": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "get jenis laporan.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "JenisLaporan"
-                ],
-                "summary": "get jenis laporan",
-                "operationId": "jenis_laporan-index",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "uuid",
-                        "description": "Bentuk Usaha",
-                        "name": "bentuk_usaha",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Parent ID",
-                        "name": "parent_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.JenisLaporanModel"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "403": {
-                        "description": "Login forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/utils.LoginError"
-                        }
-                    },
-                    "404": {
-                        "description": "Data not found",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    },
-                    "422": {
-                        "description": "Data validation failed",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/utils.RequestError"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.RequestError"
-                        }
-                    }
-                }
-            }
-        },
         "/site/index": {
             "get": {
                 "description": "index page.",
@@ -4090,8 +4010,7 @@ const docTemplate = `{
                         "type": "file",
                         "description": "File",
                         "name": "file",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -8080,6 +7999,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/jenis_laporan": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get jenis laporan.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "JenisLaporan"
+                ],
+                "summary": "get jenis laporan",
+                "operationId": "jenis_laporan-index",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Bentuk Usaha",
+                        "name": "bentuk_usaha",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Parent ID",
+                        "name": "parent_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.JenisLaporanModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "403": {
+                        "description": "Login forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/utils.LoginError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/pendidikan": {
             "get": {
                 "security": [
@@ -9027,6 +9026,14 @@ const docTemplate = `{
         "dokumen.AktaNotarisModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -9054,12 +9061,28 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "dokumen.NibModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -9099,12 +9122,28 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "dokumen.PerdaPendirianModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -9132,12 +9171,28 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "dokumen.SiupModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -9177,12 +9232,28 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "dokumen.TdpModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -9221,6 +9292,14 @@ const docTemplate = `{
                 },
                 "tanggal": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -9240,7 +9319,6 @@ const docTemplate = `{
         "kepengurusan_sdm.PegawaiForm": {
             "type": "object",
             "required": [
-                "pendidikan",
                 "tahun"
             ],
             "properties": {
@@ -9271,6 +9349,14 @@ const docTemplate = `{
         "kepengurusan_sdm.PegawaiModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
@@ -9298,6 +9384,14 @@ const docTemplate = `{
                 "tahun": {
                     "type": "integer",
                     "example": 2021
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -9307,6 +9401,14 @@ const docTemplate = `{
                 "alamat": {
                     "type": "string",
                     "example": "Jl. Raya No. 1, Jakarta"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "deskripsi_jabatan": {
                     "type": "string",
@@ -9351,6 +9453,14 @@ const docTemplate = `{
                 "tanggal_mulai_jabatan": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -9396,6 +9506,14 @@ const docTemplate = `{
         "keuangan.KeuModalModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
@@ -9439,6 +9557,14 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -9781,6 +9907,14 @@ const docTemplate = `{
         "others.DomisiliModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -9820,6 +9954,14 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -10044,6 +10186,14 @@ const docTemplate = `{
         "others.PeraturanModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file_peraturan": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -10075,12 +10225,28 @@ const docTemplate = `{
                 "tanggal_berlaku": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "others.ProdukModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "deskripsi": {
                     "type": "string",
                     "example": "Deskripsi Produk 1"
@@ -10100,12 +10266,28 @@ const docTemplate = `{
                 "nama_produk": {
                     "type": "string",
                     "example": "Produk 1"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "others.RKAModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -10145,12 +10327,28 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "others.RencanaBisnisModel": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "created_by": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "file": {
                     "type": "string",
                     "example": "/path/to/file.pdf"
@@ -10190,6 +10388,14 @@ const docTemplate = `{
                 "tanggal": {
                     "type": "string",
                     "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
+                "updated_by": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },

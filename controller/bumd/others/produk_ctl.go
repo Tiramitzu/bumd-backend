@@ -48,7 +48,7 @@ func (c *ProdukController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_produk WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk
+	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk, created_at, created_by, updated_at, updated_by
 	FROM trn_produk
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
@@ -82,7 +82,7 @@ func (c *ProdukController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m others.ProdukModel
-		err = rows.Scan(&m.Id, &m.IdBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -112,12 +112,12 @@ func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	}
 
 	q := `
-	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk
+	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk, created_at, created_by, updated_at, updated_by
 	FROM trn_produk
 	WHERE id_produk = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.IdBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.IdBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{

@@ -20,6 +20,10 @@ type PengurusModel struct {
 	TanggalMulaiJabatan time.Time `json:"tanggal_mulai_jabatan" example:"2021-01-01T00:00:00Z"`
 	TanggalAkhirJabatan time.Time `json:"tanggal_akhir_jabatan" example:"2021-01-01T00:00:00Z"`
 	File                string    `json:"file" example:"/path/to/file.pdf"`
+	CreatedAt           time.Time `json:"created_at" example:"2021-01-01T00:00:00Z"`
+	CreatedBy           int64     `json:"created_by" example:"1"`
+	UpdatedAt           time.Time `json:"updated_at" example:"2021-01-01T00:00:00Z"`
+	UpdatedBy           int64     `json:"updated_by" example:"1"`
 }
 
 type PengurusForm struct {
