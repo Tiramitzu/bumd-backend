@@ -53,7 +53,9 @@ func (c *LaporanKeuanganController) Index(
 		tlk.id_jenis_laporan,
 		tlk.id_jenis_laporan_item,
 		mjl.uraian_jenis_laporan,
+		mjl.kode_jenis_laporan,
 		mjl_item.uraian_jenis_laporan,
+		mjl_item.kode_jenis_laporan,
 		tahun_laporan_keuangan,
 		jumlah_laporan_keuangan,
 		file_laporan_keuangan,
@@ -89,7 +91,7 @@ func (c *LaporanKeuanganController) Index(
 
 	for rows.Next() {
 		var m keuangan.LaporanKeuanganModel
-		err = rows.Scan(&m.Id, &m.IdBumd, &m.IdJenisLaporan, &m.IdJenisLaporanItem, &m.NamaJenisLaporan, &m.NamaJenisLaporanItem, &m.Tahun, &m.Jumlah, &m.File, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.IdJenisLaporan, &m.IdJenisLaporanItem, &m.NamaJenisLaporan, &m.KodeJenisLaporan, &m.NamaJenisLaporanItem, &m.KodeJenisLaporanItem, &m.Tahun, &m.Jumlah, &m.File, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -127,7 +129,9 @@ func (c *LaporanKeuanganController) View(ctx context.Context, user *jwt.Token, i
 		tlk.id_jenis_laporan,
 		tlk.id_jenis_laporan_item,
 		mjl.uraian_jenis_laporan,
+		mjl.kode_jenis_laporan,
 		mjl_item.uraian_jenis_laporan,
+		mjl_item.kode_jenis_laporan,
 		tahun_laporan_keuangan,
 		jumlah_laporan_keuangan,
 		file_laporan_keuangan,
@@ -140,7 +144,7 @@ func (c *LaporanKeuanganController) View(ctx context.Context, user *jwt.Token, i
 	LEFT JOIN m_jenis_laporan mjl_item ON mjl_item.id_jenis_laporan = tlk.id_jenis_laporan_item
 	WHERE id_bumd = $1 AND id_laporan_keuangan = $2 AND deleted_by = 0`
 
-	err = c.pgxConn.QueryRow(ctx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.IdJenisLaporan, &r.IdJenisLaporanItem, &r.NamaJenisLaporan, &r.NamaJenisLaporanItem, &r.Tahun, &r.Jumlah, &r.File, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
+	err = c.pgxConn.QueryRow(ctx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.IdJenisLaporan, &r.IdJenisLaporanItem, &r.NamaJenisLaporan, &r.KodeJenisLaporan, &r.NamaJenisLaporanItem, &r.KodeJenisLaporanItem, &r.Tahun, &r.Jumlah, &r.File, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		return r, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,

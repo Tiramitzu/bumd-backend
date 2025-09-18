@@ -143,6 +143,10 @@ func (h *KinerjaHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
+	if err := h.Validate.Struct(payload); err != nil {
+		return err
+	}
+
 	r, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), idBumd, payload)
 	if err != nil {
 		return err
@@ -180,6 +184,10 @@ func (h *KinerjaHandler) Update(c *fiber.Ctx) error {
 	}
 	payload := new(others.KinerjaForm)
 	if err := c.BodyParser(payload); err != nil {
+		return err
+	}
+
+	if err := h.Validate.Struct(payload); err != nil {
 		return err
 	}
 

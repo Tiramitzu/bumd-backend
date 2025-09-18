@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 // NewValidator func for create a new validator for model fields.
@@ -23,13 +24,13 @@ func NewValidator() *validator.Validate {
 	})
 
 	// Custom validation for uuid.UUID fields.
-	/*_ = validate.RegisterValidation("uuid", func(fl validator.FieldLevel) bool {
+	_ = validate.RegisterValidation("custom_uuid", func(fl validator.FieldLevel) bool {
 		field := fl.Field().String()
 		if _, err := uuid.Parse(field); err != nil {
-			return true
+			return false // Return false if parsing fails (invalid UUID)
 		}
-		return false
-	})*/
+		return true // Return true if parsing succeeds (valid UUID)
+	})
 
 	return validate
 }

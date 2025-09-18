@@ -8,19 +8,19 @@ import (
 )
 
 type AktaNotarisModel struct {
-	Id         uuid.UUID `json:"id" xml:"id"`
-	IdBumd     uuid.UUID `json:"id_bumd" xml:"id_bumd"`
-	Nomor      string    `json:"nomor" xml:"nomor"`
-	Notaris    string    `json:"notaris" xml:"notaris"`
-	Tanggal    time.Time `json:"tanggal" xml:"tanggal"`
-	Keterangan string    `json:"keterangan" xml:"keterangan"`
-	File       string    `json:"file" xml:"file"`
+	Id         uuid.UUID `json:"id" xml:"id" example:"123e4567-e89b-12d3-a456-426614174000"`
+	IdBumd     uuid.UUID `json:"id_bumd" xml:"id_bumd" example:"123e4567-e89b-12d3-a456-426614174000"`
+	Nomor      string    `json:"nomor" xml:"nomor" example:"1234567890"`
+	Notaris    string    `json:"notaris" xml:"notaris" example:"Notaris"`
+	Tanggal    time.Time `json:"tanggal" xml:"tanggal" example:"2021-01-01T00:00:00Z"`
+	Keterangan string    `json:"keterangan" xml:"keterangan" example:"Keterangan"`
+	File       string    `json:"file" xml:"file" example:"/path/to/file.pdf"`
 }
 
 type AktaNotarisForm struct {
-	Nomor      string                `json:"nomor" xml:"nomor" form:"nomor"`
-	Notaris    string                `json:"notaris" xml:"notaris" form:"notaris"`
-	Tanggal    string                `json:"tanggal" xml:"tanggal" form:"tanggal"`
-	Keterangan string                `json:"keterangan" xml:"keterangan" form:"keterangan"`
+	Nomor      string                `json:"nomor" xml:"nomor" form:"nomor" example:"1234567890"`
+	Notaris    string                `json:"notaris" xml:"notaris" form:"notaris" example:"Notaris"`
+	Tanggal    string                `json:"tanggal" xml:"tanggal" form:"tanggal" example:"2021-01-01T00:00:00Z"`
+	Keterangan string                `json:"keterangan" xml:"keterangan" form:"keterangan" example:"Keterangan"`
 	File       *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 }

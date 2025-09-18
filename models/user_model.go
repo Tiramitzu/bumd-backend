@@ -8,13 +8,13 @@ import (
 )
 
 type User struct {
-	KodeDDN         string    `json:"kode_ddn"          xml:"kode_ddn"`
-	KodeProvinsi    string    `json:"kode_provinsi"    xml:"kode_provinsi"`
-	SubDomainDaerah string    `json:"sub_domain_daerah" xml:"sub_domain_daerah"`
-	IdUser          int64     `json:"id_user"           xml:"id_user"`
-	IdDaerah        int32     `json:"id_daerah"         xml:"id_daerah"`
-	IdRole          int32     `json:"id_role"           xml:"id_role"`
-	IdBumd          uuid.UUID `json:"id_bumd"           xml:"id_bumd"`
+	KodeDDN         string    `json:"kode_ddn"          xml:"kode_ddn" example:"123"`
+	KodeProvinsi    string    `json:"kode_provinsi"     xml:"kode_provinsi" example:"11.01"`
+	SubDomainDaerah string    `json:"sub_domain_daerah" xml:"sub_domain_daerah" example:"jakarta"`
+	IdUser          int64     `json:"id_user"           xml:"id_user" example:"1"`
+	IdDaerah        int32     `json:"id_daerah"         xml:"id_daerah" example:"1"`
+	IdRole          int32     `json:"id_role"           xml:"id_role" example:"1"`
+	IdBumd          uuid.UUID `json:"id_bumd"           xml:"id_bumd" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
 // FromJSON decode json to user struct
@@ -29,19 +29,19 @@ func (u *User) ToJSON() []byte {
 }
 
 type UserDetail struct {
-	Username   string    `json:"username"          xml:"username"`
-	NamaUser   string    `json:"nama_user"         xml:"nama_user"`
-	NamaRole   string    `json:"nama_role"         xml:"nama_role"`
-	NamaBumd   string    `json:"nama_bumd"         xml:"nama_bumd"`
-	NamaDaerah string    `json:"nama_daerah"       xml:"nama_daerah"`
-	IdUser     int64     `json:"id_user"           xml:"id_user"`
-	IdDaerah   int32     `json:"id_daerah"         xml:"id_daerah"`
-	IdRole     int32     `json:"id_role"           xml:"id_role"`
-	IdBumd     uuid.UUID `json:"id_bumd"           xml:"id_bumd"`
-	KodeDDN    string    `json:"kode_ddn"          xml:"kode_ddn"`
-	KodeProp   string    `json:"kode_prop"    xml:"kode_prop"`
-	SubDomain  string    `json:"sub_domain" xml:"sub_domain"`
-	Logo       string    `json:"logo" xml:"logo"`
+	Username   string    `json:"username"          xml:"username" example:"admin"`
+	NamaUser   string    `json:"nama_user"         xml:"nama_user" example:"Admin"`
+	NamaRole   string    `json:"nama_role"         xml:"nama_role" example:"Admin"`
+	NamaBumd   string    `json:"nama_bumd"         xml:"nama_bumd" example:"BUMD"`
+	NamaDaerah string    `json:"nama_daerah"       xml:"nama_daerah" example:"Daerah"`
+	IdUser     int64     `json:"id_user"           xml:"id_user" example:"1"`
+	IdDaerah   int32     `json:"id_daerah"         xml:"id_daerah" example:"1"`
+	IdRole     int32     `json:"id_role"           xml:"id_role" example:"1"`
+	IdBumd     uuid.UUID `json:"id_bumd"           xml:"id_bumd" example:"123e4567-e89b-12d3-a456-426614174000"`
+	KodeDDN    string    `json:"kode_ddn"          xml:"kode_ddn" example:"11.01"`
+	KodeProp   string    `json:"kode_prop"    xml:"kode_prop" example:"11.01"`
+	SubDomain  string    `json:"sub_domain" xml:"sub_domain" example:"jakarta"`
+	Logo       string    `json:"logo" xml:"logo" example:"/path/to/file.png"`
 }
 
 // FromJSON decode json to user struct
@@ -56,22 +56,22 @@ func (u *UserDetail) ToJSON() []byte {
 }
 
 type UserModel struct {
-	Username string `json:"username"          xml:"username"`
-	Nama     string `json:"nama"              xml:"nama"`
-	Logo     string `json:"logo"              xml:"logo"`
-	Role     string `json:"role"              xml:"role"`
-	IdUser   int64  `json:"id_user"           xml:"id_user"`
-	IdDaerah int32  `json:"id_daerah"         xml:"id_daerah"`
-	IdRole   int32  `json:"id_role"           xml:"id_role"`
-	IdBumd   int32  `json:"id_bumd"           xml:"id_bumd"`
+	Username string    `json:"username"          xml:"username" example:"admin"`
+	Nama     string    `json:"nama"              xml:"nama" example:"Admin"`
+	Logo     string    `json:"logo"              xml:"logo" example:"/path/to/file.png"`
+	Role     string    `json:"role"              xml:"role" example:"Admin"`
+	IdUser   int64     `json:"id_user"           xml:"id_user" example:"1"`
+	IdDaerah int32     `json:"id_daerah"         xml:"id_daerah" example:"1"`
+	IdRole   int32     `json:"id_role"           xml:"id_role" example:"1"`
+	IdBumd   uuid.UUID `json:"id_bumd"           xml:"id_bumd" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
 type UserForm struct {
-	Username string                `json:"username" xml:"username" form:"username"`
-	Password string                `json:"password" xml:"password" form:"password"`
-	Nama     string                `json:"nama" xml:"nama" form:"nama"`
+	Username string                `json:"username" xml:"username" form:"username" validate:"required" example:"admin"`
+	Password string                `json:"password" xml:"password" form:"password" validate:"required" example:"password"`
+	Nama     string                `json:"nama" xml:"nama" form:"nama" validate:"required" example:"Admin"`
 	Logo     *multipart.FileHeader `json:"logo" xml:"logo" form:"logo"`
-	IdDaerah int32                 `json:"id_daerah" xml:"id_daerah" form:"id_daerah"`
-	IdRole   int32                 `json:"id_role" xml:"id_role" form:"id_role"`
-	IdBumd   int32                 `json:"id_bumd" xml:"id_bumd" form:"id_bumd"`
+	IdDaerah int32                 `json:"id_daerah" xml:"id_daerah" form:"id_daerah" validate:"required" example:"1"`
+	IdRole   int32                 `json:"id_role" xml:"id_role" form:"id_role" validate:"required" example:"1"`
+	IdBumd   uuid.UUID             `json:"id_bumd" xml:"id_bumd" form:"id_bumd" validate:"required,custom_uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
 }

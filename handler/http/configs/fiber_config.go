@@ -50,6 +50,10 @@ func fiberErrorHandler(ctx *fiber.Ctx, err error) error {
 			switch err.Tag() {
 			case "required":
 				errObj.Message = fmt.Sprintf("%s harus diisi.", err.Field())
+			case "custom_uuid":
+				errObj.Message = fmt.Sprintf("%s harus berupa UUID yang valid (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)", err.Field())
+			case "email":
+				errObj.Message = "Format email tidak valid"
 			case "len":
 				errObj.Message = fmt.Sprintf("panjang %s harus sama dengan %s", err.Field(), err.Param())
 			case "gte":

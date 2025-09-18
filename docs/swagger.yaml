@@ -2,211 +2,308 @@ definitions:
   bumd.BumdForm:
     properties:
       alamat:
+        example: Jl. Raya No. 1, Jakarta
         type: string
       deskripsi:
+        example: BUMD adalah Badan Usaha Milik Daerah
         type: string
       email:
+        example: bumd@e-bumd.com
         type: string
       id_bentuk_hukum:
+        example: 01994c00-6768-7fde-ab34-f315eea6510f
         type: string
       id_bentuk_usaha:
+        example: 01994c01-c285-7e57-a486-fd9978083917
         type: string
       id_induk_perusahaan:
+        default: 00000000-0000-0000-0000-000000000000
+        example: 00000000-0000-0000-0000-000000000000
         type: string
       nama:
+        example: BUMD
         type: string
       narahubung:
+        example: John Doe
         type: string
       no_fax:
+        example: "081234567890"
         type: string
       no_telp:
+        example: "081234567890"
         type: string
       penerapan_spi:
+        example: true
         type: boolean
       website:
+        example: https://e-bumd.com
         type: string
+    required:
+    - id_bentuk_hukum
+    - id_bentuk_usaha
+    - id_induk_perusahaan
+    - nama
+    - penerapan_spi
     type: object
   bumd.BumdModel:
     properties:
       alamat:
+        example: Jl. Raya No. 1, Jakarta
         type: string
       bentuk_badan_hukum:
+        example: Perumda
         type: string
       bentuk_usaha:
+        example: Air Minum
         type: string
       created_at:
+        example: "2021-01-01T00:00:00Z"
         type: string
       created_by:
+        example: 1
         type: integer
       deskripsi:
+        example: BUMD adalah Badan Usaha Milik Daerah
         type: string
       email:
+        example: bumd@e-bumd.com
         type: string
       file_spi:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bentuk_hukum:
+        example: 01994c00-6768-7fde-ab34-f315eea6510f
         type: string
       id_bentuk_usaha:
+        example: 01994c01-c285-7e57-a486-fd9978083917
         type: string
       id_daerah:
+        example: 1
         type: integer
       id_induk_perusahaan:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_provinsi:
+        example: 1
         type: integer
       logo:
+        example: /path/to/file.png
         type: string
       nama:
+        example: BUMD
         type: string
       nama_daerah:
+        example: DKI Jakarta
         type: string
       nama_induk_perusahaan:
+        example: PT. BUMD
         type: string
       nama_provinsi:
+        example: DKI Jakarta
         type: string
       narahubung:
+        example: John Doe
         type: string
       no_fax:
+        example: "081234567890"
         type: string
       no_telp:
+        example: "081234567890"
         type: string
       npwp:
+        example: "123456789012345"
         type: string
       npwp_file:
+        example: /path/to/file.pdf
         type: string
       npwp_pemberi:
+        example: DJP
         type: string
       penerapan_spi:
+        example: true
         type: boolean
       updated_at:
+        example: "2021-01-01T00:00:00Z"
         type: string
       updated_by:
+        example: 1
         type: integer
       website:
+        example: https://e-bumd.com
         type: string
     type: object
   bumd.LogoModel:
     properties:
       logo:
+        example: /path/to/file.png
         type: string
     type: object
   bumd.NPWPModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       npwp:
+        example: "123456789012345"
         type: string
       pemberi:
+        example: DJP
         type: string
     type: object
   bumd.SPIModel:
     properties:
       file_spi:
+        example: /path/to/file.pdf
         type: string
       penerapan_spi:
+        example: true
         type: boolean
     type: object
   dokumen.AktaNotarisModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       keterangan:
+        example: Keterangan
         type: string
       nomor:
+        example: "1234567890"
         type: string
       notaris:
+        example: Notaris
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   dokumen.NibModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       instansi_pemberi:
+        example: Kemendagri
         type: string
       is_seumur_hidup:
+        example: 1
         type: integer
       klasifikasi:
+        example: NIB
         type: string
       kualifikasi:
+        example: 1
         type: integer
       masa_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   dokumen.PerdaPendirianModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       keterangan:
+        example: Keterangan
         type: string
       modal_dasar:
+        example: 1000000
         type: number
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   dokumen.SiupModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       instansi_pemberi:
+        example: Kemendagri
         type: string
       is_seumur_hidup:
+        example: 1
         type: integer
       klasifikasi:
+        example: SIUP
         type: string
       kualifikasi:
+        example: 1
         type: integer
       masa_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   dokumen.TdpModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       instansi_pemberi:
+        example: Kemendagri
         type: string
       is_seumur_hidup:
+        example: 1
         type: integer
       klasifikasi:
+        example: TDP
         type: string
       kualifikasi:
+        example: 1
         type: integer
       masa_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
         type: string
@@ -223,94 +320,155 @@ definitions:
   kepengurusan_sdm.PegawaiForm:
     properties:
       jumlah_pegawai:
+        example: 100
+        minimum: 0
         type: integer
       pendidikan:
+        example: 01994c79-6d4d-7e5e-9d30-3d28773ae539
         type: string
       status_pegawai:
+        example: 1
+        maximum: 3
+        minimum: 0
         type: integer
       tahun:
+        example: 2021
+        maximum: 2099
+        minimum: 2000
         type: integer
+    required:
+    - jumlah_pegawai
+    - pendidikan
+    - status_pegawai
+    - tahun
     type: object
   kepengurusan_sdm.PegawaiModel:
     properties:
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       jumlah_pegawai:
+        example: 100
         type: integer
+      nama_pendidikan:
+        example: S3 (Doktor)
+        type: string
       pendidikan:
+        example: 01994c79-6d4d-7e5e-9d30-3d28773ae539
         type: string
       status_pegawai:
+        example: 1
         type: integer
       tahun:
+        example: 2021
         type: integer
     type: object
   kepengurusan_sdm.PengurusModel:
     properties:
       alamat:
+        example: Jl. Raya No. 1, Jakarta
         type: string
       deskripsi_jabatan:
+        example: Deskripsi Jabatan
         type: string
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       jabatan_struktur:
+        example: 1
         type: integer
+      nama_pendidikan_akhir:
+        example: S3 (Doktor)
+        type: string
       nama_pengurus:
+        example: Pengurus 1
         type: string
       nik:
+        example: "1234567890"
         type: string
       pendidikan_akhir:
+        example: 01994c79-6d4d-7e5e-9d30-3d28773ae539
         type: string
       tanggal_akhir_jabatan:
+        example: "2021-01-01T00:00:00Z"
         type: string
       tanggal_mulai_jabatan:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   keuangan.KeuModalForm:
     properties:
       id_kab:
+        example: 1
         type: integer
       id_prov:
+        example: 1
         type: integer
       jumlah:
+        example: 1000000
+        minimum: 0
         type: number
       keterangan:
+        example: Keterangan Modal
         type: string
       no_ba:
+        example: "1234567890"
         type: string
       pemegang:
+        example: Pemegang Modal
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
+    required:
+    - id_kab
+    - id_prov
+    - jumlah
+    - tanggal
     type: object
   keuangan.KeuModalModel:
     properties:
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_kab:
+        example: 1
         type: integer
       id_prov:
+        example: 1
         type: integer
       jumlah:
+        example: 1000000
         type: number
       keterangan:
+        example: Keterangan Modal
         type: string
       nama_kab:
+        example: Jakarta Selatan
         type: string
       nama_prov:
+        example: DKI Jakarta
         type: string
       no_ba:
+        example: "1234567890"
         type: string
       pemegang:
+        example: Pemegang Modal
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   keuangan.LaporanKeuanganForm:
@@ -318,26 +476,49 @@ definitions:
   keuangan.LaporanKeuanganModel:
     properties:
       created_at:
+        example: "2021-01-01T00:00:00Z"
         type: string
       created_by:
+        example: 1
         type: integer
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_jenis_laporan:
-        type: string
+        example: 2
+        type: integer
       id_jenis_laporan_item:
-        type: string
+        example: 3
+        type: integer
       jumlah:
+        example: 1000000
         type: number
+      kode_jenis_laporan:
+        example: "1.1"
+        type: string
+      kode_jenis_laporan_item:
+        example: 1.1.01
+        type: string
+      nama_jenis_laporan:
+        example: Cakupan Layanan
+        type: string
+      nama_jenis_laporan_item:
+        example: Penduduk Wilayah Administrasi (Jiwa)
+        type: string
       tahun:
+        example: 2021
         type: integer
       updated_at:
+        example: "2021-01-01T00:00:00Z"
         type: string
       updated_by:
+        example: 1
         type: integer
     type: object
   models.BentukBadanHukumForm:
@@ -435,265 +616,424 @@ definitions:
   models.User:
     properties:
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_daerah:
+        example: 1
         type: integer
       id_role:
+        example: 1
         type: integer
       id_user:
+        example: 1
         type: integer
       kode_ddn:
+        example: "123"
         type: string
       kode_provinsi:
+        example: "11.01"
         type: string
       sub_domain_daerah:
+        example: jakarta
         type: string
     type: object
   models.UserDetail:
     properties:
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_daerah:
+        example: 1
         type: integer
       id_role:
+        example: 1
         type: integer
       id_user:
+        example: 1
         type: integer
       kode_ddn:
+        example: "11.01"
         type: string
       kode_prop:
+        example: "11.01"
         type: string
       logo:
+        example: /path/to/file.png
         type: string
       nama_bumd:
+        example: BUMD
         type: string
       nama_daerah:
+        example: Daerah
         type: string
       nama_role:
+        example: Admin
         type: string
       nama_user:
+        example: Admin
         type: string
       sub_domain:
+        example: jakarta
         type: string
       username:
+        example: admin
         type: string
     type: object
   models.UserModel:
     properties:
       id_bumd:
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       id_daerah:
+        example: 1
         type: integer
       id_role:
+        example: 1
         type: integer
       id_user:
+        example: 1
         type: integer
       logo:
+        example: /path/to/file.png
         type: string
       nama:
+        example: Admin
         type: string
       role:
+        example: Admin
         type: string
       username:
+        example: admin
         type: string
     type: object
   others.DomisiliModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       instansi_pemberi:
+        example: Kemendagri
         type: string
       is_seumur_hidup:
+        example: 1
         type: integer
       klasifikasi:
+        example: Domisili
         type: string
       kualifikasi:
+        example: 1
         type: integer
       masa_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   others.KinerjaForm:
     properties:
       aktiva_tetap:
+        example: 1000000
+        minimum: 0
         type: number
       akumulasi_depresiasi:
+        example: 1000000
+        minimum: 0
         type: number
       capital_employed:
+        example: 1000000
+        minimum: 0
         type: number
       ebit:
+        example: 1000000
+        minimum: 0
         type: number
       ebitda:
+        example: 1000000
+        minimum: 0
         type: number
       harga_pokok_penjualan:
+        example: 1000000
+        minimum: 0
         type: number
       harta_lancar:
+        example: 1000000
+        minimum: 0
         type: number
       kas:
+        example: 1000000
+        minimum: 0
         type: number
       kewajiban_lancar:
+        example: 1000000
+        minimum: 0
         type: number
       kredit_bermasalah:
+        example: 1000000
+        minimum: 0
         type: number
       modal_sendiri:
+        example: 1000000
+        minimum: 0
         type: number
       penjualan_bersih:
+        example: 1000000
+        minimum: 0
         type: number
       penyusutan:
+        example: 1000000
+        minimum: 0
         type: number
       persediaan:
+        example: 1000000
+        minimum: 0
         type: number
       piutang_dagang:
+        example: 1000000
+        minimum: 0
         type: number
       setara_kas:
+        example: 1000000
+        minimum: 0
         type: number
       tahun:
+        example: 2021
+        maximum: 2099
+        minimum: 2000
         type: integer
       total_aset_akhir:
+        example: 1000000
+        minimum: 0
         type: number
       total_aset_awal:
+        example: 1000000
+        minimum: 0
         type: number
       total_kredit:
+        example: 1000000
+        minimum: 0
         type: number
+    required:
+    - aktiva_tetap
+    - akumulasi_depresiasi
+    - capital_employed
+    - ebit
+    - ebitda
+    - harga_pokok_penjualan
+    - harta_lancar
+    - kas
+    - kewajiban_lancar
+    - kredit_bermasalah
+    - modal_sendiri
+    - penjualan_bersih
+    - penyusutan
+    - persediaan
+    - piutang_dagang
+    - setara_kas
+    - tahun
+    - total_aset_akhir
+    - total_aset_awal
+    - total_kredit
     type: object
   others.KinerjaModel:
     properties:
       aktiva_tetap:
+        example: 1000000
         type: number
       akumulasi_depresiasi:
+        example: 1000000
         type: number
       capital_employed:
+        example: 1000000
         type: number
       created_at:
+        example: "2021-01-01T00:00:00Z"
         type: string
       created_by:
+        example: 1
         type: integer
       ebit:
+        example: 1000000
         type: number
       ebitda:
+        example: 1000000
         type: number
       harga_pokok_penjualan:
+        example: 1000000
         type: number
       harta_lancar:
+        example: 1000000
         type: number
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_kinerja:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       kas:
+        example: 1000000
         type: number
       kewajiban_lancar:
+        example: 1000000
         type: number
       kredit_bermasalah:
+        example: 1000000
         type: number
       modal_sendiri:
+        example: 1000000
         type: number
       penjualan_bersih:
+        example: 1000000
         type: number
       penyusutan:
+        example: 1000000
         type: number
       persediaan:
+        example: 1000000
         type: number
       piutang_dagang:
+        example: 1000000
         type: number
       setara_kas:
+        example: 1000000
         type: number
       tahun:
+        example: 2021
         type: integer
       total_aset_akhir:
+        example: 1000000
         type: number
       total_aset_awal:
+        example: 1000000
         type: number
       total_kredit:
+        example: 1000000
         type: number
       updated_at:
+        example: "2021-01-01T00:00:00Z"
         type: string
       updated_by:
+        example: 1
         type: integer
     type: object
   others.PeraturanModel:
     properties:
       file_peraturan:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       jenis_peraturan:
+        example: 01994c04-699d-75e0-a288-13980f8c854d
         type: string
       keterangan_peraturan:
+        example: Keterangan Peraturan
         type: string
       nama_jenis_peraturan:
+        example: SOP
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   others.ProdukModel:
     properties:
       deskripsi:
+        example: Deskripsi Produk 1
         type: string
       foto_produk:
+        example: /path/to/file.png
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       nama_produk:
+        example: Produk 1
         type: string
     type: object
   others.RKAModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       instansi_pemberi:
+        example: Kemendagri
         type: string
       is_seumur_hidup:
+        example: 1
         type: integer
       klasifikasi:
+        example: RKA
         type: string
       kualifikasi:
+        example: 1
         type: integer
       masa_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   others.RencanaBisnisModel:
     properties:
       file:
+        example: /path/to/file.pdf
         type: string
       id:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
         type: string
       instansi_pemberi:
+        example: Kemendagri
         type: string
       is_seumur_hidup:
+        example: 1
         type: integer
       klasifikasi:
+        example: Rencana Bisnis
         type: string
       kualifikasi:
+        example: 1
         type: integer
       masa_berlaku:
+        example: "2021-01-01T00:00:00Z"
         type: string
       nomor:
+        example: "1234567890"
         type: string
       tanggal:
+        example: "2021-01-01T00:00:00Z"
         type: string
     type: object
   utils.DataValidationError:
@@ -2941,7 +3281,7 @@ paths:
       parameters:
       - description: Id Bumd
         format: uuid
-        in: query
+        in: path
         name: id_bumd
         required: true
         type: string

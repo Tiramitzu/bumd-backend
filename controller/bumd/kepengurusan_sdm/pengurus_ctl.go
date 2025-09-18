@@ -42,9 +42,22 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_pengurus WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus
+	SELECT
+		id_pengurus,
+		id_bumd,
+		jabatan_struktur_pengurus,
+		nama_pengurus,
+		nik_pengurus,
+		alamat_pengurus,
+		deskripsi_jabatan_pengurus,
+		pendidikan_akhir_pengurus,
+		m_pendidikan.nama_pendidikan,
+		tanggal_mulai_jabatan_pengurus,
+		tanggal_akhir_jabatan_pengurus,
+		file_pengurus
 	FROM trn_pengurus
-	WHERE deleted_by = 0 AND id_bumd = $1
+	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_akhir_pengurus
+	WHERE trn_pengurus.deleted_by = 0 AND id_bumd = $1
 	`
 	args = append(args, idBumd)
 
@@ -76,7 +89,7 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 	defer rows.Close()
 	for rows.Next() {
 		var m kepengurusan_sdm.PengurusModel
-		err = rows.Scan(&m.Id, &m.IdBumd, &m.JabatanStruktur, &m.NamaPengurus, &m.NIK, &m.Alamat, &m.DeskripsiJabatan, &m.PendidikanAkhir, &m.TanggalMulaiJabatan, &m.TanggalAkhirJabatan, &m.File)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.JabatanStruktur, &m.NamaPengurus, &m.NIK, &m.Alamat, &m.DeskripsiJabatan, &m.PendidikanAkhir, &m.NamaPendidikanAkhir, &m.TanggalMulaiJabatan, &m.TanggalAkhirJabatan, &m.File)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -106,12 +119,13 @@ func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	}
 
 	q := `
-	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus
+	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, m_pendidikan.nama_pendidikan, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus
 	FROM trn_pengurus
-	WHERE deleted_by = 0 AND id_bumd = $1 AND id_pengurus = $2
+	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_akhir_pengurus
+	WHERE trn_pengurus.deleted_by = 0 AND id_bumd = $1 AND id_pengurus = $2
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.JabatanStruktur, &r.NamaPengurus, &r.NIK, &r.Alamat, &r.DeskripsiJabatan, &r.PendidikanAkhir, &r.TanggalMulaiJabatan, &r.TanggalAkhirJabatan, &r.File)
+	err = c.pgxConn.QueryRow(fCtx, q, idBumd, id).Scan(&r.Id, &r.IdBumd, &r.JabatanStruktur, &r.NamaPengurus, &r.NIK, &r.Alamat, &r.DeskripsiJabatan, &r.PendidikanAkhir, &r.NamaPendidikanAkhir, &r.TanggalMulaiJabatan, &r.TanggalAkhirJabatan, &r.File)
 	if err != nil {
 		return r, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,

@@ -37,7 +37,7 @@ func NewPegawaiHandler(r fiber.Router, vld *validator.Validate, controller *ctl.
 //	@ID				pegawai-index
 //	@Tags			Pegawai
 //	@Produce		json
-//	@Param			id_bumd	query		string							true	"Id Bumd"	Format(uuid)
+//	@Param			id_bumd	path		string							true	"Id Bumd"	Format(uuid)
 //	@Param			page	query		int								false	"Halaman yang ditampilkan"
 //	@Param			limit	query		int								false	"Jumlah data per halaman, maksimal 5 data per halaman"
 //	@Param			search	query		string							false	"Search"
@@ -151,6 +151,10 @@ func (h *PegawaiHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
+	if err := h.Validate.Struct(payload); err != nil {
+		return err
+	}
+
 	m, err := h.Controller.Create(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, payload)
 	if err != nil {
 		return err
@@ -190,6 +194,10 @@ func (h *PegawaiHandler) Update(c *fiber.Ctx) error {
 
 	payload := new(kepengurusan_sdm.PegawaiForm)
 	if err := c.BodyParser(payload); err != nil {
+		return err
+	}
+
+	if err := h.Validate.Struct(payload); err != nil {
 		return err
 	}
 

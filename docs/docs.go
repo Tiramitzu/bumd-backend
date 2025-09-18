@@ -3371,7 +3371,7 @@ const docTemplate = `{
                         "format": "uuid",
                         "description": "Id Bumd",
                         "name": "id_bumd",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -8803,42 +8803,62 @@ const docTemplate = `{
     "definitions": {
         "bumd.BumdForm": {
             "type": "object",
+            "required": [
+                "id_bentuk_hukum",
+                "id_bentuk_usaha",
+                "id_induk_perusahaan",
+                "nama",
+                "penerapan_spi"
+            ],
             "properties": {
                 "alamat": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Jl. Raya No. 1, Jakarta"
                 },
                 "deskripsi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "BUMD adalah Badan Usaha Milik Daerah"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "bumd@e-bumd.com"
                 },
                 "id_bentuk_hukum": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c00-6768-7fde-ab34-f315eea6510f"
                 },
                 "id_bentuk_usaha": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c01-c285-7e57-a486-fd9978083917"
                 },
                 "id_induk_perusahaan": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "00000000-0000-0000-0000-000000000000",
+                    "example": "00000000-0000-0000-0000-000000000000"
                 },
                 "nama": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "BUMD"
                 },
                 "narahubung": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "John Doe"
                 },
                 "no_fax": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "081234567890"
                 },
                 "no_telp": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "081234567890"
                 },
                 "penerapan_spi": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "website": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://e-bumd.com"
                 }
             }
         },
@@ -8846,91 +8866,120 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "alamat": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Jl. Raya No. 1, Jakarta"
                 },
                 "bentuk_badan_hukum": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Perumda"
                 },
                 "bentuk_usaha": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Air Minum"
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "created_by": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "deskripsi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "BUMD adalah Badan Usaha Milik Daerah"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "bumd@e-bumd.com"
                 },
                 "file_spi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bentuk_hukum": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c00-6768-7fde-ab34-f315eea6510f"
                 },
                 "id_bentuk_usaha": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c01-c285-7e57-a486-fd9978083917"
                 },
                 "id_daerah": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_induk_perusahaan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_provinsi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "logo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.png"
                 },
                 "nama": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "BUMD"
                 },
                 "nama_daerah": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "DKI Jakarta"
                 },
                 "nama_induk_perusahaan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "PT. BUMD"
                 },
                 "nama_provinsi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "DKI Jakarta"
                 },
                 "narahubung": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "John Doe"
                 },
                 "no_fax": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "081234567890"
                 },
                 "no_telp": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "081234567890"
                 },
                 "npwp": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456789012345"
                 },
                 "npwp_file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "npwp_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "DJP"
                 },
                 "penerapan_spi": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "updated_by": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "website": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://e-bumd.com"
                 }
             }
         },
@@ -8938,7 +8987,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "logo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.png"
                 }
             }
         },
@@ -8946,13 +8996,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "npwp": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456789012345"
                 },
                 "pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "DJP"
                 }
             }
         },
@@ -8960,10 +9013,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file_spi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "penerapan_spi": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -8971,25 +9026,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "keterangan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Keterangan"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "notaris": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Notaris"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -8997,34 +9059,44 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "instansi_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Kemendagri"
                 },
                 "is_seumur_hidup": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "klasifikasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "NIB"
                 },
                 "kualifikasi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "masa_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9032,25 +9104,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "keterangan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Keterangan"
                 },
                 "modal_dasar": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9058,34 +9137,44 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "instansi_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Kemendagri"
                 },
                 "is_seumur_hidup": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "klasifikasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "SIUP"
                 },
                 "kualifikasi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "masa_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9093,31 +9182,40 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "instansi_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Kemendagri"
                 },
                 "is_seumur_hidup": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "klasifikasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "TDP"
                 },
                 "kualifikasi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "masa_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
                     "type": "string"
@@ -9139,18 +9237,33 @@ const docTemplate = `{
         },
         "kepengurusan_sdm.PegawaiForm": {
             "type": "object",
+            "required": [
+                "jumlah_pegawai",
+                "pendidikan",
+                "status_pegawai",
+                "tahun"
+            ],
             "properties": {
                 "jumlah_pegawai": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 100
                 },
                 "pendidikan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c79-6d4d-7e5e-9d30-3d28773ae539"
                 },
                 "status_pegawai": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0,
+                    "example": 1
                 },
                 "tahun": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 2099,
+                    "minimum": 2000,
+                    "example": 2021
                 }
             }
         },
@@ -9158,22 +9271,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "jumlah_pegawai": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 100
+                },
+                "nama_pendidikan": {
+                    "type": "string",
+                    "example": "S3 (Doktor)"
                 },
                 "pendidikan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c79-6d4d-7e5e-9d30-3d28773ae539"
                 },
                 "status_pegawai": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "tahun": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2021
                 }
             }
         },
@@ -9181,63 +9304,92 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "alamat": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Jl. Raya No. 1, Jakarta"
                 },
                 "deskripsi_jabatan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Deskripsi Jabatan"
                 },
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "jabatan_struktur": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                },
+                "nama_pendidikan_akhir": {
+                    "type": "string",
+                    "example": "S3 (Doktor)"
                 },
                 "nama_pengurus": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Pengurus 1"
                 },
                 "nik": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "pendidikan_akhir": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c79-6d4d-7e5e-9d30-3d28773ae539"
                 },
                 "tanggal_akhir_jabatan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "tanggal_mulai_jabatan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
         "keuangan.KeuModalForm": {
             "type": "object",
+            "required": [
+                "id_kab",
+                "id_prov",
+                "jumlah",
+                "tanggal"
+            ],
             "properties": {
                 "id_kab": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_prov": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "jumlah": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "keterangan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Keterangan Modal"
                 },
                 "no_ba": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "pemegang": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Pemegang Modal"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9245,37 +9397,48 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_kab": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_prov": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "jumlah": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "keterangan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Keterangan Modal"
                 },
                 "nama_kab": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Jakarta Selatan"
                 },
                 "nama_prov": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "DKI Jakarta"
                 },
                 "no_ba": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "pemegang": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Pemegang Modal"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9286,37 +9449,64 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "created_by": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_jenis_laporan": {
-                    "type": "string"
+                    "type": "integer",
+                    "example": 2
                 },
                 "id_jenis_laporan_item": {
-                    "type": "string"
+                    "type": "integer",
+                    "example": 3
                 },
                 "jumlah": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
+                },
+                "kode_jenis_laporan": {
+                    "type": "string",
+                    "example": "1.1"
+                },
+                "kode_jenis_laporan_item": {
+                    "type": "string",
+                    "example": "1.1.01"
+                },
+                "nama_jenis_laporan": {
+                    "type": "string",
+                    "example": "Cakupan Layanan"
+                },
+                "nama_jenis_laporan_item": {
+                    "type": "string",
+                    "example": "Penduduk Wilayah Administrasi (Jiwa)"
                 },
                 "tahun": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2021
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "updated_by": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -9465,25 +9655,32 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_daerah": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_role": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_user": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "kode_ddn": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123"
                 },
                 "kode_provinsi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "11.01"
                 },
                 "sub_domain_daerah": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "jakarta"
                 }
             }
         },
@@ -9491,43 +9688,56 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_daerah": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_role": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_user": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "kode_ddn": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "11.01"
                 },
                 "kode_prop": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "11.01"
                 },
                 "logo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.png"
                 },
                 "nama_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "BUMD"
                 },
                 "nama_daerah": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Daerah"
                 },
                 "nama_role": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Admin"
                 },
                 "nama_user": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Admin"
                 },
                 "sub_domain": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "jakarta"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         },
@@ -9535,28 +9745,36 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id_bumd": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_daerah": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_role": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "id_user": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "logo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.png"
                 },
                 "nama": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Admin"
                 },
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Admin"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "admin"
                 }
             }
         },
@@ -9564,99 +9782,172 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "instansi_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Kemendagri"
                 },
                 "is_seumur_hidup": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "klasifikasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Domisili"
                 },
                 "kualifikasi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "masa_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
         "others.KinerjaForm": {
             "type": "object",
+            "required": [
+                "aktiva_tetap",
+                "akumulasi_depresiasi",
+                "capital_employed",
+                "ebit",
+                "ebitda",
+                "harga_pokok_penjualan",
+                "harta_lancar",
+                "kas",
+                "kewajiban_lancar",
+                "kredit_bermasalah",
+                "modal_sendiri",
+                "penjualan_bersih",
+                "penyusutan",
+                "persediaan",
+                "piutang_dagang",
+                "setara_kas",
+                "tahun",
+                "total_aset_akhir",
+                "total_aset_awal",
+                "total_kredit"
+            ],
             "properties": {
                 "aktiva_tetap": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "akumulasi_depresiasi": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "capital_employed": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "ebit": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "ebitda": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "harga_pokok_penjualan": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "harta_lancar": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "kas": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "kewajiban_lancar": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "kredit_bermasalah": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "modal_sendiri": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "penjualan_bersih": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "penyusutan": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "persediaan": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "piutang_dagang": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "setara_kas": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "tahun": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 2099,
+                    "minimum": 2000,
+                    "example": 2021
                 },
                 "total_aset_akhir": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "total_aset_awal": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 },
                 "total_kredit": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 1000000
                 }
             }
         },
@@ -9664,82 +9955,108 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "aktiva_tetap": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "akumulasi_depresiasi": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "capital_employed": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "created_by": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "ebit": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "ebitda": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "harga_pokok_penjualan": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "harta_lancar": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_kinerja": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "kas": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "kewajiban_lancar": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "kredit_bermasalah": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "modal_sendiri": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "penjualan_bersih": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "penyusutan": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "persediaan": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "piutang_dagang": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "setara_kas": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "tahun": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2021
                 },
                 "total_aset_akhir": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "total_aset_awal": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "total_kredit": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1000000
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "updated_by": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -9747,28 +10064,36 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file_peraturan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "jenis_peraturan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "01994c04-699d-75e0-a288-13980f8c854d"
                 },
                 "keterangan_peraturan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Keterangan Peraturan"
                 },
                 "nama_jenis_peraturan": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "SOP"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9776,19 +10101,24 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "deskripsi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Deskripsi Produk 1"
                 },
                 "foto_produk": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.png"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "nama_produk": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Produk 1"
                 }
             }
         },
@@ -9796,34 +10126,44 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "instansi_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Kemendagri"
                 },
                 "is_seumur_hidup": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "klasifikasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "RKA"
                 },
                 "kualifikasi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "masa_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
@@ -9831,34 +10171,44 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "file": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "/path/to/file.pdf"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "id_bumd": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "instansi_pemberi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Kemendagri"
                 },
                 "is_seumur_hidup": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "klasifikasi": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Rencana Bisnis"
                 },
                 "kualifikasi": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "masa_berlaku": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "nomor": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "tanggal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 }
             }
         },
