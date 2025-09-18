@@ -55,10 +55,10 @@ func (c *PengurusController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, p
 		tanggal_mulai_jabatan_pengurus,
 		tanggal_akhir_jabatan_pengurus,
 		file_pengurus,
-		created_at,
-		created_by,
-		updated_at,
-		updated_by
+		trn_pengurus.created_at,
+		trn_pengurus.created_by,
+		trn_pengurus.updated_at,
+		trn_pengurus.updated_by
 	FROM trn_pengurus
 	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_akhir_pengurus
 	WHERE trn_pengurus.deleted_by = 0 AND id_bumd = $1
@@ -123,7 +123,7 @@ func (c *PengurusController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	}
 
 	q := `
-	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, m_pendidikan.nama_pendidikan, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus, created_at, created_by, updated_at, updated_by
+	SELECT id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, m_pendidikan.nama_pendidikan, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, file_pengurus, trn_pengurus.created_at, trn_pengurus.created_by, trn_pengurus.updated_at, trn_pengurus.updated_by
 	FROM trn_pengurus
 	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_akhir_pengurus
 	WHERE trn_pengurus.deleted_by = 0 AND id_bumd = $1 AND id_pengurus = $2

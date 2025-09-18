@@ -37,7 +37,7 @@ func (c *PegawaiController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, pa
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_pegawai WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai, created_at, created_by, updated_at, updated_by
+	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai, trn_pegawai.created_at, trn_pegawai.created_by, trn_pegawai.updated_at, trn_pegawai.updated_by
 	FROM trn_pegawai
 	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_pegawai
 	WHERE trn_pegawai.deleted_by = 0 AND id_bumd = $1
@@ -102,7 +102,7 @@ func (c *PegawaiController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idB
 	}
 
 	q := `
-	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai, created_at, created_by, updated_at, updated_by
+	SELECT id_pegawai, id_bumd, tahun_pegawai, status_pegawai, pendidikan_pegawai, m_pendidikan.nama_pendidikan, jumlah_pegawai, trn_pegawai.created_at, trn_pegawai.created_by, trn_pegawai.updated_at, trn_pegawai.updated_by
 	FROM trn_pegawai
 	LEFT JOIN m_pendidikan ON m_pendidikan.id_pendidikan = pendidikan_pegawai
 	WHERE trn_pegawai.deleted_by = 0 AND id_bumd = $1 AND id_pegawai = $2
