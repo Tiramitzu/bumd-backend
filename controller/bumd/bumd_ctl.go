@@ -113,7 +113,6 @@ func (c *BumdController) Index(
 	}
 
 	q += fmt.Sprintf(`
-	ORDER BY created_at DESC
 	LIMIT $%d OFFSET $%d
 	`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)

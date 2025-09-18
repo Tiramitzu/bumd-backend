@@ -81,7 +81,7 @@ func (c *RKAController) Index(
 		}
 	}
 
-	q += fmt.Sprintf(` ORDER BY id_rka DESC LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	q += fmt.Sprintf(` LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
 
 	rows, err := c.pgxConn.Query(fCtx, q, args...)

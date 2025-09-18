@@ -49,7 +49,6 @@ func (c *RolesController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token, page
 		args = append(args, "%"+nama+"%")
 	}
 	q += fmt.Sprintf(`
-	ORDER BY id DESC
 	LIMIT $%d OFFSET $%d
 	`, len(args)+1, len(args)+2)
 	args = append(args, limit, offset)

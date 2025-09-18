@@ -32,8 +32,6 @@ func (c *BentukUsahaController) Index(fCtx *fasthttp.RequestCtx, user *jwt.Token
 		args = append(args, "%"+nama+"%")
 	}
 
-	q += ` ORDER BY created_at DESC`
-
 	rows, err := c.pgxConn.Query(fCtx, q, args...)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
