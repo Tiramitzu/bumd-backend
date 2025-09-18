@@ -41,7 +41,7 @@ func NewJenisLaporanHandler(r fiber.Router, validator *validator.Validate, contr
 //	@Failure		422				{array}		utils.RequestError			"Data validation failed"
 //	@Failure		500				{object}	utils.RequestError			"Server error"
 //	@Security		ApiKeyAuth
-//	@Router			/jenis_laporan [get]
+//	@Router			/strict/jenis_laporan [get]
 func (h *JenisLaporanHandler) Index(c *fiber.Ctx) error {
 	bentukUsaha := c.Query("bentuk_usaha", "00000000-0000-0000-0000-000000000000")
 	bentukUsahaUUID, err := uuid.Parse(bentukUsaha)

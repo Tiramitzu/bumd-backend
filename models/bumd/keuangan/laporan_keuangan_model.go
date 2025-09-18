@@ -29,6 +29,6 @@ type LaporanKeuanganForm struct {
 	IdJenisLaporan     int                   `json:"id_jenis_laporan" xml:"id_jenis_laporan" form:"id_jenis_laporan" validate:"required" example:"2"`
 	IdJenisLaporanItem int                   `json:"id_jenis_laporan_item" xml:"id_jenis_laporan_item" form:"id_jenis_laporan_item" validate:"required" example:"3"`
 	Tahun              int                   `json:"tahun" xml:"tahun" form:"tahun" validate:"required,min=2000,max=2099" example:"2021"`
-	Jumlah             float64               `json:"jumlah" xml:"jumlah" form:"jumlah" validate:"required,min=0" example:"1000000"`
+	Jumlah             float64               `json:"jumlah" xml:"jumlah" form:"jumlah" validate:"min=0" example:"1000000"`
 	File               *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 }

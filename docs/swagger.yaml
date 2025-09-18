@@ -327,6 +327,7 @@ definitions:
         example: 01994c79-6d4d-7e5e-9d30-3d28773ae539
         type: string
       status_pegawai:
+        default: 0
         example: 1
         maximum: 3
         minimum: 0
@@ -337,9 +338,7 @@ definitions:
         minimum: 2000
         type: integer
     required:
-    - jumlah_pegawai
     - pendidikan
-    - status_pegawai
     - tahun
     type: object
   kepengurusan_sdm.PegawaiModel:
@@ -432,7 +431,6 @@ definitions:
     required:
     - id_kab
     - id_prov
-    - jumlah
     - tanggal
     type: object
   keuangan.KeuModalModel:
@@ -823,26 +821,7 @@ definitions:
         minimum: 0
         type: number
     required:
-    - aktiva_tetap
-    - akumulasi_depresiasi
-    - capital_employed
-    - ebit
-    - ebitda
-    - harga_pokok_penjualan
-    - harta_lancar
-    - kas
-    - kewajiban_lancar
-    - kredit_bermasalah
-    - modal_sendiri
-    - penjualan_bersih
-    - penyusutan
-    - persediaan
-    - piutang_dagang
-    - setara_kas
     - tahun
-    - total_aset_akhir
-    - total_aset_awal
-    - total_kredit
     type: object
   others.KinerjaModel:
     properties:
@@ -3611,10 +3590,11 @@ paths:
         required: true
         type: string
       - description: Pendidikan Akhir
+        format: uuid
         in: formData
         name: pendidikan_akhir
         required: true
-        type: integer
+        type: string
       - description: Tanggal Mulai Jabatan
         in: formData
         name: tanggal_mulai_jabatan
@@ -3793,10 +3773,11 @@ paths:
         required: true
         type: string
       - description: Pendidikan Akhir
+        format: uuid
         in: formData
         name: pendidikan_akhir
         required: true
-        type: integer
+        type: string
       - description: Tanggal Mulai Jabatan
         in: formData
         name: tanggal_mulai_jabatan

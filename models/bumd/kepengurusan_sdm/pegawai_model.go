@@ -14,7 +14,7 @@ type PegawaiModel struct {
 
 type PegawaiForm struct {
 	Tahun         int       `json:"tahun" form:"tahun" validate:"required,min=2000,max=2099" example:"2021"`
-	StatusPegawai int       `json:"status_pegawai" form:"status_pegawai" validate:"required,min=0,max=3" example:"1"`
-	Pendidikan    uuid.UUID `json:"pendidikan" form:"pendidikan" validate:"required,custom_uuid" example:"01994c79-6d4d-7e5e-9d30-3d28773ae539"`
-	JumlahPegawai int       `json:"jumlah_pegawai" form:"jumlah_pegawai" validate:"required,min=0" example:"100"`
+	StatusPegawai int       `json:"status_pegawai" form:"status_pegawai" validate:"min=0,max=3" example:"1" default:"0"`
+	Pendidikan    uuid.UUID `json:"pendidikan" form:"pendidikan" validate:"custom_uuid" example:"01994c79-6d4d-7e5e-9d30-3d28773ae539"`
+	JumlahPegawai int       `json:"jumlah_pegawai" form:"jumlah_pegawai" validate:"min=0" example:"100"`
 }

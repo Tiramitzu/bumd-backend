@@ -37,23 +37,23 @@ type KinerjaModel struct {
 
 type KinerjaForm struct {
 	Tahun               int64   `json:"tahun" validate:"required,min=2000,max=2099" example:"2021"`
-	Ebit                float64 `json:"ebit" validate:"required,min=0" example:"1000000"`
-	Ebitda              float64 `json:"ebitda" validate:"required,min=0" example:"1000000"`
-	ModalSendiri        float64 `json:"modal_sendiri" validate:"required,min=0" example:"1000000"`
-	Penyusutan          float64 `json:"penyusutan" validate:"required,min=0" example:"1000000"`
-	CapitalEmployed     float64 `json:"capital_employed" validate:"required,min=0" example:"1000000"`
-	TotalAsetAwal       float64 `json:"total_aset_awal" validate:"required,min=0" example:"1000000"`
-	TotalAsetAkhir      float64 `json:"total_aset_akhir" validate:"required,min=0" example:"1000000"`
-	Kas                 float64 `json:"kas" validate:"required,min=0" example:"1000000"`
-	SetaraKas           float64 `json:"setara_kas" validate:"required,min=0" example:"1000000"`
-	KewajibanLancar     float64 `json:"kewajiban_lancar" validate:"required,min=0" example:"1000000"`
-	Hartalancar         float64 `json:"harta_lancar" validate:"required,min=0" example:"1000000"`
-	PenjualanBersih     float64 `json:"penjualan_bersih" validate:"required,min=0" example:"1000000"`
-	PiutangDagang       float64 `json:"piutang_dagang" validate:"required,min=0" example:"1000000"`
-	HargaPokokPenjualan float64 `json:"harga_pokok_penjualan" validate:"required,min=0" example:"1000000"`
-	Persediaan          float64 `json:"persediaan" validate:"required,min=0" example:"1000000"`
-	AktivaTetap         float64 `json:"aktiva_tetap" validate:"required,min=0" example:"1000000"`
-	AkumulasiDepresiasi float64 `json:"akumulasi_depresiasi" validate:"required,min=0" example:"1000000"`
-	KreditBermasalah    float64 `json:"kredit_bermasalah" validate:"required,min=0" example:"1000000"`
-	TotalKredit         float64 `json:"total_kredit" validate:"required,min=0" example:"1000000"`
+	Ebit                float64 `json:"ebit" validate:"min=0" example:"1000000"`
+	Ebitda              float64 `json:"ebitda" validate:"min=0" example:"1000000"`
+	ModalSendiri        float64 `json:"modal_sendiri" validate:"min=0" example:"1000000"`
+	Penyusutan          float64 `json:"penyusutan" validate:"min=0" example:"1000000"`
+	CapitalEmployed     float64 `json:"capital_employed" validate:"min=0" example:"1000000"`
+	TotalAsetAwal       float64 `json:"total_aset_awal" validate:"min=0" example:"1000000"`
+	TotalAsetAkhir      float64 `json:"total_aset_akhir" validate:"min=0" example:"1000000"`
+	Kas                 float64 `json:"kas" validate:"min=0" example:"1000000"`
+	SetaraKas           float64 `json:"setara_kas" validate:"min=0" example:"1000000"`
+	KewajibanLancar     float64 `json:"kewajiban_lancar" validate:"min=0" example:"1000000"`
+	Hartalancar         float64 `json:"harta_lancar" validate:"min=0" example:"1000000"`
+	PenjualanBersih     float64 `json:"penjualan_bersih" validate:"min=0" example:"1000000"`
+	PiutangDagang       float64 `json:"piutang_dagang" validate:"min=0" example:"1000000"`
+	HargaPokokPenjualan float64 `json:"harga_pokok_penjualan" validate:"min=0" example:"1000000"`
+	Persediaan          float64 `json:"persediaan" validate:"min=0" example:"1000000"`
+	AktivaTetap         float64 `json:"aktiva_tetap" validate:"min=0" example:"1000000"`
+	AkumulasiDepresiasi float64 `json:"akumulasi_depresiasi" validate:"min=0" example:"1000000"`
+	KreditBermasalah    float64 `json:"kredit_bermasalah" validate:"min=0" example:"1000000"`
+	TotalKredit         float64 `json:"total_kredit" validate:"min=0" example:"1000000"`
 }

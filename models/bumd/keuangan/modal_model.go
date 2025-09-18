@@ -26,6 +26,6 @@ type KeuModalForm struct {
 	Pemegang   string  `json:"pemegang" example:"Pemegang Modal"`
 	NoBa       string  `json:"no_ba" example:"1234567890"`
 	Tanggal    string  `json:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
-	Jumlah     float64 `json:"jumlah" validate:"required,min=0" example:"1000000"`
+	Jumlah     float64 `json:"jumlah" validate:"min=0" example:"1000000"`
 	Keterangan string  `json:"keterangan" example:"Keterangan Modal"`
 }

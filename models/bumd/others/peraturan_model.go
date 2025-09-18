@@ -23,5 +23,5 @@ type PeraturanForm struct {
 	TanggalBerlaku      *string               `json:"tanggal_berlaku" xml:"tanggal_berlaku" form:"tanggal_berlaku" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
 	KeteranganPeraturan string                `json:"keterangan_peraturan" xml:"keterangan_peraturan" form:"keterangan_peraturan" example:"Keterangan Peraturan"`
 	FilePeraturan       *multipart.FileHeader `json:"file_peraturan" xml:"file_peraturan" form:"file_peraturan"`
-	JenisPeraturan      uuid.UUID             `json:"jenis_peraturan" xml:"jenis_peraturan" form:"jenis_peraturan" validate:"required,custom_uuid" example:"01994c04-699d-75e0-a288-13980f8c854d"`
+	JenisPeraturan      uuid.UUID             `json:"jenis_peraturan" xml:"jenis_peraturan" form:"jenis_peraturan" validate:"required" example:"01994c04-699d-75e0-a288-13980f8c854d"`
 }

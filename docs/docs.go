@@ -3861,7 +3861,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Pendidikan Akhir",
                         "name": "pendidikan_akhir",
                         "in": "formData",
@@ -4064,7 +4065,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "uuid",
                         "description": "Pendidikan Akhir",
                         "name": "pendidikan_akhir",
                         "in": "formData",
@@ -9238,9 +9240,7 @@ const docTemplate = `{
         "kepengurusan_sdm.PegawaiForm": {
             "type": "object",
             "required": [
-                "jumlah_pegawai",
                 "pendidikan",
-                "status_pegawai",
                 "tahun"
             ],
             "properties": {
@@ -9255,6 +9255,7 @@ const docTemplate = `{
                 },
                 "status_pegawai": {
                     "type": "integer",
+                    "default": 0,
                     "maximum": 3,
                     "minimum": 0,
                     "example": 1
@@ -9358,7 +9359,6 @@ const docTemplate = `{
             "required": [
                 "id_kab",
                 "id_prov",
-                "jumlah",
                 "tanggal"
             ],
             "properties": {
@@ -9826,26 +9826,7 @@ const docTemplate = `{
         "others.KinerjaForm": {
             "type": "object",
             "required": [
-                "aktiva_tetap",
-                "akumulasi_depresiasi",
-                "capital_employed",
-                "ebit",
-                "ebitda",
-                "harga_pokok_penjualan",
-                "harta_lancar",
-                "kas",
-                "kewajiban_lancar",
-                "kredit_bermasalah",
-                "modal_sendiri",
-                "penjualan_bersih",
-                "penyusutan",
-                "persediaan",
-                "piutang_dagang",
-                "setara_kas",
-                "tahun",
-                "total_aset_akhir",
-                "total_aset_awal",
-                "total_kredit"
+                "tahun"
             ],
             "properties": {
                 "aktiva_tetap": {

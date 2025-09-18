@@ -73,5 +73,5 @@ type UserForm struct {
 	Logo     *multipart.FileHeader `json:"logo" xml:"logo" form:"logo"`
 	IdDaerah int32                 `json:"id_daerah" xml:"id_daerah" form:"id_daerah" validate:"required" example:"1"`
 	IdRole   int32                 `json:"id_role" xml:"id_role" form:"id_role" validate:"required" example:"1"`
-	IdBumd   uuid.UUID             `json:"id_bumd" xml:"id_bumd" form:"id_bumd" validate:"required,custom_uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
+	IdBumd   uuid.UUID             `json:"id_bumd" xml:"id_bumd" form:"id_bumd" example:"123e4567-e89b-12d3-a456-426614174000" default:"00000000-0000-0000-0000-000000000000"`
 }

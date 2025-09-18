@@ -137,7 +137,7 @@ func (h *PengurusHandler) View(c *fiber.Ctx) error {
 //	@Param			nik						formData	string							true	"NIK"
 //	@Param			alamat					formData	string							true	"Alamat"
 //	@Param			deskripsi_jabatan		formData	string							true	"Deskripsi Jabatan"
-//	@Param			pendidikan_akhir		formData	int								true	"Pendidikan Akhir"
+//	@Param			pendidikan_akhir		formData	string							true	"Pendidikan Akhir"	Format(uuid)
 //	@Param			tanggal_mulai_jabatan	formData	string							true	"Tanggal Mulai Jabatan"
 //	@Param			tanggal_akhir_jabatan	formData	string							true	"Tanggal Akhir Jabatan"
 //	@Param			file					formData	file							true	"File"
@@ -199,15 +199,15 @@ func (h *PengurusHandler) Create(c *fiber.Ctx) error {
 //	@Accept			multipart/form-data
 //	@Param			id_bumd					path		string							true	"Id Bumd"		Format(uuid)
 //	@Param			id						path		string							true	"Id Pengurus"	Format(uuid)
-//	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"
+//	@Param			jabatan_struktur		formData	int								true	"Jabatan Struktur"	Min(0) Max(2)
 //	@Param			nama_pengurus			formData	string							true	"Nama Pengurus"
 //	@Param			nik						formData	string							true	"NIK"
 //	@Param			alamat					formData	string							true	"Alamat"
 //	@Param			deskripsi_jabatan		formData	string							true	"Deskripsi Jabatan"
-//	@Param			pendidikan_akhir		formData	int								true	"Pendidikan Akhir"
+//	@Param			pendidikan_akhir		formData	string							true	"Pendidikan Akhir"	Format(uuid)
 //	@Param			tanggal_mulai_jabatan	formData	string							true	"Tanggal Mulai Jabatan"
 //	@Param			tanggal_akhir_jabatan	formData	string							true	"Tanggal Akhir Jabatan"
-//	@Param			file					formData	file							true	"File"
+//	@Param			file					formData	file							false	"File"
 //	@success		200						{object}	kepengurusan_sdm.PengurusModel	"Success"
 //	@Failure		400						{object}	utils.RequestError				"Bad request"
 //	@Failure		404						{object}	utils.RequestError				"Data not found"
