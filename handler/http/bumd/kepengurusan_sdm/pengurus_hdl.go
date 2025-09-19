@@ -29,6 +29,7 @@ func NewPengurusHandler(r fiber.Router, vld *validator.Validate, controller *ctl
 	rPub.Post("/", handler.Create)
 	rPub.Put("/:id", handler.Update)
 	rPub.Delete("/:id", handler.Delete)
+	rPub.Put("/:id/status", handler.UpdateStatus)
 }
 
 // Index func for get all pengurus.
@@ -304,13 +305,13 @@ func (h *PengurusHandler) Delete(c *fiber.Ctx) error {
 //	@Description	update status pengurus.
 //	@ID				pengurus-update-status
 //	@Tags			Pengurus
-//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
-//	@Param			id		path		string							true	"Id Pengurus"	Format(uuid)
-//	@success		200		{object}	kepengurusan_sdm.PengurusModel	"Success"
-//	@Failure		400		{object}	utils.RequestError				"Bad request"
-//	@Failure		404		{object}	utils.RequestError				"Data not found"
-//	@Failure		422		{array}		utils.RequestError				"Data validation failed"
-//	@Failure		500		{object}	utils.RequestError				"Server error"
+//	@Param			id_bumd	path		string								true	"Id Bumd"		Format(uuid)
+//	@Param			id		path		string								true	"Id Pengurus"	Format(uuid)
+//	@success		200		{object}	kepengurusan_sdm.PengurusUpdateForm	"Success"
+//	@Failure		400		{object}	utils.RequestError					"Bad request"
+//	@Failure		404		{object}	utils.RequestError					"Data not found"
+//	@Failure		422		{array}		utils.RequestError					"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError					"Server error"
 //	@Security		ApiKeyAuth
 //	@Router			/strict/bumd/{id_bumd}/pengurus/{id}/status [put]
 func (h *PengurusHandler) UpdateStatus(c *fiber.Ctx) error {

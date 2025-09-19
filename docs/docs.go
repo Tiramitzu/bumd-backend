@@ -4151,7 +4151,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
+                            "$ref": "#/definitions/kepengurusan_sdm.PengurusUpdateForm"
                         }
                     },
                     "400": {
@@ -9536,6 +9536,20 @@ const docTemplate = `{
                 }
             }
         },
+        "kepengurusan_sdm.PengurusUpdateForm": {
+            "type": "object",
+            "properties": {
+                "is_active": {
+                    "type": "integer",
+                    "default": 1,
+                    "enum": [
+                        0,
+                        1
+                    ],
+                    "example": 1
+                }
+            }
+        },
         "keuangan.KeuModalForm": {
             "type": "object",
             "required": [
@@ -9572,7 +9586,7 @@ const docTemplate = `{
                 },
                 "tanggal": {
                     "type": "string",
-                    "example": "2021-01-01T00:00:00Z"
+                    "example": "2021-01-01"
                 }
             }
         },

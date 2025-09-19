@@ -490,6 +490,16 @@ definitions:
         example: 1
         type: integer
     type: object
+  kepengurusan_sdm.PengurusUpdateForm:
+    properties:
+      is_active:
+        default: 1
+        enum:
+        - 0
+        - 1
+        example: 1
+        type: integer
+    type: object
   keuangan.KeuModalForm:
     properties:
       id_kab:
@@ -514,7 +524,7 @@ definitions:
         example: Pemegang Modal
         type: string
       tanggal:
-        example: "2021-01-01T00:00:00Z"
+        example: "2021-01-01"
         type: string
     required:
     - no_ba
@@ -3948,7 +3958,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
+            $ref: '#/definitions/kepengurusan_sdm.PengurusUpdateForm'
         "400":
           description: Bad request
           schema:
