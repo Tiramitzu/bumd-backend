@@ -25,11 +25,11 @@ type NibModel struct {
 }
 
 type NibForm struct {
-	Nomor           string                `json:"nomor" xml:"nomor" form:"nomor" example:"1234567890"`
-	InstansiPemberi string                `json:"instansi_pemberi" xml:"instansi_pemberi" form:"instansi_pemberi" example:"Kemendagri"`
-	Tanggal         string                `json:"tanggal" xml:"tanggal" form:"tanggal" example:"2021-01-01T00:00:00Z"`
+	Nomor           string                `json:"nomor" xml:"nomor" form:"nomor" validate:"required" example:"1234567890"`
+	InstansiPemberi string                `json:"instansi_pemberi" xml:"instansi_pemberi" form:"instansi_pemberi" validate:"required" example:"Kemendagri"`
+	Tanggal         string                `json:"tanggal" xml:"tanggal" form:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
 	Klasifikasi     string                `json:"klasifikasi" xml:"klasifikasi" form:"klasifikasi" example:"NIB"`
-	MasaBerlaku     *string               `json:"masa_berlaku" xml:"masa_berlaku" form:"masa_berlaku" example:"2021-01-01T00:00:00Z"`
+	MasaBerlaku     *string               `json:"masa_berlaku" xml:"masa_berlaku" form:"masa_berlaku" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
 	File            *multipart.FileHeader `json:"file" xml:"file" form:"file"`
-	Kualifikasi     int32                 `json:"kualifikasi" xml:"kualifikasi" form:"kualifikasi" example:"1"`
+	Kualifikasi     int32                 `json:"kualifikasi" xml:"kualifikasi" form:"kualifikasi" validate:"oneof=0 1" example:"1"`
 }

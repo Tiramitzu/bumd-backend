@@ -20,6 +20,7 @@ type PengurusModel struct {
 	TanggalMulaiJabatan time.Time `json:"tanggal_mulai_jabatan" example:"2021-01-01T00:00:00Z"`
 	TanggalAkhirJabatan time.Time `json:"tanggal_akhir_jabatan" example:"2021-01-01T00:00:00Z"`
 	File                string    `json:"file" example:"/path/to/file.pdf"`
+	IsActive            int       `json:"is_active" example:"1"`
 	CreatedAt           time.Time `json:"created_at" example:"2021-01-01T00:00:00Z"`
 	CreatedBy           int64     `json:"created_by" example:"1"`
 	UpdatedAt           time.Time `json:"updated_at" example:"2021-01-01T00:00:00Z"`
@@ -29,11 +30,16 @@ type PengurusModel struct {
 type PengurusForm struct {
 	JabatanStruktur     int                   `json:"jabatan_struktur" form:"jabatan_struktur" validate:"min=0,max=2" example:"1" default:"0"`
 	NamaPengurus        string                `json:"nama_pengurus" form:"nama_pengurus" validate:"required" example:"Pengurus 1"`
-	NIK                 string                `json:"nik" form:"nik" example:"1234567890"`
+	NIK                 string                `json:"nik" form:"nik" validate:"required" example:"1234567890"`
 	Alamat              string                `json:"alamat" form:"alamat" example:"Jl. Raya No. 1, Jakarta"`
-	DeskripsiJabatan    string                `json:"deskripsi_jabatan" form:"deskripsi_jabatan" example:"Deskripsi Jabatan"`
+	DeskripsiJabatan    string                `json:"deskripsi_jabatan" form:"deskripsi_jabatan" validate:"required" example:"Deskripsi Jabatan"`
 	PendidikanAkhir     uuid.UUID             `json:"pendidikan_akhir" form:"pendidikan_akhir" validate:"required" example:"01994c79-6d4d-7e5e-9d30-3d28773ae539"`
 	TanggalMulaiJabatan string                `json:"tanggal_mulai_jabatan" form:"tanggal_mulai_jabatan" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
 	TanggalAkhirJabatan string                `json:"tanggal_akhir_jabatan" form:"tanggal_akhir_jabatan" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
+	IsActive            int                   `json:"is_active" form:"is_active" validate:"oneof=0 1" example:"1" default:"1"`
 	File                *multipart.FileHeader `json:"file" form:"file"`
+}
+
+type PengurusUpdateForm struct {
+	IsActive int `json:"is_active" form:"is_active" validate:"oneof=0 1" example:"1" default:"1"`
 }

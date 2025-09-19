@@ -22,9 +22,9 @@ type AktaNotarisModel struct {
 }
 
 type AktaNotarisForm struct {
-	Nomor      string                `json:"nomor" xml:"nomor" form:"nomor" example:"1234567890"`
-	Notaris    string                `json:"notaris" xml:"notaris" form:"notaris" example:"Notaris"`
-	Tanggal    string                `json:"tanggal" xml:"tanggal" form:"tanggal" example:"2021-01-01T00:00:00Z"`
+	Nomor      string                `json:"nomor" xml:"nomor" form:"nomor" validate:"required" example:"1234567890"`
+	Notaris    string                `json:"notaris" xml:"notaris" form:"notaris" validate:"required" example:"Notaris"`
+	Tanggal    string                `json:"tanggal" xml:"tanggal" form:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
 	Keterangan string                `json:"keterangan" xml:"keterangan" form:"keterangan" example:"Keterangan"`
 	File       *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 }

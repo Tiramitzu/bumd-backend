@@ -51,7 +51,7 @@ type BumdForm struct {
 	Email             string `json:"email" xml:"email" validate:"email" example:"bumd@e-bumd.com"`
 	Website           string `json:"website" xml:"website" example:"https://e-bumd.com"`
 	Narahubung        string `json:"narahubung" xml:"narahubung" example:"John Doe"`
-	PenerapanSPI      bool   `json:"penerapan_spi" xml:"penerapan_spi" validate:"required,boolean" example:"true"`
+	PenerapanSPI      bool   `json:"penerapan_spi" xml:"penerapan_spi" validate:"boolean" example:"false"`
 }
 
 type LogoModel struct {

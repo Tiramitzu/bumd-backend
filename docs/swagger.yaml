@@ -33,7 +33,7 @@ definitions:
         example: "081234567890"
         type: string
       penerapan_spi:
-        example: true
+        example: false
         type: boolean
       website:
         example: https://e-bumd.com
@@ -43,7 +43,6 @@ definitions:
     - id_bentuk_usaha
     - id_induk_perusahaan
     - nama
-    - penerapan_spi
     type: object
   bumd.BumdModel:
     properties:
@@ -398,6 +397,7 @@ definitions:
         minimum: 2000
         type: integer
     required:
+    - pendidikan
     - tahun
     type: object
   kepengurusan_sdm.PegawaiModel:
@@ -459,6 +459,9 @@ definitions:
       id_bumd:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+      is_active:
+        example: 1
+        type: integer
       jabatan_struktur:
         example: 1
         type: integer
@@ -490,10 +493,12 @@ definitions:
   keuangan.KeuModalForm:
     properties:
       id_kab:
-        example: 1
+        example: 0
+        minimum: 0
         type: integer
       id_prov:
-        example: 1
+        example: 0
+        minimum: 0
         type: integer
       jumlah:
         example: 1000000
@@ -512,8 +517,7 @@ definitions:
         example: "2021-01-01T00:00:00Z"
         type: string
     required:
-    - id_kab
-    - id_prov
+    - no_ba
     - tanggal
     type: object
   keuangan.KeuModalModel:
@@ -3921,6 +3925,51 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: update pengurus
+      tags:
+      - Pengurus
+  /strict/bumd/{id_bumd}/pengurus/{id}/status:
+    put:
+      description: update status pengurus.
+      operationId: pengurus-update-status
+      parameters:
+      - description: Id Bumd
+        format: uuid
+        in: path
+        name: id_bumd
+        required: true
+        type: string
+      - description: Id Pengurus
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/kepengurusan_sdm.PengurusModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update status pengurus
       tags:
       - Pengurus
   /strict/bumd/{id_bumd}/peraturan:

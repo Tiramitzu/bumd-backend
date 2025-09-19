@@ -4116,6 +4116,74 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/bumd/{id_bumd}/pengurus/{id}/status": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update status pengurus.",
+                "tags": [
+                    "Pengurus"
+                ],
+                "summary": "update status pengurus",
+                "operationId": "pengurus-update-status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Bumd",
+                        "name": "id_bumd",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id Pengurus",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/kepengurusan_sdm.PengurusModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd/{id_bumd}/peraturan": {
             "get": {
                 "security": [
@@ -8808,8 +8876,7 @@ const docTemplate = `{
                 "id_bentuk_hukum",
                 "id_bentuk_usaha",
                 "id_induk_perusahaan",
-                "nama",
-                "penerapan_spi"
+                "nama"
             ],
             "properties": {
                 "alamat": {
@@ -8855,7 +8922,7 @@ const docTemplate = `{
                 },
                 "penerapan_spi": {
                     "type": "boolean",
-                    "example": true
+                    "example": false
                 },
                 "website": {
                     "type": "string",
@@ -9319,6 +9386,7 @@ const docTemplate = `{
         "kepengurusan_sdm.PegawaiForm": {
             "type": "object",
             "required": [
+                "pendidikan",
                 "tahun"
             ],
             "properties": {
@@ -9426,6 +9494,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
+                "is_active": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "jabatan_struktur": {
                     "type": "integer",
                     "example": 1
@@ -9467,18 +9539,19 @@ const docTemplate = `{
         "keuangan.KeuModalForm": {
             "type": "object",
             "required": [
-                "id_kab",
-                "id_prov",
+                "no_ba",
                 "tanggal"
             ],
             "properties": {
                 "id_kab": {
                     "type": "integer",
-                    "example": 1
+                    "minimum": 0,
+                    "example": 0
                 },
                 "id_prov": {
                     "type": "integer",
-                    "example": 1
+                    "minimum": 0,
+                    "example": 0
                 },
                 "jumlah": {
                     "type": "number",

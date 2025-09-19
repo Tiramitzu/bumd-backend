@@ -48,7 +48,7 @@ func (c *PeraturanController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_peraturan WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1`
 	q := `
-	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd, created_at, created_by, updated_at, updated_by
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd, trn_peraturan.created_at, trn_peraturan.created_by, trn_peraturan.updated_at, trn_peraturan.updated_by
 	FROM trn_peraturan
 	LEFT JOIN m_jenis_dokumen ON trn_peraturan.jenis_peraturan = m_jenis_dokumen.id_jd
 	WHERE trn_peraturan.deleted_by = 0 AND trn_peraturan.id_bumd = $1
@@ -113,7 +113,7 @@ func (c *PeraturanController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, i
 	}
 
 	q := `
-	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd, created_at, created_by, updated_at, updated_by
+	SELECT id_peraturan, nomor_peraturan, tanggal_berlaku_peraturan, keterangan_peraturan, file_peraturan, id_bumd, jenis_peraturan, m_jenis_dokumen.nama_jd, trn_peraturan.created_at, trn_peraturan.created_by, trn_peraturan.updated_at, trn_peraturan.updated_by
 	FROM trn_peraturan
 	LEFT JOIN m_jenis_dokumen ON trn_peraturan.jenis_peraturan = m_jenis_dokumen.id_jd
 	WHERE trn_peraturan.id_peraturan = $1 AND trn_peraturan.id_bumd = $2 AND trn_peraturan.deleted_by = 0

@@ -297,3 +297,43 @@ func (h *PengurusHandler) Delete(c *fiber.Ctx) error {
 	}
 	return c.JSON(m)
 }
+
+// UpdateStatus func for update status pengurus.
+//
+//	@Summary		update status pengurus
+//	@Description	update status pengurus.
+//	@ID				pengurus-update-status
+//	@Tags			Pengurus
+//	@Param			id_bumd	path		string							true	"Id Bumd"		Format(uuid)
+//	@Param			id		path		string							true	"Id Pengurus"	Format(uuid)
+//	@success		200		{object}	kepengurusan_sdm.PengurusModel	"Success"
+//	@Failure		400		{object}	utils.RequestError				"Bad request"
+//	@Failure		404		{object}	utils.RequestError				"Data not found"
+//	@Failure		422		{array}		utils.RequestError				"Data validation failed"
+//	@Failure		500		{object}	utils.RequestError				"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/{id_bumd}/pengurus/{id}/status [put]
+func (h *PengurusHandler) UpdateStatus(c *fiber.Ctx) error {
+	idBumd := c.Params("id_bumd")
+	parsedIdBumd, err := uuid.Parse(idBumd)
+	if err != nil {
+		return err
+	}
+
+	id := c.Params("id")
+	parsedId, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+
+	payload := new(kepengurusan_sdm.PengurusUpdateForm)
+	if err := c.BodyParser(payload); err != nil {
+		return err
+	}
+
+	m, err := h.Controller.UpdateStatus(c.Context(), c.Locals("jwt").(*jwt.Token), parsedIdBumd, parsedId, payload)
+	if err != nil {
+		return err
+	}
+	return c.JSON(m)
+}

@@ -10,6 +10,7 @@ CREATE TABLE trn_pengurus (
     tanggal_mulai_jabatan_pengurus  date NOT NULL DEFAULT '0001-01-01',
     tanggal_akhir_jabatan_pengurus  date NOT NULL DEFAULT '0001-01-01',
     file_pengurus                   text NOT NULL DEFAULT '',
+    is_active                       int4 NOT NULL DEFAULT 1,
     created_at                      timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by                      int4 NOT NULL DEFAULT 0,
     updated_at                      timestamp NOT NULL DEFAULT '0001-01-01 00:00:00'::timestamp without time zone,
@@ -25,6 +26,7 @@ ALTER TABLE trn_pengurus ADD CONSTRAINT trn_pengurus_pendidikan_akhir_fk FOREIGN
 
 -- Create index
 CREATE INDEX idx_trn_pengurus_id_bumd ON trn_pengurus(id_bumd);
+CREATE INDEX idx_trn_pengurus_is_active ON trn_pengurus(is_active);
 CREATE INDEX idx_trn_pengurus_jabatan_struktur ON trn_pengurus(jabatan_struktur_pengurus);
 CREATE INDEX idx_trn_pengurus_nama_pengurus ON trn_pengurus(nama_pengurus);
 CREATE INDEX idx_trn_pengurus_nik ON trn_pengurus(nik_pengurus);

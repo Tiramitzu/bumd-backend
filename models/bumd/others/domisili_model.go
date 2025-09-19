@@ -31,5 +31,5 @@ type DomisiliForm struct {
 	Klasifikasi     string                `json:"klasifikasi" xml:"klasifikasi" form:"klasifikasi" validate:"required" example:"Domisili"`
 	MasaBerlaku     *string               `json:"masa_berlaku" xml:"masa_berlaku" form:"masa_berlaku" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
 	File            *multipart.FileHeader `json:"file" xml:"file" form:"file"`
-	Kualifikasi     int32                 `json:"kualifikasi" xml:"kualifikasi" form:"kualifikasi" validate:"required,oneof=0 1" example:"1"`
+	Kualifikasi     int32                 `json:"kualifikasi" xml:"kualifikasi" form:"kualifikasi" validate:"oneof=0 1" example:"1"`
 }
