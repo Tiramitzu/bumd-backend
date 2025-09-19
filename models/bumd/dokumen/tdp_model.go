@@ -27,7 +27,7 @@ type TdpModel struct {
 type TdpForm struct {
 	Nomor           string                `json:"nomor" xml:"nomor" form:"nomor" validate:"required" example:"1234567890"`
 	InstansiPemberi string                `json:"instansi_pemberi" xml:"instansi_pemberi" form:"instansi_pemberi" validate:"required" example:"Kemendagri"`
-	Tanggal         string                `json:"tanggal" xml:"tanggal" form:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
+	Tanggal         string                `json:"tanggal" xml:"tanggal" form:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01"`
 	Klasifikasi     string                `json:"klasifikasi" xml:"klasifikasi" form:"klasifikasi" example:"TDP"`
 	MasaBerlaku     *string               `json:"masa_berlaku" xml:"masa_berlaku" form:"masa_berlaku" example:"2021-01-01T00:00:00Z"`
 	File            *multipart.FileHeader `json:"file" xml:"file" form:"file"`

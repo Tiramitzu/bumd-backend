@@ -23,7 +23,7 @@ type PerdaPendirianModel struct {
 
 type PerdaPendirianForm struct {
 	Nomor      string                `json:"nomor_perda" xml:"nomor_perda" form:"nomor_perda" validate:"required" example:"1234567890"`
-	Tanggal    string                `json:"tanggal_perda" xml:"tanggal_perda" form:"tanggal_perda" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
+	Tanggal    string                `json:"tanggal_perda" xml:"tanggal_perda" form:"tanggal_perda" validate:"required,datetime=2006-01-02" example:"2021-01-01"`
 	Keterangan string                `json:"keterangan" xml:"keterangan" form:"keterangan" example:"Keterangan"`
 	File       *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 	ModalDasar string                `json:"modal_dasar" xml:"modal_dasar" form:"modal_dasar" validate:"min=0" example:"1000000"`

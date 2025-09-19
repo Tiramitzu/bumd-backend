@@ -6,6 +6,7 @@ import (
 	"microdata/kemendagri/bumd/utils"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -66,6 +67,21 @@ func fiberErrorHandler(ctx *fiber.Ctx, err error) error {
 				errObj.Message = "Only alphanumeric and space allowed"
 			case "alphanumslashasterisk":
 				errObj.Message = "Only alphanumeric, slash and asterisk allowed"
+			case "required_without":
+				var errorParam []string
+				var errorParamString string
+				errorParam = strings.Split(err.Param(), " ")
+
+				var lastIndex = len(errorParam) - 1
+				for i, p := range errorParam {
+					if i == lastIndex {
+						errorParamString += p
+					} else {
+						errorParamString += p + " atau "
+					}
+				}
+
+				errObj.Message = fmt.Sprintf("%s harus diisi jika %s kosong atau tidak diisi", err.Field(), errorParamString)
 			default:
 				errObj.Message = err.Tag()
 			}

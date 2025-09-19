@@ -27,9 +27,9 @@ type KeuModalModel struct {
 type KeuModalForm struct {
 	IdProv     int64   `json:"id_prov" validate:"min=0" example:"0"`
 	IdKab      int64   `json:"id_kab" validate:"min=0" example:"0"`
-	Pemegang   string  `json:"pemegang" validate:"required_if=IdProv 0,required_if=IdKab 0" example:"Pemegang Modal"`
+	Pemegang   string  `json:"pemegang" validate:"required_without_all=IdProv IdKab" example:"Pemegang Modal"`
 	NoBa       string  `json:"no_ba" validate:"required" example:"1234567890"`
-	Tanggal    string  `json:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01T00:00:00Z"`
+	Tanggal    string  `json:"tanggal" validate:"required,datetime=2006-01-02" example:"2021-01-01"`
 	Jumlah     float64 `json:"jumlah" validate:"min=0" example:"1000000"`
 	Keterangan string  `json:"keterangan" example:"Keterangan Modal"`
 }

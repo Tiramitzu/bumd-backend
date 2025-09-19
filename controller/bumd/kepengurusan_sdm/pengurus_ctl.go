@@ -181,7 +181,7 @@ func (c *PengurusController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, 
 
 	q := `
 	INSERT INTO trn_pengurus (id_pengurus, id_bumd, jabatan_struktur_pengurus, nama_pengurus, nik_pengurus, alamat_pengurus, deskripsi_jabatan_pengurus, pendidikan_akhir_pengurus, tanggal_mulai_jabatan_pengurus, tanggal_akhir_jabatan_pengurus, is_active, created_by)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 	`
 	_, err = tx.Exec(fCtx, q, id, idBumd, payload.JabatanStruktur, payload.NamaPengurus, payload.NIK, payload.Alamat, payload.DeskripsiJabatan, payload.PendidikanAkhir, payload.TanggalMulaiJabatan, payload.TanggalAkhirJabatan, payload.IsActive, idUser)
 	if err != nil {
