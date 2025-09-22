@@ -48,7 +48,7 @@ type BumdForm struct {
 	Alamat            string `json:"alamat" xml:"alamat" example:"Jl. Raya No. 1, Jakarta"`
 	NoTelp            string `json:"no_telp" xml:"no_telp" example:"081234567890"`
 	NoFax             string `json:"no_fax" xml:"no_fax" example:"081234567890"`
-	Email             string `json:"email" xml:"email" validate:"email" example:"bumd@e-bumd.com"`
+	Email             string `json:"email" xml:"email" validate:"omitempty,email" example:"bumd@e-bumd.com"`
 	Website           string `json:"website" xml:"website" example:"https://e-bumd.com"`
 	Narahubung        string `json:"narahubung" xml:"narahubung" example:"John Doe"`
 	PenerapanSPI      bool   `json:"penerapan_spi" xml:"penerapan_spi" validate:"boolean" example:"false"`
