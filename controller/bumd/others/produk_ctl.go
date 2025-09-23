@@ -48,7 +48,7 @@ func (c *ProdukController) Index(
 
 	qCount := `SELECT COALESCE(COUNT(*), 0) FROM trn_produk WHERE deleted_by = 0 AND id_bumd = $1`
 	q := `
-	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk, created_at, created_by, updated_at, updated_by
+	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk, is_show, created_at, created_by, updated_at, updated_by
 	FROM trn_produk
 	WHERE deleted_by = 0 AND id_bumd = $1
 	`
@@ -82,7 +82,7 @@ func (c *ProdukController) Index(
 	defer rows.Close()
 	for rows.Next() {
 		var m others.ProdukModel
-		err = rows.Scan(&m.Id, &m.IdBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
+		err = rows.Scan(&m.Id, &m.IdBumd, &m.NamaProduk, &m.Deskripsi, &m.FotoProduk, &m.IsShow, &m.CreatedAt, &m.CreatedBy, &m.UpdatedAt, &m.UpdatedBy)
 		if err != nil {
 			return r, totalCount, pageCount, utils.RequestError{
 				Code:    fasthttp.StatusInternalServerError,
@@ -112,12 +112,12 @@ func (c *ProdukController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 	}
 
 	q := `
-	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk, created_at, created_by, updated_at, updated_by
+	SELECT id_produk, id_bumd, nama_produk, deskripsi_produk, foto_produk, is_show, created_at, created_by, updated_at, updated_by
 	FROM trn_produk
 	WHERE id_produk = $1 AND id_bumd = $2 AND deleted_by = 0
 	`
 
-	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.IdBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
+	err = c.pgxConn.QueryRow(fCtx, q, id, idBumd).Scan(&r.Id, &r.IdBumd, &r.NamaProduk, &r.Deskripsi, &r.FotoProduk, &r.IsShow, &r.CreatedAt, &r.CreatedBy, &r.UpdatedAt, &r.UpdatedBy)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return r, utils.RequestError{
@@ -165,7 +165,7 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	}
 
 	q := `
-	INSERT INTO trn_produk (id_produk, nama_produk, deskripsi_produk, id_bumd, created_by) VALUES ($1, $2, $3, $4, $5)
+	INSERT INTO trn_produk (id_produk, nama_produk, deskripsi_produk, id_bumd, created_by, is_show) VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
 	id, err := uuid.NewV7()
@@ -175,7 +175,7 @@ func (c *ProdukController) Create(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 			Message: "gagal membuat id PRODUK. - " + err.Error(),
 		}
 	}
-	_, err = tx.Exec(context.Background(), q, id, payload.NamaProduk, payload.Deskripsi, idBumd, idUser)
+	_, err = tx.Exec(context.Background(), q, id, payload.NamaProduk, payload.Deskripsi, idBumd, idUser, payload.IsShow)
 	if err != nil {
 		return false, utils.RequestError{
 			Code:    fasthttp.StatusInternalServerError,
@@ -260,10 +260,10 @@ func (c *ProdukController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, id
 	var args []interface{}
 	q := `
 	UPDATE trn_produk
-	SET nama_produk = $1, deskripsi_produk = $2, updated_by = $3, updated_at = NOW()
-	WHERE id_produk = $4 AND id_bumd = $5
+	SET nama_produk = $1, deskripsi_produk = $2, updated_by = $3, updated_at = NOW(), is_show = $4
+	WHERE id_produk = $5 AND id_bumd = $6
 	`
-	args = append(args, payload.NamaProduk, payload.Deskripsi, idUser, id, idBumd)
+	args = append(args, payload.NamaProduk, payload.Deskripsi, idUser, payload.IsShow, id, idBumd)
 	_, err = tx.Exec(context.Background(), q, args...)
 	if err != nil {
 		return false, utils.RequestError{

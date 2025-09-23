@@ -13,6 +13,7 @@ type ProdukModel struct {
 	NamaProduk string    `json:"nama_produk" example:"Produk 1"`
 	Deskripsi  string    `json:"deskripsi" example:"Deskripsi Produk 1"`
 	FotoProduk string    `json:"foto_produk" example:"/path/to/file.png"`
+	IsShow     int       `json:"is_show" example:"0"`
 	CreatedAt  time.Time `json:"created_at" example:"2021-01-01T00:00:00Z"`
 	CreatedBy  int64     `json:"created_by" example:"1"`
 	UpdatedAt  time.Time `json:"updated_at" example:"2021-01-01T00:00:00Z"`
@@ -23,4 +24,5 @@ type ProdukForm struct {
 	NamaProduk string                `json:"nama_produk" form:"nama_produk" validate:"required" example:"Produk 1"`
 	Deskripsi  string                `json:"deskripsi" form:"deskripsi" example:"Deskripsi Produk 1"`
 	FotoProduk *multipart.FileHeader `json:"foto_produk" form:"foto_produk"`
+	IsShow     int                   `json:"is_show" form:"is_show" validate:"oneof=0 1" example:"0"`
 }

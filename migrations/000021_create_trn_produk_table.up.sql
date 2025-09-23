@@ -4,6 +4,7 @@ CREATE TABLE trn_produk (
     nama_produk             varchar(255) NOT NULL DEFAULT '',
     deskripsi_produk        text NOT NULL DEFAULT '',
     foto_produk             text NOT NULL DEFAULT '',
+    is_show                 int4 NOT NULL DEFAULT 0,
     created_at              timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by              int4 NOT NULL DEFAULT 0,
     updated_at              timestamp NOT NULL DEFAULT '0001-01-01 00:00:00'::timestamp without time zone,
@@ -19,3 +20,4 @@ CREATE INDEX idx_trn_produk_id_bumd ON trn_produk(id_bumd);
 CREATE INDEX idx_trn_produk_nama_produk ON trn_produk(nama_produk);
 CREATE INDEX idx_trn_produk_deskripsi ON trn_produk(deskripsi_produk);
 CREATE INDEX idx_trn_produk_foto_produk ON trn_produk(foto_produk);
+CREATE INDEX idx_trn_produk_is_show ON trn_produk(is_show);
