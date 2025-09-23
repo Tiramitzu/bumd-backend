@@ -315,7 +315,7 @@ func (c *RencanaBisnisController) Update(fCtx *fasthttp.RequestCtx, user *jwt.To
 			}
 		}
 	} else {
-		q = `UPDATE trn_rencana_bisnis SET masa_berlaku_rencana_bisnis='' WHERE id_rencana_bisnis=$1 AND id_bumd=$2`
+		q = `UPDATE trn_rencana_bisnis SET masa_berlaku_rencana_bisnis=NULL WHERE id_rencana_bisnis=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{

@@ -301,7 +301,7 @@ func (c *SiupController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBu
 			}
 		}
 	} else {
-		q = `UPDATE trn_siup SET masa_berlaku_siup='' WHERE id_siup=$1 AND id_bumd=$2`
+		q = `UPDATE trn_siup SET masa_berlaku_siup=NULL WHERE id_siup=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{

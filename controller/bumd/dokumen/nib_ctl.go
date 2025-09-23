@@ -313,7 +313,7 @@ func (c *NibController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 			}
 		}
 	} else {
-		q = `UPDATE trn_nib SET masa_berlaku_nib='' WHERE id_nib=$1 AND id_bumd=$2`
+		q = `UPDATE trn_nib SET masa_berlaku_nib=NULL WHERE id_nib=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{

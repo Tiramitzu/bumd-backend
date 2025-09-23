@@ -322,7 +322,7 @@ func (c *RKAController) Update(fCtx *fasthttp.RequestCtx, user *jwt.Token, idBum
 			}
 		}
 	} else {
-		q = `UPDATE trn_rka SET masa_berlaku_rka='' WHERE id_rka=$1 AND id_bumd=$2`
+		q = `UPDATE trn_rka SET masa_berlaku_rka=NULL WHERE id_rka=$1 AND id_bumd=$2`
 		_, err = tx.Exec(context.Background(), q, id, idBumd)
 		if err != nil {
 			return false, utils.RequestError{
