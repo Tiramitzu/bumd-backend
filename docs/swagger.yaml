@@ -134,6 +134,57 @@ definitions:
         example: https://e-bumd.com
         type: string
     type: object
+  bumd.KelengkapanInputModel:
+    properties:
+      akta_pendirian:
+        example: 1
+        type: integer
+      bentuk_badan_hukum:
+        example: Perumda
+        type: string
+      bentuk_usaha:
+        example: Air Minum
+        type: string
+      id_bentuk_badan_hukum:
+        example: 01994c00-6768-7fde-ab34-f315eea6510f
+        type: string
+      id_bentuk_usaha:
+        example: 01994c01-c285-7e57-a486-fd9978083917
+        type: string
+      id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      id_daerah:
+        example: 1
+        type: integer
+      keuangan:
+        example: 1
+        type: integer
+      kinerja:
+        example: 1
+        type: integer
+      modal:
+        example: 1
+        type: integer
+      nama_bumd:
+        example: BUMD
+        type: string
+      nama_daerah:
+        example: DKI Jakarta
+        type: string
+      pegawai:
+        example: 1
+        type: integer
+      penerapan_spi:
+        example: 1
+        type: integer
+      pengurus:
+        example: 1
+        type: integer
+      peraturan:
+        example: 1
+        type: integer
+    type: object
   bumd.LogoModel:
     properties:
       logo:
@@ -1793,6 +1844,52 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: get data bisnis matching
+      tags:
+      - Bisnis Matching
+  /strict/bisnis_matching/{id}:
+    put:
+      description: update data bisnis matching.
+      operationId: bisnis_matching-update
+      parameters:
+      - description: Id produk untuk update data bisnis matching
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status untuk update data bisnis matching
+        in: query
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.BisnisMatchingModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: update data bisnis matching
       tags:
       - Bisnis Matching
   /strict/bumd:
@@ -6420,6 +6517,59 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: update data spi by id
+      tags:
+      - BUMD
+  /strict/bumd/kelengkapan_input:
+    get:
+      description: get data kelengkapan input.
+      operationId: kelengkapan_input-view
+      parameters:
+      - description: Id Daerah
+        in: query
+        name: id_daerah
+        type: string
+      - description: Bentuk Usaha BUMD
+        in: query
+        name: bentuk_usaha
+        type: string
+      - description: Id BUMD
+        in: query
+        name: id_bumd
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/bumd.KelengkapanInputModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data kelengkapan input
       tags:
       - BUMD
   /strict/jenis_dokumen:

@@ -28,9 +28,9 @@ INSERT INTO m_bentuk_usaha (id_bu, nama_bu, deskripsi_bu, created_by) VALUES
 ('01994c01-c285-73ae-8885-65ab6b20deb3', 'JAMKRIDA', '', 1),
 ('01994c01-c285-7e51-9140-e75269630f28', 'Pasar', '', 1),
 ('01994c01-c285-73b3-ada9-10d5180a4a2f', 'Lainnya', '', 1),
-('01994c01-c285-75df-906f-5b5ea775d519', 'Migas', '', 1),
-('01994c01-c285-764f-ab66-d9e0c728ba59', 'Pariwisata', '', 1),
-('01994c01-c285-7880-a971-70231530ba47', 'MINERBA', '', 1),
-('01994c01-c285-7e19-a547-c055c71b681b', 'AGRO', '', 1),
-('01994c01-c285-72e8-a39a-4b065fa81980', 'Kepelabuhan', '', 1),
-('01994c01-c285-72c6-9bec-5ebe9fbd222d', 'Transportasi', '', 1);
+('01994c01-c285-75df-906f-5b5ea775d519', 'Migas', 'Migas', 1),
+('01994c01-c285-764f-ab66-d9e0c728ba59', 'Pariwisata', 'Pariwisata', 1),
+('01994c01-c285-7880-a971-70231530ba47', 'MINERBA', 'Minerba', 1),
+('01994c01-c285-7e19-a547-c055c71b681b', 'AGRO', 'Agro', 1),
+('01994c01-c285-72e8-a39a-4b065fa81980', 'Kepelabuhan', 'Kepelabuhan', 1),
+('01994c01-c285-72c6-9bec-5ebe9fbd222d', 'Transportasi', 'Transportasi', 1);

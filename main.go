@@ -373,7 +373,7 @@ func main() {
 		return c.Next()
 	})
 
-	http.NewSiteHandler(app, controller.NewSiteController(pgxConn, timeoutContext), vld)
+	http.NewSiteHandler(app, controller.NewSiteController(timeoutContext), vld)
 
 	// captchaStore := captcha_store.NewPostgreSQLStore(pgxConn)
 	// http.NewCaptchaHandler(app, controller.NewCaptchaController(captchaStore, timeoutContext, vld))

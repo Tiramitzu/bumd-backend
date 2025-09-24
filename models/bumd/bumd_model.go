@@ -83,3 +83,22 @@ type NPWPForm struct {
 	Pemberi string                `json:"pemberi" xml:"pemberi" form:"pemberi" validate:"required" example:"DJP"`
 	File    *multipart.FileHeader `json:"file" xml:"file" form:"file"`
 }
+
+type KelengkapanInputModel struct {
+	IdBumd             uuid.UUID `json:"id_bumd" xml:"id_bumd" example:"123e4567-e89b-12d3-a456-426614174000"`
+	NamaBumd           string    `json:"nama_bumd" xml:"nama_bumd" example:"BUMD"`
+	IdBentukBadanHukum uuid.UUID `json:"id_bentuk_badan_hukum" xml:"id_bentuk_badan_hukum" example:"01994c00-6768-7fde-ab34-f315eea6510f"`
+	BentukBadanHukum   string    `json:"bentuk_badan_hukum" xml:"bentuk_badan_hukum" example:"Perumda"`
+	IdBentukUsaha      uuid.UUID `json:"id_bentuk_usaha" xml:"id_bentuk_usaha" example:"01994c01-c285-7e57-a486-fd9978083917"`
+	BentukUsaha        string    `json:"bentuk_usaha" xml:"bentuk_usaha" example:"Air Minum"`
+	NamaDaerah         string    `json:"nama_daerah" xml:"nama_daerah" example:"DKI Jakarta"`
+	IdDaerah           int32     `json:"id_daerah" xml:"id_daerah" example:"1"`
+	PenerapanSPI       int32     `json:"penerapan_spi" xml:"penerapan_spi" example:"1"`
+	AktaPendirian      int32     `json:"akta_pendirian" xml:"akta_pendirian" example:"1"`
+	Kinerja            int32     `json:"kinerja" xml:"kinerja" example:"1"`
+	Keuangan           int32     `json:"keuangan" xml:"keuangan" example:"1"`
+	Modal              int32     `json:"modal" xml:"modal" example:"1"`
+	Pegawai            int32     `json:"pegawai" xml:"pegawai" example:"1"`
+	Pengurus           int32     `json:"pengurus" xml:"pengurus" example:"1"`
+	Peraturan          int32     `json:"peraturan" xml:"peraturan" example:"1"`
+}

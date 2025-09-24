@@ -25,7 +25,7 @@ func (c *BentukBadanHukumController) Index(fCtx *fasthttp.RequestCtx, user *jwt.
 
 	var args []interface{}
 	q := `
-	SELECT id_bbh, nama_bbh, deskripsi_bbh FROM m_bentuk_badan_hukum WHERE deleted_by = 0
+	SELECT id_bbh, nama_bbh, deskripsi_bbh FROM m_bentuk_badan_hukum WHERE deleted_by = 0 ORDER BY created_at ASC
 	`
 	if nama != "" {
 		q += fmt.Sprintf(` AND nama_bbh ILIKE $%d`, len(args)+1)

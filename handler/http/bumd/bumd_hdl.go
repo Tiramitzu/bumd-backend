@@ -44,6 +44,7 @@ func NewBumdHandler(
 
 	rStrict := r.Group("bumd")
 	rStrict.Get("/", handler.Index)
+	rStrict.Get("/kelengkapan_input", handler.KelengkapanInput)
 	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
@@ -164,7 +165,7 @@ func NewBumdHandler(
 func (h *BumdHandler) Index(c *fiber.Ctx) error {
 	nama := c.Query("nama")
 	penerapanSPI := c.QueryBool("penerapan_spi", false)
-	indukPerusahaan := c.Query("induk_perusahaan", "00000000-0000-0000-0000-000000000000")
+	indukPerusahaan := c.Query("induk_perusahaan", uuid.Nil.String())
 	parsedIndukPerusahaan, err := uuid.Parse(indukPerusahaan)
 	if err != nil {
 		return err
@@ -615,5 +616,73 @@ func (h *BumdHandler) NPWPUpdate(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	return c.JSON(m)
+}
+
+// KelengkapanInput func for get data kelengkapan input.
+//
+//	@Summary		get data kelengkapan input
+//	@Description	get data kelengkapan input.
+//	@ID				kelengkapan_input-view
+//	@Tags			BUMD
+//	@Produce		json
+//	@Param			id_daerah		query		string						false	"Id Daerah"
+//	@Param			bentuk_usaha	query		string						false	"Bentuk Usaha BUMD"
+//	@Param			id_bumd			query		string						false	"Id BUMD"
+//	@Param			page			query		int							false	"Page"
+//	@Param			limit			query		int							false	"Limit"
+//	@Param			search			query		string						false	"Search"
+//	@success		200				{object}	bumd.KelengkapanInputModel	"Success"
+//	@Failure		400				{object}	utils.RequestError			"Bad request"
+//	@Failure		404				{object}	utils.RequestError			"Data not found"
+//	@Failure		500				{object}	utils.RequestError			"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/kelengkapan_input [get]
+func (h *BumdHandler) KelengkapanInput(c *fiber.Ctx) error {
+	idDaerah := c.QueryInt("id_daerah")
+	bentukUsaha := c.Query("bentuk_usaha", uuid.Nil.String())
+	parsedBentukUsaha, err := uuid.Parse(bentukUsaha)
+	if err != nil {
+		return err
+	}
+	idBumd := c.Query("id_bumd", uuid.Nil.String())
+	parsedIdBumd, err := uuid.Parse(idBumd)
+	if err != nil {
+		return err
+	}
+	page := c.QueryInt("page", 1)
+	var limit int
+	limit = c.QueryInt("limit", 5)
+	search := c.Query("search", "")
+
+	if limit > 5 {
+		limit = 5
+	}
+
+	m, totalCount, pageCount, err := h.Controller.KelengkapanInput(
+		c.Context(),
+		c.Locals("jwt").(*jwt.Token),
+		idDaerah,
+		parsedBentukUsaha,
+		parsedIdBumd,
+		page,
+		limit,
+		search,
+	)
+	if err != nil {
+		return err
+	}
+
+	c.Append("x-pagination-total-count", strconv.Itoa(totalCount))
+	c.Append("x-pagination-page-count", strconv.Itoa(pageCount))
+	c.Append("x-pagination-page-size", strconv.Itoa(limit))
+	if page > 1 {
+		c.Append("x-pagination-previous-page", strconv.Itoa(page-1))
+	}
+	c.Append("x-pagination-current-page", strconv.Itoa(page))
+	if page < pageCount {
+		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
+	}
+
 	return c.JSON(m)
 }

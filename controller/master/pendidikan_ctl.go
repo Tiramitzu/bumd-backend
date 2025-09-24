@@ -23,7 +23,7 @@ func NewPendidikanController(conn *pgxpool.Pool) *PendidikanController {
 func (c *PendidikanController) Index(ctx context.Context, jwt *jwt.Token) ([]models.PendidikanModel, error) {
 	var r []models.PendidikanModel
 
-	q := `SELECT id_pendidikan, nama_pendidikan FROM m_pendidikan`
+	q := `SELECT id_pendidikan, nama_pendidikan FROM m_pendidikan ORDER BY created_at ASC`
 	rows, err := c.pgxConn.Query(ctx, q)
 	if err != nil {
 		return nil, utils.RequestError{

@@ -2,16 +2,13 @@ package controller
 
 import (
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type SiteController struct {
-	pgxConn        *pgxpool.Pool
 	contextTimeout time.Duration
 }
 
-func NewSiteController(conn *pgxpool.Pool, tot time.Duration) *SiteController {
+func NewSiteController(tot time.Duration) *SiteController {
 	return &SiteController{
 		contextTimeout: tot,
 	}

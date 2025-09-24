@@ -6,6 +6,7 @@ import (
 	"math"
 	"microdata/kemendagri/bumd/models/bumd"
 	"microdata/kemendagri/bumd/utils"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -817,4 +818,192 @@ func (c *BumdController) NPWPUpdate(
 	}
 
 	return true, err
+}
+
+func (c *BumdController) KelengkapanInput(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	idDaerah int,
+	bentukUsaha,
+	idBumd uuid.UUID,
+	page,
+	limit int,
+	search string,
+) (r []bumd.KelengkapanInputModel, totalCount, pageCount int, err error) {
+	r = make([]bumd.KelengkapanInputModel, 0)
+	claims := user.Claims.(jwt.MapClaims)
+	idDaerahClaims := int(claims["id_daerah"].(float64))
+	idBumdClaims, err := uuid.Parse(claims["id_bumd"].(string))
+	if err != nil {
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Kelengkapan Input. - " + err.Error(),
+		}
+	}
+
+	offset := limit * (page - 1)
+
+	qCount := `
+	SELECT COALESCE(COUNT(*), 0) FROM trn_bumd WHERE deleted_by = 0
+	`
+	args := make([]interface{}, 0)
+
+	if idDaerah > 0 {
+		qCount += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+	}
+	if idBumd != uuid.Nil {
+		qCount += fmt.Sprintf(` AND id_bumd = $%d`, len(args)+1)
+	}
+	if search != "" {
+		qCount += fmt.Sprintf(` AND nama_bumd ILIKE $%d`, len(args)+1)
+	}
+
+	err = c.pgxConn.QueryRow(fCtx, qCount, args...).Scan(&totalCount)
+	if err != nil {
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal menghitung total data Kelengkapan Input. - " + err.Error(),
+		}
+	}
+
+	q := `
+	WITH m_daerah_temp AS (
+		SELECT * FROM dblink ($1,
+		'
+			SELECT id_daerah, nama_daerah
+			FROM data.m_daerah
+			WHERE is_deleted = 0
+		')
+	AS m_daerah_temp
+		(id_daerah INT4, nama_daerah VARCHAR)
+	)
+	SELECT
+		b.id_bumd,
+		b.nama_bumd,
+		b.id_bentuk_hukum,
+		mbbh.nama_bbh as bentuk_badan_hukum,
+		b.id_bentuk_usaha,
+		mbbu.nama_bu as bentuk_usaha,
+		mda.nama_daerah as nama_daerah,
+		mda.id_daerah as id_daerah,
+		CASE WHEN
+			penerapan_spi_bumd = true
+			AND file_spi_bumd != ''
+			THEN 1
+			ELSE 0
+		END as penerapan_spi,
+		CASE WHEN
+			(SELECT COUNT(*) FROM trn_perda_pendirian WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as akta_pendirian,
+		CASE WHEN
+			(SELECT COUNT(*) FROM trn_kinerja WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as kinerja,
+		1 as keuangan,
+		/* CASE WHEN
+			(SELECT COUNT(*) FROM trn_keuangan WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as keuangan, */
+		CASE WHEN
+			(SELECT COUNT(*) FROM trn_modal WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as modal,
+		CASE WHEN
+			(SELECT COUNT(*) FROM trn_pegawai WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as pegawai,
+		CASE WHEN
+			(SELECT COUNT(*) FROM trn_pengurus WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as pengurus,
+		CASE WHEN
+			(SELECT COUNT(*) FROM trn_peraturan WHERE id_bumd = b.id_bumd AND deleted_by = 0) > 0
+			THEN 1
+			ELSE 0
+		END as peraturan
+	FROM trn_bumd b
+		LEFT JOIN m_bentuk_badan_hukum mbbh ON mbbh.id_bbh = b.id_bentuk_hukum
+		LEFT JOIN m_bentuk_usaha mbbu ON mbbu.id_bu = b.id_bentuk_usaha
+		LEFT JOIN m_daerah_temp mda ON mda.id_daerah = b.id_daerah
+	WHERE b.deleted_by = 0
+	`
+	args = make([]interface{}, 0)
+	args = append(args, os.Getenv("DB_SERVER_URL_MST_DATA"))
+
+	if idDaerahClaims > 0 {
+		idDaerah = idDaerahClaims
+	}
+	if idBumdClaims != uuid.Nil {
+		idBumd = idBumdClaims
+	}
+
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
+	if idBumd != uuid.Nil {
+		q += fmt.Sprintf(` AND id_bumd = $%d`, len(args)+1)
+		args = append(args, idBumd)
+	}
+
+	if search != "" {
+		q += fmt.Sprintf(` AND nama_bumd ILIKE $%d`, len(args)+1)
+		args = append(args, "%"+search+"%")
+	}
+
+	q += fmt.Sprintf(` LIMIT $%d OFFSET $%d`, len(args)+1, len(args)+2)
+	args = append(args, limit, offset)
+
+	rows, err := c.pgxConn.Query(fCtx, q, args...)
+	if err != nil {
+		return r, totalCount, pageCount, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Kelengkapan Input. - " + err.Error(),
+		}
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var m bumd.KelengkapanInputModel
+		err = rows.Scan(
+			&m.IdBumd,
+			&m.NamaBumd,
+			&m.IdBentukBadanHukum,
+			&m.BentukBadanHukum,
+			&m.IdBentukUsaha,
+			&m.BentukUsaha,
+			&m.NamaDaerah,
+			&m.IdDaerah,
+			&m.PenerapanSPI,
+			&m.AktaPendirian,
+			&m.Kinerja,
+			&m.Keuangan,
+			&m.Modal,
+			&m.Pegawai,
+			&m.Pengurus,
+			&m.Peraturan,
+		)
+
+		if err != nil {
+			return r, totalCount, pageCount, utils.RequestError{
+				Code:    fasthttp.StatusInternalServerError,
+				Message: "gagal mengambil data Kelengkapan Input. - " + err.Error(),
+			}
+		}
+		r = append(r, m)
+	}
+
+	pageCount = 1
+	if totalCount > 0 && totalCount > limit {
+		pageCount = int(math.Ceil(float64(totalCount) / float64(limit)))
+	}
+
+	return r, totalCount, pageCount, nil
 }

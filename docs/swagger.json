@@ -828,6 +828,76 @@
                 }
             }
         },
+        "/strict/bisnis_matching/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update data bisnis matching.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bisnis Matching"
+                ],
+                "summary": "update data bisnis matching",
+                "operationId": "bisnis_matching-update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "Id produk untuk update data bisnis matching",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Status untuk update data bisnis matching",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.BisnisMatchingModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd": {
             "get": {
                 "security": [
@@ -968,6 +1038,88 @@
                             "items": {
                                 "$ref": "#/definitions/utils.RequestError"
                             }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
+        "/strict/bumd/kelengkapan_input": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data kelengkapan input.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "get data kelengkapan input",
+                "operationId": "kelengkapan_input-view",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Id Daerah",
+                        "name": "id_daerah",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bentuk Usaha BUMD",
+                        "name": "bentuk_usaha",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Id BUMD",
+                        "name": "id_bumd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/bumd.KelengkapanInputModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
                         }
                     },
                     "500": {
@@ -9096,6 +9248,75 @@
                 "website": {
                     "type": "string",
                     "example": "https://e-bumd.com"
+                }
+            }
+        },
+        "bumd.KelengkapanInputModel": {
+            "type": "object",
+            "properties": {
+                "akta_pendirian": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "bentuk_badan_hukum": {
+                    "type": "string",
+                    "example": "Perumda"
+                },
+                "bentuk_usaha": {
+                    "type": "string",
+                    "example": "Air Minum"
+                },
+                "id_bentuk_badan_hukum": {
+                    "type": "string",
+                    "example": "01994c00-6768-7fde-ab34-f315eea6510f"
+                },
+                "id_bentuk_usaha": {
+                    "type": "string",
+                    "example": "01994c01-c285-7e57-a486-fd9978083917"
+                },
+                "id_bumd": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "id_daerah": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "keuangan": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "kinerja": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "modal": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nama_bumd": {
+                    "type": "string",
+                    "example": "BUMD"
+                },
+                "nama_daerah": {
+                    "type": "string",
+                    "example": "DKI Jakarta"
+                },
+                "pegawai": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "penerapan_spi": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pengurus": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "peraturan": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },

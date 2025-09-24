@@ -43,7 +43,7 @@ func NewJenisLaporanHandler(r fiber.Router, validator *validator.Validate, contr
 //	@Security		ApiKeyAuth
 //	@Router			/strict/jenis_laporan [get]
 func (h *JenisLaporanHandler) Index(c *fiber.Ctx) error {
-	bentukUsaha := c.Query("bentuk_usaha", "00000000-0000-0000-0000-000000000000")
+	bentukUsaha := c.Query("bentuk_usaha", uuid.Nil.String())
 	bentukUsahaUUID, err := uuid.Parse(bentukUsaha)
 	if err != nil {
 		return err

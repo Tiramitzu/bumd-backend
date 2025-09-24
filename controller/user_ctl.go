@@ -174,8 +174,7 @@ func (c *UserController) View(fCtx *fasthttp.RequestCtx, user *jwt.Token, id int
 }
 
 func (c *UserController) Logout(idUser string) error {
-	var err error
-	err = c.redisCl.Delete("usr:" + idUser)
+	err := c.redisCl.Delete("usr:" + idUser)
 
 	if err != nil {
 		return utils.RequestError{
@@ -213,11 +212,11 @@ func (c *UserController) Profile(user *jwt.Token) (r models.UserDetail, err erro
 		users.nama,
 		roles.nama as nama_role,
 		COALESCE(bumd.nama_bumd, '-') as nama_bumd,
-		t_daerah.nama_daerah,
-		t_daerah.kode_ddn,
-		t_daerah.kode_prop,
-		t_daerah.sub_domain,
-		t_daerah.logo
+		COALESCE(t_daerah.nama_daerah, '-') as nama_daerah,
+		COALESCE(t_daerah.kode_ddn, '-') as kode_ddn,
+		COALESCE(t_daerah.kode_prop, '-') as kode_prop,
+		COALESCE(t_daerah.sub_domain, '-') as sub_domain,
+		COALESCE(t_daerah.logo, '-') as logo
 	FROM users
 	LEFT JOIN roles ON roles.id = users.id_role
 	LEFT JOIN trn_bumd bumd ON bumd.id_bumd = users.id_bumd
