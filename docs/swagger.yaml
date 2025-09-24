@@ -660,6 +660,26 @@ definitions:
       nama:
         type: string
     type: object
+  models.BisnisMatchingModel:
+    properties:
+      id_bumd:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      logo_bumd:
+        example: /path/to/file.png
+        type: string
+      nama_bumd:
+        example: BUMD 1
+        type: string
+      produk:
+        items:
+          $ref: '#/definitions/models.ProdukModel'
+        type: array
+      produk_show:
+        items:
+          $ref: '#/definitions/models.ProdukModel'
+        type: array
+    type: object
   models.JenisDokumenForm:
     properties:
       deskripsi:
@@ -711,6 +731,21 @@ definitions:
       id:
         type: string
       nama:
+        type: string
+    type: object
+  models.ProdukModel:
+    properties:
+      foto_produk:
+        example: /path/to/file.png
+        type: string
+      id_produk:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_show:
+        example: 0
+        type: integer
+      nama_produk:
+        example: Produk 1
         type: string
     type: object
   models.RolesModel:
@@ -1084,6 +1119,9 @@ definitions:
       id_bumd:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+      is_show:
+        example: 0
+        type: integer
       nama_produk:
         example: Produk 1
         type: string
@@ -1721,6 +1759,42 @@ paths:
       summary: update data bentuk usaha
       tags:
       - Bentuk Usaha
+  /strict/bisnis_matching:
+    get:
+      description: get data bisnis matching.
+      operationId: bisnis_matching-index
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.BisnisMatchingModel'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data bisnis matching
+      tags:
+      - Bisnis Matching
   /strict/bumd:
     get:
       description: get data bumd.

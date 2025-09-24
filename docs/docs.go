@@ -780,6 +780,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/bisnis_matching": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data bisnis matching.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bisnis Matching"
+                ],
+                "summary": "get data bisnis matching",
+                "operationId": "bisnis_matching-index",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.BisnisMatchingModel"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd": {
             "get": {
                 "security": [
@@ -9773,6 +9829,35 @@ const docTemplate = `{
                 }
             }
         },
+        "models.BisnisMatchingModel": {
+            "type": "object",
+            "properties": {
+                "id_bumd": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "logo_bumd": {
+                    "type": "string",
+                    "example": "/path/to/file.png"
+                },
+                "nama_bumd": {
+                    "type": "string",
+                    "example": "BUMD 1"
+                },
+                "produk": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProdukModel"
+                    }
+                },
+                "produk_show": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProdukModel"
+                    }
+                }
+            }
+        },
         "models.JenisDokumenForm": {
             "type": "object",
             "properties": {
@@ -9850,6 +9935,27 @@ const docTemplate = `{
                 },
                 "nama": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ProdukModel": {
+            "type": "object",
+            "properties": {
+                "foto_produk": {
+                    "type": "string",
+                    "example": "/path/to/file.png"
+                },
+                "id_produk": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "is_show": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "nama_produk": {
+                    "type": "string",
+                    "example": "Produk 1"
                 }
             }
         },
@@ -10349,6 +10455,10 @@ const docTemplate = `{
                 "id_bumd": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "is_show": {
+                    "type": "integer",
+                    "example": 0
                 },
                 "nama_produk": {
                     "type": "string",

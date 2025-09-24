@@ -442,6 +442,12 @@ func main() {
 		vld,
 		controller_mst.NewPendidikanController(pgxConn),
 	)
+	// bisnis_matching
+	http_master.NewBisnisMatchingHandler(
+		rStrict,
+		vld,
+		controller_mst.NewBisnisMatchingController(pgxConn),
+	)
 
 	http_util.StartServer(app)
 }
