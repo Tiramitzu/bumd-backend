@@ -102,3 +102,14 @@ type KelengkapanInputModel struct {
 	Pengurus           int32     `json:"pengurus" xml:"pengurus" example:"1"`
 	Peraturan          int32     `json:"peraturan" xml:"peraturan" example:"1"`
 }
+
+type SebaranModel struct {
+	IdDaerah   int32 `json:"id_daerah" xml:"id_daerah" example:"1"`
+	Bpd        int32 `json:"bpd" xml:"bpd" example:"1"`
+	Bpr        int32 `json:"bpr" xml:"bpr" example:"1"`
+	Jamkrida   int32 `json:"jamkrida" xml:"jamkrida" example:"1"`
+	Pdam       int32 `json:"pdam" xml:"pdam" example:"1"`
+	Pasar      int32 `json:"pasar" xml:"pasar" example:"1"`
+	AnekaUsaha int32 `json:"aneka_usaha" xml:"aneka_usaha" example:"1"`
+	Lainnya    int32 `json:"lainnya" xml:"lainnya" example:"1"`
+}

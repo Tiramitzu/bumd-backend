@@ -1007,3 +1007,45 @@ func (c *BumdController) KelengkapanInput(
 
 	return r, totalCount, pageCount, nil
 }
+
+func (c *BumdController) Sebaran(
+	fCtx *fasthttp.RequestCtx,
+	user *jwt.Token,
+	idDaerah int,
+) (r bumd.SebaranModel, err error) {
+	claims := user.Claims.(jwt.MapClaims)
+	idDaerahClaims := int(claims["id_daerah"].(float64))
+	if idDaerah > 0 {
+		idDaerah = idDaerahClaims
+	}
+
+	r.IdDaerah = int32(idDaerah)
+
+	q := `
+	SELECT
+		sum(case when id_bentuk_usaha = '01994c01-c285-7eea-aead-221a0d1f4cac' then 1 else 0 end) as bpd,
+		sum(case when id_bentuk_usaha = '01994c01-c285-7e6f-865a-b286738dff03' then 1 else 0 end) as bpr,
+		sum(case when id_bentuk_usaha = '01994c01-c285-73ae-8885-65ab6b20deb3' then 1 else 0 end) as jamkrida,
+		sum(case when id_bentuk_usaha = '01994c01-c285-7e57-a486-fd9978083917' then 1 else 0 end) as pdam,
+		sum(case when id_bentuk_usaha = '01994c01-c285-7e51-9140-e75269630f28' then 1 else 0 end) as pasar,
+		sum(case when id_bentuk_usaha = '01994c01-c285-7744-ba6a-5782f39fe366' then 1 else 0 end) as aneka_usaha,
+		sum(case when id_bentuk_usaha = '01994c01-c285-73b3-ada9-10d5180a4a2f' then 1 else 0 end) as lainnya
+	FROM trn_bumd
+	WHERE deleted_by = 0
+	`
+
+	var args []interface{}
+	if idDaerah > 0 {
+		q += fmt.Sprintf(` AND id_daerah = $%d`, len(args)+1)
+		args = append(args, idDaerah)
+	}
+
+	err = c.pgxConn.QueryRow(fCtx, q, args...).Scan(&r.Bpd, &r.Bpr, &r.Jamkrida, &r.Pdam, &r.Pasar, &r.AnekaUsaha, &r.Lainnya)
+	if err != nil {
+		return bumd.SebaranModel{}, utils.RequestError{
+			Code:    fasthttp.StatusInternalServerError,
+			Message: "gagal mengambil data Sebaran BUMD. - " + err.Error(),
+		}
+	}
+	return r, nil
+}

@@ -45,6 +45,7 @@ func NewBumdHandler(
 	rStrict := r.Group("bumd")
 	rStrict.Get("/", handler.Index)
 	rStrict.Get("/kelengkapan_input", handler.KelengkapanInput)
+	rStrict.Get("/sebaran", handler.Sebaran)
 	rStrict.Get("/:id", handler.View)
 	rStrict.Post("/", handler.Create)
 	rStrict.Put("/:id", handler.Update)
@@ -684,5 +685,28 @@ func (h *BumdHandler) KelengkapanInput(c *fiber.Ctx) error {
 		c.Append("x-pagination-next-page", strconv.Itoa(page+1))
 	}
 
+	return c.JSON(m)
+}
+
+// Sebaran func for get data sebaran by id daerah.
+//
+//	@Summary		get data sebaran by id daerah
+//	@Description	get data sebaran by id daerah.
+//	@ID				sebaran-view
+//	@Tags			BUMD
+//	@Produce		json
+//	@Param			id_daerah	query		int						false	"Id Daerah"
+//	@success		200			{object}	bumd.SebaranModel	"Success"
+//	@Failure		400			{object}	utils.RequestError		"Bad request"
+//	@Failure		404			{object}	utils.RequestError		"Data not found"
+//	@Failure		500			{object}	utils.RequestError		"Server error"
+//	@Security		ApiKeyAuth
+//	@Router			/strict/bumd/sebaran [get]
+func (h *BumdHandler) Sebaran(c *fiber.Ctx) error {
+	idDaerah := c.QueryInt("id_daerah")
+	m, err := h.Controller.Sebaran(c.Context(), c.Locals("jwt").(*jwt.Token), idDaerah)
+	if err != nil {
+		return err
+	}
 	return c.JSON(m)
 }
