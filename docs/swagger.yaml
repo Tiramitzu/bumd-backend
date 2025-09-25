@@ -212,6 +212,33 @@ definitions:
         example: true
         type: boolean
     type: object
+  bumd.SebaranModel:
+    properties:
+      aneka_usaha:
+        example: 1
+        type: integer
+      bpd:
+        example: 1
+        type: integer
+      bpr:
+        example: 1
+        type: integer
+      id_daerah:
+        example: 1
+        type: integer
+      jamkrida:
+        example: 1
+        type: integer
+      lainnya:
+        example: 1
+        type: integer
+      pasar:
+        example: 1
+        type: integer
+      pdam:
+        example: 1
+        type: integer
+    type: object
   dokumen.AktaNotarisModel:
     properties:
       created_at:
@@ -730,6 +757,18 @@ definitions:
         items:
           $ref: '#/definitions/models.ProdukModel'
         type: array
+    type: object
+  models.DashboardModel:
+    properties:
+      total_bumd:
+        example: 1
+        type: integer
+      total_laba:
+        example: 1
+        type: integer
+      total_modal:
+        example: 1
+        type: integer
     type: object
   models.JenisDokumenForm:
     properties:
@@ -6572,6 +6611,73 @@ paths:
       summary: get data kelengkapan input
       tags:
       - BUMD
+  /strict/bumd/sebaran:
+    get:
+      description: get data sebaran by id daerah.
+      operationId: sebaran-view
+      parameters:
+      - description: Id Daerah
+        in: query
+        name: id_daerah
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/bumd.SebaranModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data sebaran by id daerah
+      tags:
+      - BUMD
+  /strict/dashboard:
+    get:
+      description: index page.
+      operationId: dashboard-index
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.DashboardModel'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "404":
+          description: Data not found
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+        "422":
+          description: Data validation failed
+          schema:
+            items:
+              $ref: '#/definitions/utils.RequestError'
+            type: array
+        "500":
+          description: Server error
+          schema:
+            $ref: '#/definitions/utils.RequestError'
+      security:
+      - ApiKeyAuth: []
+      summary: get data dashboard
+      tags:
+      - Dashboard
   /strict/jenis_dokumen:
     get:
       description: get data jenis dokumen.

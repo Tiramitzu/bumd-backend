@@ -449,6 +449,13 @@ func main() {
 		controller_mst.NewBisnisMatchingController(pgxConn),
 	)
 
+	// dashboard
+	http.NewDashboardHandler(
+		rStrict,
+		vld,
+		controller.NewDashboardController(pgxConn),
+	)
+
 	http_util.StartServer(app)
 }
 

@@ -1,22 +1,45 @@
 services:
   api:
     build: .
-    container_name: bumd
+    container_name: bumd_dev
     network_mode: host
     environment:
-      SERVER_NAME: "BUMD_SERVICE"
+      SERVER_NAME: "BUMD_DEV_SERVICE"
       SERVER_URL: "0.0.0.0:8000"
       SERVER_READ_TIMEOUT: "60"
       JWT_SECRET_KEY: "L62WJIlrJUtHLUC0TEkMtq"
-      DB_SERVER_URL: "host=192.168.191.10 port=5432 user=postgres password=postgres dbname=bumd sslmode=disable"
-      DB_SERVER_URL_MST_DATA: "host=192.168.191.10 port=5432 user=postgres password=postgres dbname=mst_data sslmode=disable"
+      DB_SERVER_URL: "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=bumd sslmode=disable"
+      DB_SERVER_URL_MST_DATA: "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=mst_data sslmode=disable"
       SIPD_CORS_WHITELISTS: "*"
       USED_PROV: "33"
-      REDIS_HOST: "192.168.191.10"
+      REDIS_HOST: "127.0.0.1"
       REDIS_PORT: "6379"
       REDIS_USERNAME: "default"
       REDIS_PASSWORD: "123456"
-      MINIO_ENDPOINT: "192.168.191.10:9000"
+      MINIO_ENDPOINT: "127.0.0.1:9000"
+      MINIO_ACCESS_KEY: "myuser"
+      MINIO_SECRET_KEY: "mysecret123"
+      MINIO_BUCKET_NAME: "bumd"
+    ports:
+      - 8000:8000
+  api-prod:
+    build: .
+    container_name: bumd_prod
+    network_mode: host
+    environment:
+      SERVER_NAME: "BUMD_PROD_SERVICE"
+      SERVER_URL: "0.0.0.0:6800"
+      SERVER_READ_TIMEOUT: "60"
+      JWT_SECRET_KEY: "L62WJIlrJUtHLUC0TEkMtq"
+      DB_SERVER_URL: "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=bumd sslmode=disable"
+      DB_SERVER_URL_MST_DATA: "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=mst_data sslmode=disable"
+      SIPD_CORS_WHITELISTS: "*"
+      USED_PROV: "33"
+      REDIS_HOST: "127.0.0.1"
+      REDIS_PORT: "6379"
+      REDIS_USERNAME: "default"
+      REDIS_PASSWORD: "123456"
+      MINIO_ENDPOINT: "127.0.0.1:9000"
       MINIO_ACCESS_KEY: "myuser"
       MINIO_SECRET_KEY: "mysecret123"
       MINIO_BUCKET_NAME: "bumd"

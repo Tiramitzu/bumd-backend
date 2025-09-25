@@ -1139,6 +1139,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/bumd/sebaran": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get data sebaran by id daerah.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BUMD"
+                ],
+                "summary": "get data sebaran by id daerah",
+                "operationId": "sebaran-view",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id Daerah",
+                        "name": "id_daerah",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/bumd.SebaranModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/bumd/{id_bumd}/akta_notaris": {
             "get": {
                 "security": [
@@ -7958,6 +8010,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/strict/dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "index page.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "get data dashboard",
+                "operationId": "dashboard-index",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.DashboardModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Data not found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    },
+                    "422": {
+                        "description": "Data validation failed",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/utils.RequestError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.RequestError"
+                        }
+                    }
+                }
+            }
+        },
         "/strict/jenis_dokumen": {
             "get": {
                 "security": [
@@ -9367,6 +9472,43 @@ const docTemplate = `{
                 }
             }
         },
+        "bumd.SebaranModel": {
+            "type": "object",
+            "properties": {
+                "aneka_usaha": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "bpd": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "bpr": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id_daerah": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "jamkrida": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "lainnya": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pasar": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pdam": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "dokumen.AktaNotarisModel": {
             "type": "object",
             "properties": {
@@ -10076,6 +10218,23 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.ProdukModel"
                     }
+                }
+            }
+        },
+        "models.DashboardModel": {
+            "type": "object",
+            "properties": {
+                "total_bumd": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total_laba": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total_modal": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
