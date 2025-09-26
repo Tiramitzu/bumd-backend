@@ -47,7 +47,7 @@ func (c *JenisLaporanController) Index(ctx context.Context, jwt *jwt.Token, bent
 		keterangan_jenis_laporan,
 		level_jenis_laporan,
 		parent_id_jenis_laporan
-		FROM m_jenis_laporan WHERE parent_id_jenis_laporan = $1 ORDER BY created_at ASC`
+		FROM m_jenis_laporan WHERE parent_id_jenis_laporan = $1`
 	args = append(args, parentId)
 
 	if bentukUsaha != uuid.Nil && totalCount > 0 {
